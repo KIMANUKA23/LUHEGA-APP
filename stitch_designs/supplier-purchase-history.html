@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Supplier Purchase History</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&amp;family=Inter:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+<style>
+
+    .material-symbols-outlined {
+
+      font-variation-settings:
+
+        'FILL' 0,
+
+        'wght' 400,
+
+        'GRAD' 0,
+
+        'opsz' 24
+
+    }
+
+  </style>
+
+<script id="tailwind-config">
+
+    tailwind.config = {
+
+      darkMode: "class",
+
+      theme: {
+
+        extend: {
+
+          colors: {
+
+            "primary": "#007BFF",
+
+            "background-light": "#F8F9FA",
+
+            "background-dark": "#101922",
+
+            "surface-light": "#FFFFFF",
+
+            "surface-dark": "#182431",
+
+            "on-surface-light": "#1A1C1E",
+
+            "on-surface-dark": "#E2E2E6",
+
+            "outline-light": "#E0E2E6",
+
+            "outline-dark": "#44474B"
+
+          },
+
+          fontFamily: {
+
+            "display": ["Poppins", "sans-serif"],
+
+            "body": ["Inter", "sans-serif"]
+
+          },
+
+          borderRadius: {
+
+            "DEFAULT": "0.75rem","lg": "1rem",
+
+            "xl": "1.5rem",
+
+            "full": "9999px"
+
+          },
+
+          boxShadow: {
+
+            'md': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
+
+          }
+
+        },
+
+      },
+
+    }
+
+  </script>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="font-body bg-background-light dark:bg-background-dark text-on-surface-light dark:text-on-surface-dark">
+
+<div class="relative flex min-h-screen w-full flex-col">
+
+<header class="sticky top-0 z-10 flex h-16 items-center justify-between bg-background-light/80 px-4 backdrop-blur-sm dark:bg-background-dark/80">
+
+<div class="flex items-center gap-2">
+
+<button class="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full">
+
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+
+</button>
+
+<div class="flex flex-col">
+
+<h1 class="font-display text-lg font-bold leading-tight text-on-surface-light dark:text-on-surface-dark">Purchase History</h1>
+
+<p class="text-sm text-on-surface-light/70 dark:text-on-surface-dark/70">AutoParts Inc.</p>
+
+</div>
+
+</div>
+
+</header>
+
+<main class="flex-1 space-y-4 p-4 pb-24">
+
+<a class="block rounded-lg border border-outline-light bg-surface-light p-4 shadow-md transition-shadow hover:shadow-lg dark:border-outline-dark dark:bg-surface-dark" href="#">
+
+<div class="flex items-center justify-between">
+
+<p class="font-display font-semibold text-primary">#PO-00123</p>
+
+<div class="flex h-6 items-center justify-center rounded-full bg-green-100 px-3 py-1 dark:bg-green-900/50">
+
+<span class="text-xs font-medium text-green-800 dark:text-green-200">Delivered</span>
+
+</div>
+
+</div>
+
+<div class="mt-3 space-y-1 text-sm">
+
+<div class="flex justify-between">
+
+<span class="text-on-surface-light/70 dark:text-on-surface-dark/70">Order Date</span>
+
+<span class="font-medium">2023-10-25</span>
+
+</div>
+
+<div class="flex justify-between">
+
+<span class="text-on-surface-light/70 dark:text-on-surface-dark/70">Total Amount</span>
+
+<span class="font-medium">KES 15,000</span>
+
+</div>
+
+</div>
+
+</a>
+
+<a class="block rounded-lg border border-outline-light bg-surface-light p-4 shadow-md transition-shadow hover:shadow-lg dark:border-outline-dark dark:bg-surface-dark" href="#">
+
+<div class="flex items-center justify-between">
+
+<p class="font-display font-semibold text-primary">#PO-00121</p>
+
+<div class="flex h-6 items-center justify-center rounded-full bg-green-100 px-3 py-1 dark:bg-green-900/50">
+
+<span class="text-xs font-medium text-green-800 dark:text-green-200">Delivered</span>
+
+</div>
+
+</div>
+
+<div class="mt-3 space-y-1 text-sm">
+
+<div class="flex justify-between">
+
+<span class="text-on-surface-light/70 dark:text-on-surface-dark/70">Order Date</span>
+
+<span class="font-medium">2023-10-18</span>
+
+</div>
+
+<div class="flex justify-between">
+
+<span class="text-on-surface-light/70 dark:text-on-surface-dark/70">Total Amount</span>
+
+<span class="font-medium">KES 22,500</span>
+
+</div>
+
+</div>
+
+</a>
+
+<a class="block rounded-lg border border-outline-light bg-surface-light p-4 shadow-md transition-shadow hover:shadow-lg dark:border-outline-dark dark:bg-surface-dark" href="#">
+
+<div class="flex items-center justify-between">
+
+<p class="font-display font-semibold text-primary">#PO-00115</p>
+
+<div class="flex h-6 items-center justify-center rounded-full bg-yellow-100 px-3 py-1 dark:bg-yellow-900/50">
+
+<span class="text-xs font-medium text-yellow-800 dark:text-yellow-200">Pending</span>
+
+</div>
+
+</div>
+
+<div class="mt-3 space-y-1 text-sm">
+
+<div class="flex justify-between">
+
+<span class="text-on-surface-light/70 dark:text-on-surface-dark/70">Order Date</span>
+
+<span class="font-medium">2023-10-12</span>
+
+</div>
+
+<div class="flex justify-between">
+
+<span class="text-on-surface-light/70 dark:text-on-surface-dark/70">Total Amount</span>
+
+<span class="font-medium">KES 8,750</span>
+
+</div>
+
+</div>
+
+</a>
+
+<a class="block rounded-lg border border-outline-light bg-surface-light p-4 shadow-md transition-shadow hover:shadow-lg dark:border-outline-dark dark:bg-surface-dark" href="#">
+
+<div class="flex items-center justify-between">
+
+<p class="font-display font-semibold text-primary">#PO-00112</p>
+
+<div class="flex h-6 items-center justify-center rounded-full bg-green-100 px-3 py-1 dark:bg-green-900/50">
+
+<span class="text-xs font-medium text-green-800 dark:text-green-200">Delivered</span>
+
+</div>
+
+</div>
+
+<div class="mt-3 space-y-1 text-sm">
+
+<div class="flex justify-between">
+
+<span class="text-on-surface-light/70 dark:text-on-surface-dark/70">Order Date</span>
+
+<span class="font-medium">2023-09-28</span>
+
+</div>
+
+<div class="flex justify-between">
+
+<span class="text-on-surface-light/70 dark:text-on-surface-dark/70">Total Amount</span>
+
+<span class="font-medium">KES 31,200</span>
+
+</div>
+
+</div>
+
+</a>
+
+<a class="block rounded-lg border border-outline-light bg-surface-light p-4 shadow-md transition-shadow hover:shadow-lg dark:border-outline-dark dark:bg-surface-dark" href="#">
+
+<div class="flex items-center justify-between">
+
+<p class="font-display font-semibold text-primary">#PO-00109</p>
+
+<div class="flex h-6 items-center justify-center rounded-full bg-red-100 px-3 py-1 dark:bg-red-900/50">
+
+<span class="text-xs font-medium text-red-800 dark:text-red-200">Cancelled</span>
+
+</div>
+
+</div>
+
+<div class="mt-3 space-y-1 text-sm">
+
+<div class="flex justify-between">
+
+<span class="text-on-surface-light/70 dark:text-on-surface-dark/70">Order Date</span>
+
+<span class="font-medium">2023-09-21</span>
+
+</div>
+
+<div class="flex justify-between">
+
+<span class="text-on-surface-light/70 dark:text-on-surface-dark/70">Total Amount</span>
+
+<span class="font-medium">KES 19,000</span>
+
+</div>
+
+</div>
+
+</a>
+
+</main>
+
+<nav class="fixed bottom-0 left-0 right-0 z-10 flex h-20 items-center justify-around border-t border-outline-light bg-surface-light/95 backdrop-blur-sm dark:border-outline-dark dark:bg-surface-dark/95">
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-on-surface-light/70 dark:text-on-surface-dark/70" href="#">
+
+<span class="material-symbols-outlined">dashboard</span>
+
+<span class="text-xs font-medium">Dashboard</span>
+
+</a>
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-on-surface-light/70 dark:text-on-surface-dark/70" href="#">
+
+<span class="material-symbols-outlined">inventory_2</span>
+
+<span class="text-xs font-medium">Inventory</span>
+
+</a>
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-on-surface-light/70 dark:text-on-surface-dark/70" href="#">
+
+<span class="material-symbols-outlined">point_of_sale</span>
+
+<span class="text-xs font-medium">Sales</span>
+
+</a>
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-on-surface-light/70 dark:text-on-surface-dark/70" href="#">
+
+<span class="material-symbols-outlined">group</span>
+
+<span class="text-xs font-medium">Customers</span>
+
+</a>
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-on-surface-light/70 dark:text-on-surface-dark/70" href="#">
+
+<span class="material-symbols-outlined">person</span>
+
+<span class="text-xs font-medium">Profile</span>
+
+</a>
+
+</nav>
+
+</div>
+
+</body></html>
+

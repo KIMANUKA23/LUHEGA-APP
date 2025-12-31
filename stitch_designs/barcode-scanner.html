@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>LUHEGA Barcode Scanner</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+<style>
+
+        .material-symbols-rounded {
+
+            font-variation-settings:
+
+            'FILL' 0,
+
+            'wght' 400,
+
+            'GRAD' 0,
+
+            'opsz' 24
+
+        }
+
+    </style>
+
+<script id="tailwind-config">
+
+        tailwind.config = {
+
+            darkMode: "class",
+
+            theme: {
+
+                extend: {
+
+                    colors: {
+
+                        "primary": "#007BFF",
+
+                        "background-light": "#000000",
+
+                        "background-dark": "#000000",
+
+                        "surface": "#ffffff",
+
+                        "on-surface": "#1C1B1F",
+
+                        "secondary-text": "#757575",
+
+                        "outline": "#cddbea",
+
+                        "error": "#B3261E"
+
+                    },
+
+                    fontFamily: {
+
+                        "display": ["Poppins", "sans-serif"],
+
+                        "body": ["Inter", "sans-serif"],
+
+                    },
+
+                    borderRadius: {
+
+                        "DEFAULT": "0.5rem",
+
+                        "lg": "12px",
+
+                        "xl": "1.5rem",
+
+                        "full": "9999px"
+
+                    },
+
+                },
+
+            },
+
+        }
+
+    </script>
+
+<style>
+
+        body {
+
+            min-height: max(884px, 100dvh);
+
+            overflow: hidden;}
+
+        .scanner-frame {
+
+            position: absolute;
+
+            width: 80%;
+
+            height: 30%;
+
+            border: 2px solid white;
+
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
+
+            border-radius: 1rem;
+
+        }
+
+        .scanner-corner {
+
+            position: absolute;
+
+            width: 32px;
+
+            height: 32px;
+
+            border-color: #007BFF;
+
+            border-style: solid;
+
+        }
+
+        .top-left {
+
+            top: -2px;
+
+            left: -2px;
+
+            border-top-width: 4px;
+
+            border-left-width: 4px;
+
+            border-top-left-radius: 1rem;
+
+        }
+
+        .top-right {
+
+            top: -2px;
+
+            right: -2px;
+
+            border-top-width: 4px;
+
+            border-right-width: 4px;
+
+            border-top-right-radius: 1rem;
+
+        }
+
+        .bottom-left {
+
+            bottom: -2px;
+
+            left: -2px;
+
+            border-bottom-width: 4px;
+
+            border-left-width: 4px;
+
+            border-bottom-left-radius: 1rem;
+
+        }
+
+        .bottom-right {
+
+            bottom: -2px;
+
+            right: -2px;
+
+            border-bottom-width: 4px;
+
+            border-right-width: 4px;
+
+            border-bottom-right-radius: 1rem;
+
+        }
+
+    </style>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="font-body bg-background-light">
+
+<div class="relative flex min-h-screen w-full flex-col items-center justify-center bg-black group/design-root" style='font-family: Inter, "Noto Sans", sans-serif;'>
+
+<div class="absolute inset-0 bg-gray-800 flex items-center justify-center">
+
+<span class="text-gray-500 text-sm">Camera Feed Placeholder</span>
+
+</div>
+
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+
+<div class="absolute top-0 left-0 right-0 p-4 flex items-center justify-between z-10 bg-black/30 backdrop-blur-sm">
+
+<button class="text-white p-2 rounded-full hover:bg-white/10">
+
+<span class="material-symbols-rounded">close</span>
+
+</button>
+
+<h1 class="text-white text-lg font-display font-medium">Scan Barcode</h1>
+
+<div class="w-10 h-10"></div> 
+
+</div>
+
+<div class="relative flex items-center justify-center w-full h-full">
+
+<div class="scanner-frame">
+
+<div class="scanner-corner top-left"></div>
+
+<div class="scanner-corner top-right"></div>
+
+<div class="scanner-corner bottom-left"></div>
+
+<div class="scanner-corner bottom-right"></div>
+
+</div>
+
+</div>
+
+<div class="absolute bottom-0 left-0 right-0 p-8 flex flex-col items-center justify-center z-10 bg-gradient-to-t from-black/80 to-transparent">
+
+<p class="text-white text-center text-base font-body mb-8">Align barcode within the frame to scan</p>
+
+<div class="flex w-full items-center justify-center space-x-6">
+
+<div class="flex flex-col items-center gap-2">
+
+<button class="flex h-16 w-16 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition-colors hover:bg-white/30">
+
+<span class="material-symbols-rounded text-3xl">flashlight_on</span>
+
+</button>
+
+<span class="text-white text-sm font-medium font-body">Flashlight</span>
+
+</div>
+
+<div class="flex flex-col items-center gap-2">
+
+<button class="flex h-16 w-16 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-md transition-colors hover:bg-white/30">
+
+<span class="material-symbols-rounded text-3xl">edit</span>
+
+</button>
+
+<span class="text-white text-sm font-medium font-body">Manual Entry</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+</body></html>
+

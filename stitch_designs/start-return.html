@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Start Return</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+<script>
+
+      tailwind.config = {
+
+        darkMode: "class",
+
+        theme: {
+
+          extend: {
+
+            colors: {
+
+              "primary": "#007BFF",
+
+              "background-light": "#f8fafc", /* Updated to a lighter gray for better contrast */
+
+              "background-dark": "#0f1923",
+
+              "surface-light": "#ffffff",
+
+              "surface-dark": "#1e293b",
+
+              "text-primary-light": "#1c1b1f",
+
+              "text-primary-dark": "#f8fafc",
+
+              "text-secondary-light": "#757575",
+
+              "text-secondary-dark": "#94a3b8",
+
+            },
+
+            fontFamily: {
+
+              "display": ["Inter", "sans-serif"],
+
+              "heading": ["Poppins", "sans-serif"]
+
+            },
+
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1.5rem", "full": "9999px"},
+
+          },
+
+        },
+
+      }
+
+    </script>
+
+<style>
+
+      .material-symbols-outlined {
+
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+
+      }
+
+      .material-symbols-outlined.filled {
+
+        font-variation-settings: 'FILL' 1;
+
+      }
+
+    </style>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="font-display bg-background-light dark:bg-background-dark text-text-primary-light dark:text-text-primary-dark">
+
+<div class="relative flex h-screen w-full flex-col group/design-root overflow-hidden mx-auto max-w-md">
+
+<!-- Top App Bar -->
+
+<header class="flex items-center p-4 pb-3 justify-between bg-background-light dark:bg-background-dark sticky top-0 z-10">
+
+<div class="flex size-10 shrink-0 items-center justify-center text-text-primary-light dark:text-text-primary-dark">
+
+<span class="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
+
+</div>
+
+<h1 class="text-xl font-heading font-semibold text-text-primary-light dark:text-text-primary-dark flex-1 text-center">Start Return</h1>
+
+<div class="size-10 shrink-0"></div> <!-- Spacer -->
+
+</header>
+
+<!-- Main Content -->
+
+<main class="flex-1 overflow-y-auto px-4 pt-4 pb-24">
+
+<!-- Headline and Body Text -->
+
+<h2 class="font-heading text-3xl font-bold tracking-tight text-text-primary-light dark:text-text-primary-dark">Find a Sale</h2>
+
+<p class="text-base font-normal text-text-secondary-light dark:text-text-secondary-dark mt-2 mb-6">Enter the Sale ID or search by customer name or date to find the original transaction.</p>
+
+<!-- Search Bar -->
+
+<div class="relative w-full">
+
+<label class="flex flex-col min-w-40 h-14 w-full">
+
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+
+<div class="text-text-secondary-light dark:text-text-secondary-dark flex bg-gray-100 dark:bg-slate-700/50 items-center justify-center pl-4 rounded-l-lg border-y border-l border-gray-300 dark:border-slate-600">
+
+<span class="material-symbols-outlined text-2xl">search</span>
+
+</div>
+
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg text-text-primary-light dark:text-text-primary-dark bg-gray-100 dark:bg-slate-700/50 h-full placeholder:text-text-secondary-light dark:placeholder:text-text-secondary-dark px-4 pl-3 text-base font-normal leading-normal border-y border-r border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-primary focus:border-primary dark:focus:border-primary" placeholder="Enter Sale ID or Search..."/>
+
+</div>
+
+</label>
+
+</div>
+
+<!-- Recent Sales Section -->
+
+<div class="mt-8">
+
+<h3 class="font-heading text-lg font-semibold text-text-primary-light dark:text-text-primary-dark mb-3">Recent Sales</h3>
+
+<div class="space-y-3">
+
+<!-- List Item 1 -->
+
+<div class="flex gap-4 bg-surface-light dark:bg-surface-dark px-4 py-3 justify-between items-center rounded-lg border border-gray-200 dark:border-slate-700">
+
+<div class="flex items-center gap-4">
+
+<div class="text-primary flex items-center justify-center rounded-full bg-primary/10 shrink-0 size-12">
+
+<span class="material-symbols-outlined">receipt_long</span>
+
+</div>
+
+<div class="flex flex-1 flex-col justify-center">
+
+<p class="text-base font-medium text-text-primary-light dark:text-text-primary-dark">SALE-00123</p>
+
+<p class="text-sm font-normal text-text-secondary-light dark:text-text-secondary-dark">John Doe - $150.00</p>
+
+<p class="text-xs font-normal text-text-secondary-light dark:text-text-secondary-dark mt-0.5">October 26, 2023</p>
+
+</div>
+
+</div>
+
+<div class="shrink-0">
+
+<label class="relative flex h-8 w-8 cursor-pointer items-center justify-center">
+
+<input class="form-radio h-5 w-5 text-primary focus:ring-primary" name="sale_selection" type="radio"/>
+
+</label>
+
+</div>
+
+</div>
+
+<!-- List Item 2 -->
+
+<div class="flex gap-4 bg-surface-light dark:bg-surface-dark px-4 py-3 justify-between items-center rounded-lg border border-gray-200 dark:border-slate-700">
+
+<div class="flex items-center gap-4">
+
+<div class="text-primary flex items-center justify-center rounded-full bg-primary/10 shrink-0 size-12">
+
+<span class="material-symbols-outlined">receipt_long</span>
+
+</div>
+
+<div class="flex flex-1 flex-col justify-center">
+
+<p class="text-base font-medium text-text-primary-light dark:text-text-primary-dark">SALE-00121</p>
+
+<p class="text-sm font-normal text-text-secondary-light dark:text-text-secondary-dark">Jane Smith - $89.99</p>
+
+<p class="text-xs font-normal text-text-secondary-light dark:text-text-secondary-dark mt-0.5">October 25, 2023</p>
+
+</div>
+
+</div>
+
+<div class="shrink-0">
+
+<label class="relative flex h-8 w-8 cursor-pointer items-center justify-center">
+
+<input class="form-radio h-5 w-5 text-primary focus:ring-primary" name="sale_selection" type="radio"/>
+
+</label>
+
+</div>
+
+</div>
+
+<!-- List Item 3 -->
+
+<div class="flex gap-4 bg-surface-light dark:bg-surface-dark px-4 py-3 justify-between items-center rounded-lg border border-gray-200 dark:border-slate-700">
+
+<div class="flex items-center gap-4">
+
+<div class="text-primary flex items-center justify-center rounded-full bg-primary/10 shrink-0 size-12">
+
+<span class="material-symbols-outlined">receipt_long</span>
+
+</div>
+
+<div class="flex flex-1 flex-col justify-center">
+
+<p class="text-base font-medium text-text-primary-light dark:text-text-primary-dark">SALE-00115</p>
+
+<p class="text-sm font-normal text-text-secondary-light dark:text-text-secondary-dark">Mike Johnson - $245.50</p>
+
+<p class="text-xs font-normal text-text-secondary-light dark:text-text-secondary-dark mt-0.5">October 22, 2023</p>
+
+</div>
+
+</div>
+
+<div class="shrink-0">
+
+<label class="relative flex h-8 w-8 cursor-pointer items-center justify-center">
+
+<input class="form-radio h-5 w-5 text-primary focus:ring-primary" name="sale_selection" type="radio"/>
+
+</label>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+<!-- Floating Action Button & Bottom Bar Area -->
+
+<div class="absolute bottom-0 left-0 right-0 w-full bg-gradient-to-t from-background-light dark:from-background-dark to-transparent pt-6">
+
+<div class="px-4 pb-4">
+
+<button class="w-full h-14 rounded-lg bg-primary text-white text-base font-semibold shadow-lg shadow-primary/30 flex items-center justify-center disabled:bg-gray-300 dark:disabled:bg-slate-600 disabled:text-gray-500 dark:disabled:text-slate-400 disabled:shadow-none" disabled="">Proceed</button>
+
+</div>
+
+<!-- Bottom Navigation Bar -->
+
+<nav class="flex justify-around items-center h-20 bg-surface-light dark:bg-surface-dark border-t border-gray-200 dark:border-slate-700">
+
+<a class="flex flex-col items-center justify-center text-text-secondary-light dark:text-text-secondary-dark w-1/5" href="#">
+
+<span class="material-symbols-outlined">dashboard</span>
+
+<span class="text-xs mt-1">Dashboard</span>
+
+</a>
+
+<a class="flex flex-col items-center justify-center text-text-secondary-light dark:text-text-secondary-dark w-1/5" href="#">
+
+<span class="material-symbols-outlined">inventory_2</span>
+
+<span class="text-xs mt-1">Inventory</span>
+
+</a>
+
+<a class="flex flex-col items-center justify-center text-primary w-1/5" href="#">
+
+<span class="material-symbols-outlined filled">point_of_sale</span>
+
+<span class="text-xs font-semibold mt-1">Sales</span>
+
+</a>
+
+<a class="flex flex-col items-center justify-center text-text-secondary-light dark:text-text-secondary-dark w-1/5" href="#">
+
+<span class="material-symbols-outlined">group</span>
+
+<span class="text-xs mt-1">Customers</span>
+
+</a>
+
+<a class="flex flex-col items-center justify-center text-text-secondary-light dark:text-text-secondary-dark w-1/5" href="#">
+
+<span class="material-symbols-outlined">person</span>
+
+<span class="text-xs mt-1">Profile</span>
+
+</a>
+
+</nav>
+
+</div>
+
+</div>
+
+</body></html>
+

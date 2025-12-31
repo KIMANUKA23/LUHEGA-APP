@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Create New Customer</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Poppins:wght@700&amp;display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+<style>
+
+        .material-symbols-outlined {
+
+            font-variation-settings: 'FILL' 0,
+
+            'wght' 400,
+
+            'GRAD' 0,
+
+            'opsz' 24
+
+        }
+
+    </style>
+
+<script id="tailwind-config">
+
+        tailwind.config = {
+
+            darkMode: "class",
+
+            theme: {
+
+                extend: {
+
+                    colors: {
+
+                        "primary": "#007BFF",
+
+                        "background-light": "#f5f7f8",
+
+                        "background-dark": "#0f1923",
+
+                        "text-light": "#0f172a",
+
+                        "text-dark": "#e2e8f0",
+
+                        "text-secondary-light": "#64748b",
+
+                        "text-secondary-dark": "#94a3b8",
+
+                    },
+
+                    fontFamily: {
+
+                        "display": ["Inter", "sans-serif"],
+
+                        "heading": ["Poppins", "sans-serif"]
+
+                    },
+
+                    borderRadius: {
+
+                        "DEFAULT": "0.5rem",
+
+                        "md": "12px",
+
+                        "lg": "1rem",
+
+                        "xl": "1.5rem",
+
+                        "full": "9999px"
+
+                    },
+
+                },
+
+            },
+
+        }
+
+    </script>
+
+<style>
+
+        body {
+
+            min-height: max(884px, 100dvh);
+
+        }
+
+    </style>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark">
+
+<div class="relative flex h-screen w-full flex-col group/design-root">
+
+<header class="flex h-16 shrink-0 items-center justify-start border-b border-slate-200 dark:border-slate-800 bg-background-light dark:bg-background-dark px-4">
+
+<h1 class="text-text-light dark:text-text-dark text-lg font-heading font-bold leading-tight tracking-tight">Create New Customer</h1>
+
+</header>
+
+<main class="flex flex-1 flex-col p-6">
+
+<form class="flex h-full flex-col justify-between">
+
+<div class="space-y-6">
+
+<div>
+
+<label class="block text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark mb-2" for="customer-name">Customer Name</label>
+
+<input class="block w-full rounded-md border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500 focus:border-primary focus:ring-primary text-base h-14" id="customer-name" name="customer-name" placeholder="Enter full name" type="text"/>
+
+</div>
+
+<div>
+
+<label class="block text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark mb-2" for="phone-number">Phone Number</label>
+
+<input class="block w-full rounded-md border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500 focus:border-primary focus:ring-primary text-base h-14" id="phone-number" name="phone-number" placeholder="Enter phone number" type="tel"/>
+
+</div>
+
+<div>
+
+<label class="block text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark mb-2" for="email">Email Address</label>
+
+<input class="block w-full rounded-md border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500 focus:border-primary focus:ring-primary text-base h-14" id="email" name="email" placeholder="Enter email address" type="email"/>
+
+</div>
+
+<div>
+
+<label class="block text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark mb-2" for="address">Physical Address</label>
+
+<input class="block w-full rounded-md border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500 focus:border-primary focus:ring-primary text-base h-14" id="address" name="address" placeholder="Enter physical address" type="text"/>
+
+</div>
+
+<div>
+
+<label class="block text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark mb-2" for="id-number">ID Number</label>
+
+<input class="block w-full rounded-md border-slate-300 bg-white dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500 focus:border-primary focus:ring-primary text-base h-14" id="id-number" name="id-number" placeholder="Enter ID number" type="text"/>
+
+</div>
+
+</div>
+
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 bg-primary text-white text-sm font-bold leading-normal tracking-wide w-full" type="submit">
+
+<span>Save Customer</span>
+
+</button>
+
+</form>
+
+</main>
+
+<nav class="flex shrink-0 gap-2 border-t border-slate-200 dark:border-slate-800 bg-background-light dark:bg-background-dark px-4 pb-3 pt-2">
+
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-text-secondary-light dark:text-text-secondary-dark" href="#">
+
+<span class="material-symbols-outlined">dashboard</span>
+
+<p class="text-xs font-medium">Dashboard</p>
+
+</a>
+
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-text-secondary-light dark:text-text-secondary-dark" href="#">
+
+<span class="material-symbols-outlined">inventory_2</span>
+
+<p class="text-xs font-medium">Inventory</p>
+
+</a>
+
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-text-secondary-light dark:text-text-secondary-dark" href="#">
+
+<span class="material-symbols-outlined">receipt_long</span>
+
+<p class="text-xs font-medium">Sales</p>
+
+</a>
+
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary dark:text-primary" href="#">
+
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
+
+<p class="text-xs font-bold">Customers</p>
+
+</a>
+
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-text-secondary-light dark:text-text-secondary-dark" href="#">
+
+<span class="material-symbols-outlined">person</span>
+
+<p class="text-xs font-medium">Profile</p>
+
+</a>
+
+</nav>
+
+</div>
+
+
+
+</body></html>
+

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Adjust Quantity Component</title>
+
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap" rel="stylesheet"/>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<style type="text/tailwindcss">
+
+        .material-symbols-outlined {
+
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+
+        }
+
+        h3 {
+
+            font-family: 'Poppins', sans-serif;
+
+        }
+
+    </style>
+
+<script id="tailwind-config">
+
+      tailwind.config = {
+
+        darkMode: "class",
+
+        theme: {
+
+          extend: {
+
+            colors: {
+
+              "primary": "#007bff",
+
+              "background-light": "#f5f7f8",
+
+              "background-dark": "#0f1923",
+
+              "neutral-100": "#ffffff",
+
+              "neutral-200": "#f8f9fa",
+
+              "neutral-300": "#e9ecef",
+
+              "neutral-400": "#d1d5db",
+
+              "neutral-800": "#343a40",
+
+              "neutral-900": "#1f2937",
+
+            },
+
+            fontFamily: {
+
+              "display": ["Inter", "sans-serif"],
+
+              "heading": ["Poppins", "sans-serif"]
+
+            },
+
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+
+          },
+
+        },
+
+      }
+
+    </script>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="font-display bg-background-light dark:bg-background-dark">
+
+<div class="relative flex min-h-screen w-full flex-col items-center justify-center bg-background-light dark:bg-background-dark p-4 group/design-root" style='font-family: Inter, "Noto Sans", sans-serif;'>
+
+<!-- This container simulates the bottom sheet modal -->
+
+<div class="flex w-full max-w-md flex-col justify-end">
+
+<div class="flex flex-col items-stretch overflow-hidden rounded-t-xl bg-neutral-100 dark:bg-neutral-900">
+
+<!-- BottomSheetHandle -->
+
+<button class="flex h-5 w-full items-center justify-center pt-3">
+
+<div class="h-1 w-9 rounded-full bg-neutral-400 dark:bg-neutral-800"></div>
+
+</button>
+
+<!-- HeadlineText -->
+
+<h3 class="text-neutral-900 dark:text-neutral-100 font-heading tracking-tight text-2xl font-bold leading-tight px-6 text-left pb-1 pt-4">Adjust Quantity</h3>
+
+<!-- BodyText -->
+
+<p class="text-neutral-800 dark:text-neutral-300 text-base font-normal leading-normal pb-4 pt-1 px-6 font-heading font-semibold">Oil Filter A3</p>
+
+<!-- Divider -->
+
+<div class="h-px bg-neutral-300 dark:bg-neutral-800 mx-6"></div>
+
+<!-- ListItem (modified for quantity adjustment) -->
+
+<div class="flex items-center gap-4 bg-neutral-100 dark:bg-neutral-900 px-6 min-h-14 justify-between py-6">
+
+<div class="flex items-center gap-4">
+
+<div class="text-neutral-900 dark:text-neutral-100 flex items-center justify-center rounded-lg bg-neutral-200 dark:bg-neutral-800 shrink-0 size-10">
+
+<span class="material-symbols-outlined text-2xl">inventory_2</span>
+
+</div>
+
+<p class="text-neutral-900 dark:text-neutral-100 text-base font-medium leading-normal flex-1 truncate">Quantity</p>
+
+</div>
+
+<div class="shrink-0">
+
+<div class="flex items-center gap-3 text-neutral-900 dark:text-neutral-100">
+
+<button class="text-base font-medium leading-normal flex h-9 w-9 items-center justify-center rounded-full bg-neutral-200 dark:bg-neutral-800 cursor-pointer text-primary disabled:cursor-not-allowed disabled:text-neutral-400 disabled:dark:text-neutral-500" disabled="">
+
+<span class="material-symbols-outlined text-2xl">remove</span>
+
+</button>
+
+<input class="text-lg font-medium leading-normal w-10 p-0 text-center bg-transparent focus:outline-0 focus:ring-0 focus:border-none border-none text-neutral-900 dark:text-neutral-100 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" type="number" value="1"/>
+
+<button class="text-base font-medium leading-normal flex h-9 w-9 items-center justify-center rounded-full bg-primary/20 dark:bg-primary/30 cursor-pointer text-primary">
+
+<span class="material-symbols-outlined text-2xl">add</span>
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Divider -->
+
+<div class="h-px bg-neutral-300 dark:bg-neutral-800"></div>
+
+<!-- SingleButton -->
+
+<div class="flex px-6 py-4 justify-center bg-neutral-100 dark:bg-neutral-900">
+
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 flex-1 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em]">
+
+<span class="truncate">Update Quantity</span>
+
+</button>
+
+</div>
+
+<!-- Safe area padding for bottom of screen -->
+
+<div class="h-4 bg-neutral-100 dark:bg-neutral-900"></div>
+
+</div>
+
+</div>
+
+</div>
+
+</body></html>
+

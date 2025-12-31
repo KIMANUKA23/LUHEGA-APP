@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Debt Payment History</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Poppins:wght@600;700&amp;display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+
+<style>
+
+      .material-symbols-outlined {
+
+        font-variation-settings:
+
+        'FILL' 0,
+
+        'wght' 400,
+
+        'GRAD' 0,
+
+        'opsz' 24
+
+      }
+
+      .material-symbols-outlined.filled {
+
+        font-variation-settings:
+
+        'FILL' 1
+
+      }
+
+    </style>
+
+<script id="tailwind-config">
+
+      tailwind.config = {
+
+        darkMode: "class",
+
+        theme: {
+
+          extend: {
+
+            colors: {
+
+              "primary": "#007bff",
+
+              "background-light": "#f5f7f8",
+
+              "background-dark": "#0f1923",
+
+              "surface-light": "#ffffff",
+
+              "surface-dark": "#1f2937",
+
+            },
+
+            fontFamily: {
+
+              "display": ["Inter", "sans-serif"],
+
+              "heading": ["Poppins", "sans-serif"]
+
+            },
+
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px", "md": "12px"},
+
+          },
+
+        },
+
+      }
+
+    </script>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111827] dark:text-gray-200">
+
+<div class="relative flex h-screen w-full flex-col group/design-root overflow-hidden">
+
+<main class="flex-1 overflow-y-auto">
+
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0 z-10 border-b border-gray-200 dark:border-gray-700">
+
+<div class="flex size-12 shrink-0 items-center justify-start -ml-2">
+
+<span class="material-symbols-outlined text-2xl text-[#0c141d] dark:text-gray-300">arrow_back_ios_new</span>
+
+</div>
+
+<div class="flex flex-col items-center flex-1 -ml-10">
+
+<h1 class="text-lg font-heading font-bold text-[#0c141d] dark:text-gray-100">Payment History</h1>
+
+<p class="text-sm text-gray-500 dark:text-gray-400">John Doe / DEBT-001</p>
+
+</div>
+
+<div class="size-6"></div> 
+
+</div>
+
+<div class="flex flex-col gap-3 p-4">
+
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl p-4 flex items-center shadow-sm">
+
+<div class="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/50">
+
+<span class="material-symbols-outlined text-primary">receipt_long</span>
+
+</div>
+
+<div class="flex-1">
+
+<div class="flex justify-between items-center">
+
+<p class="font-semibold text-base text-[#0c141d] dark:text-gray-100">KES 1,500</p>
+
+<p class="text-xs text-gray-500 dark:text-gray-400">2023-10-01</p>
+
+</div>
+
+<div class="flex justify-between items-center mt-1">
+
+<p class="text-sm text-gray-600 dark:text-gray-300">#PAY-006</p>
+
+<p class="text-xs text-gray-500 dark:text-gray-400">Bank Transfer</p>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl p-4 flex items-center shadow-sm">
+
+<div class="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/50">
+
+<span class="material-symbols-outlined text-primary">receipt_long</span>
+
+</div>
+
+<div class="flex-1">
+
+<div class="flex justify-between items-center">
+
+<p class="font-semibold text-base text-[#0c141d] dark:text-gray-100">KES 2,000</p>
+
+<p class="text-xs text-gray-500 dark:text-gray-400">2023-09-15</p>
+
+</div>
+
+<div class="flex justify-between items-center mt-1">
+
+<p class="text-sm text-gray-600 dark:text-gray-300">#PAY-005</p>
+
+<p class="text-xs text-gray-500 dark:text-gray-400">M-PESA</p>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl p-4 flex items-center shadow-sm">
+
+<div class="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/50">
+
+<span class="material-symbols-outlined text-primary">receipt_long</span>
+
+</div>
+
+<div class="flex-1">
+
+<div class="flex justify-between items-center">
+
+<p class="font-semibold text-base text-[#0c141d] dark:text-gray-100">KES 1,000</p>
+
+<p class="text-xs text-gray-500 dark:text-gray-400">2023-09-01</p>
+
+</div>
+
+<div class="flex justify-between items-center mt-1">
+
+<p class="text-sm text-gray-600 dark:text-gray-300">#PAY-004</p>
+
+<p class="text-xs text-gray-500 dark:text-gray-400">Cash</p>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl p-4 flex items-center shadow-sm">
+
+<div class="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/50">
+
+<span class="material-symbols-outlined text-primary">receipt_long</span>
+
+</div>
+
+<div class="flex-1">
+
+<div class="flex justify-between items-center">
+
+<p class="font-semibold text-base text-[#0c141d] dark:text-gray-100">KES 5,000</p>
+
+<p class="text-xs text-gray-500 dark:text-gray-400">2023-08-20</p>
+
+</div>
+
+<div class="flex justify-between items-center mt-1">
+
+<p class="text-sm text-gray-600 dark:text-gray-300">#PAY-003</p>
+
+<p class="text-xs text-gray-500 dark:text-gray-400">Bank Transfer</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+<footer class="sticky bottom-0 bg-background-light dark:bg-background-dark pb-3">
+
+<div class="flex justify-around items-center h-16 border-t border-gray-200 dark:border-gray-700 bg-background-light dark:bg-gray-800">
+
+<div class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+
+<span class="material-symbols-outlined">dashboard</span>
+
+<span class="text-xs">Dashboard</span>
+
+</div>
+
+<div class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+
+<span class="material-symbols-outlined">inventory_2</span>
+
+<span class="text-xs">Inventory</span>
+
+</div>
+
+<div class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+
+<span class="material-symbols-outlined">receipt_long</span>
+
+<span class="text-xs">Sales</span>
+
+</div>
+
+<div class="flex flex-col items-center justify-center text-primary">
+
+<span class="material-symbols-outlined filled">group</span>
+
+<span class="text-xs font-bold">Customers</span>
+
+</div>
+
+<div class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+
+<span class="material-symbols-outlined">person</span>
+
+<span class="text-xs">Profile</span>
+
+</div>
+
+</div>
+
+</footer>
+
+</div>
+
+
+
+</body></html>
+

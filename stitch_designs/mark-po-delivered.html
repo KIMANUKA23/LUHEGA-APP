@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Mark PO Delivered</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+<style>
+
+        .material-symbols-rounded {
+
+            font-variation-settings: 'FILL' 0,
+
+            'wght' 400,
+
+            'GRAD' 0,
+
+            'opsz' 24
+
+        }
+
+    </style>
+
+<script id="tailwind-config">
+
+        tailwind.config = {
+
+            darkMode: "class",
+
+            theme: {
+
+                extend: {
+
+                    colors: {
+
+                        "primary": "#007BFF",
+
+                        "background-light": "#f5f7f8",
+
+                        "background-dark": "#0f1923",
+
+                        "surface": "#ffffff",
+
+                        "on-surface": "#1C1B1F",
+
+                        "secondary-text": "#757575",
+
+                        "outline": "#cddbea",
+
+                        "error": "#B3261E"
+
+                    },
+
+                    fontFamily: {
+
+                        "display": ["Poppins", "sans-serif"],
+
+                        "body": ["Inter", "sans-serif"],
+
+                    },
+
+                    borderRadius: {
+
+                        "DEFAULT": "0.5rem",
+
+                        "lg": "12px",
+
+                        "xl": "1.5rem",
+
+                        "full": "9999px"
+
+                    },
+
+                },
+
+            },
+
+        }
+
+    </script>
+
+<style>
+
+        body {
+
+            min-height: 100dvh;
+
+        }
+
+    </style>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="font-body bg-background-light dark:bg-background-dark">
+
+<div class="relative flex min-h-screen w-full flex-col group/design-root" style='font-family: Inter, "Noto Sans", sans-serif;'>
+
+<header class="sticky top-0 z-10 flex h-16 items-center border-b border-outline bg-surface px-4 dark:border-gray-700 dark:bg-background-dark">
+
+<button class="flex items-center justify-center rounded-full p-2">
+
+<span class="material-symbols-rounded text-on-surface dark:text-gray-300">arrow_back_ios_new</span>
+
+</button>
+
+<h1 class="flex-1 text-center font-display text-lg font-semibold text-on-surface dark:text-gray-200">Mark as Delivered</h1>
+
+<div class="w-10"></div>
+
+</header>
+
+<main class="flex-1 overflow-y-auto p-6">
+
+<div class="flex flex-col items-center text-center">
+
+<div class="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+
+<span class="material-symbols-rounded text-3xl text-primary">local_shipping</span>
+
+</div>
+
+<h2 class="font-display text-2xl font-bold text-on-surface dark:text-white">Confirm Delivery</h2>
+
+<p class="mt-1 text-secondary-text dark:text-gray-400">Purchase Order #PO-00123</p>
+
+</div>
+
+<div class="mt-8 space-y-6">
+
+<div class="flex flex-col w-full">
+
+<label class="text-on-surface dark:text-gray-300 text-base font-medium leading-normal pb-2 font-body" for="delivery-date">Actual Delivery Date</label>
+
+<div class="relative flex w-full flex-1 items-center">
+
+<span class="material-symbols-rounded absolute left-3.5 text-secondary-text dark:text-gray-400">calendar_today</span>
+
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-on-surface dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-outline dark:border-gray-600 bg-surface dark:bg-background-dark h-14 placeholder:text-secondary-text dark:placeholder:text-gray-500 pl-11 pr-4 py-3.5 text-base font-normal leading-normal font-body" id="delivery-date" placeholder="Select date" type="text" value="October 26, 2023"/>
+
+</div>
+
+</div>
+
+<div class="flex flex-col w-full">
+
+<label class="text-on-surface dark:text-gray-300 text-base font-medium leading-normal pb-2 font-body" for="quantity-received">Quantity Received</label>
+
+<div class="relative flex w-full flex-1 items-center">
+
+<span class="material-symbols-rounded absolute left-3.5 text-secondary-text dark:text-gray-400">inventory_2</span>
+
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-on-surface dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-outline dark:border-gray-600 bg-surface dark:bg-background-dark h-14 placeholder:text-secondary-text dark:placeholder:text-gray-500 pl-11 pr-4 py-3.5 text-base font-normal leading-normal font-body" id="quantity-received" placeholder="Enter quantity" type="number" value="150"/>
+
+</div>
+
+</div>
+
+<div>
+
+<p class="text-on-surface dark:text-gray-300 text-base font-medium leading-normal pb-2 font-body">Upload Delivery Proof</p>
+
+<div class="flex items-center justify-center w-full">
+
+<label class="flex flex-col items-center justify-center w-full h-32 border-2 border-outline border-dashed rounded-lg cursor-pointer bg-surface dark:bg-background-dark hover:bg-gray-50 dark:hover:bg-gray-800 dark:border-gray-600" for="dropzone-file">
+
+<div class="flex flex-col items-center justify-center pt-5 pb-6">
+
+<span class="material-symbols-rounded text-4xl text-secondary-text dark:text-gray-400">cloud_upload</span>
+
+<p class="mb-2 text-sm text-secondary-text dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+
+<p class="text-xs text-secondary-text dark:text-gray-400">PNG, JPG or PDF (MAX. 5MB)</p>
+
+</div>
+
+<input class="hidden" id="dropzone-file" type="file"/>
+
+</label>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="mt-8">
+
+<button class="flex h-14 w-full items-center justify-center rounded-lg bg-primary px-6 text-base font-bold text-white shadow-sm transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 dark:focus:ring-offset-background-dark disabled:cursor-not-allowed disabled:bg-primary/50 font-body">Confirm Delivery</button>
+
+</div>
+
+</main>
+
+<nav class="sticky bottom-0 z-10 border-t border-outline bg-surface px-6 py-2 dark:border-gray-700 dark:bg-background-dark">
+
+<div class="flex justify-around">
+
+<a class="flex flex-col items-center gap-1 p-2 text-primary" href="#">
+
+<span class="material-symbols-rounded">dashboard</span>
+
+<span class="text-xs font-medium">Dashboard</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 p-2 text-secondary-text dark:text-gray-400" href="#">
+
+<span class="material-symbols-rounded">inventory</span>
+
+<span class="text-xs font-medium">Inventory</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 p-2 text-secondary-text dark:text-gray-400" href="#">
+
+<span class="material-symbols-rounded">receipt_long</span>
+
+<span class="text-xs font-medium">Sales</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 p-2 text-secondary-text dark:text-gray-400" href="#">
+
+<span class="material-symbols-rounded">groups</span>
+
+<span class="text-xs font-medium">Customers</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 p-2 text-secondary-text dark:text-gray-400" href="#">
+
+<span class="material-symbols-rounded">person</span>
+
+<span class="text-xs font-medium">Profile</span>
+
+</a>
+
+</div>
+
+</nav>
+
+</div>
+
+
+
+</body></html>
+

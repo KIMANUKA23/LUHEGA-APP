@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global font configuration for React Native */
+/* Fonts are loaded via expo-font in app/_layout.tsx */
+/* 
+  - font-display class uses Inter (400, 500, 600, 700)
+  - font-heading class uses Poppins (700)
+  
+  Usage in components:
+  - Body text: className="font-display" (default)
+  - Headings: className="font-heading"
+*/

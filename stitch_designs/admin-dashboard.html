@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>LUHEGA Admin Dashboard</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@700&display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style type="text/tailwindcss">
+
+        .material-symbols-outlined {
+
+          font-variation-settings:
+
+          'FILL' 0,
+
+          'wght' 400,
+
+          'GRAD' 0,
+
+          'opsz' 24
+
+        }
+
+        .material-symbols-outlined.filled {
+
+          font-variation-settings:
+
+          'FILL' 1
+
+        }
+
+    </style>
+
+<script>
+
+      tailwind.config = {
+
+        theme: {
+
+          extend: {
+
+            colors: {
+
+              "primary": "#007BFF",
+
+              "secondary-gray": "#6C757D",
+
+              "text-dark": "#212529",
+
+              "background-light": "#FFFFFF",
+
+              "background-surface": "#F8F9FA"
+
+            },
+
+            fontFamily: {
+
+              "display": ["Inter", "sans-serif"],
+
+              "heading": ["Poppins", "sans-serif"]
+
+            },
+
+            borderRadius: {
+
+              "DEFAULT": "12px",
+
+              "lg": "16px",
+
+              "xl": "20px",
+
+              "full": "9999px"
+
+            },
+
+            spacing: {
+
+                '4': '16px',
+
+            }
+
+          },
+
+        },
+
+      }
+
+    </script>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+      background-color: #F8F9FA;
+
+    }
+
+    </style>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="bg-background-surface font-display">
+
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+
+<div class="flex-grow pb-28">
+
+<div class="bg-background-light pt-8 pb-4">
+
+<div class="flex items-center px-4 justify-between">
+
+<div class="flex items-center gap-3">
+
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12" data-alt="User avatar placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA-8tesUHbnvo-pSN96j1aLie6QH56SS1UqS8mHLNFs8oV-673uBg6368Ty--soXuOCWSIQxun9ynXIvq_yLZ80oZJkqP6fgr52ph8dBYHTt8ZwS9yZS8kLmf1UCGhXrSMZrlK5pBVnO_i4KyCmq1PXKR-O0F9nPRzhB-Asw2RrNixneJrV1QgCwzKbNs2V-6L8GjbSrQ3AK8ysLcCKGZEvk9_MTlvR2Fi8YTYM7hCa3AMR76kxhh_Z3Wn4ZQ_Lp-jOAxXJtuxQWYjc");'></div>
+
+<div>
+
+<p class="text-secondary-gray text-sm">Welcome back,</p>
+
+<h1 class="text-text-dark text-xl font-heading font-bold leading-tight tracking-[-0.015em]">Admin</h1>
+
+</div>
+
+</div>
+
+<div class="flex items-center justify-end">
+
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 w-12 bg-transparent text-text-dark gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 p-0">
+
+<span class="material-symbols-outlined text-3xl">notifications</span>
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="p-4 grid grid-cols-2 gap-4">
+
+<div class="flex flex-col gap-1 rounded-lg bg-background-light p-4 shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-gray-200/80">
+
+<p class="text-secondary-gray text-sm font-medium leading-normal">Total Revenue</p>
+
+<p class="text-primary tracking-tight text-2xl font-bold leading-tight">$25,480</p>
+
+</div>
+
+<div class="flex flex-col gap-1 rounded-lg bg-background-light p-4 shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-gray-200/80">
+
+<p class="text-secondary-gray text-sm font-medium leading-normal">Total Orders</p>
+
+<p class="text-text-dark tracking-tight text-2xl font-bold leading-tight">352</p>
+
+</div>
+
+<div class="flex flex-col gap-1 rounded-lg bg-background-light p-4 shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-gray-200/80">
+
+<p class="text-secondary-gray text-sm font-medium leading-normal">New Customers</p>
+
+<p class="text-text-dark tracking-tight text-2xl font-bold leading-tight">45</p>
+
+</div>
+
+<div class="flex flex-col gap-1 rounded-lg bg-background-light p-4 shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-gray-200/80">
+
+<p class="text-secondary-gray text-sm font-medium leading-normal">Low Stock Items</p>
+
+<p class="text-text-dark tracking-tight text-2xl font-bold leading-tight">12</p>
+
+</div>
+
+</div>
+
+<div class="px-4">
+
+<div class="grid grid-cols-4 gap-4 rounded-lg bg-background-light p-3 shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-gray-200/80">
+
+<a class="flex flex-col gap-2 items-center justify-center text-center hover:bg-primary/5 active:scale-95 transition-transform rounded-lg py-2" href="#">
+
+<span class="material-symbols-outlined text-primary text-2xl">add_shopping_cart</span>
+
+<h3 class="text-text-dark text-xs font-medium leading-tight">New Order</h3>
+
+</a>
+
+<a class="flex flex-col gap-2 items-center justify-center text-center hover:bg-primary/5 active:scale-95 transition-transform rounded-lg py-2" href="#">
+
+<span class="material-symbols-outlined text-primary text-2xl">add_box</span>
+
+<h3 class="text-text-dark text-xs font-medium leading-tight">Add Product</h3>
+
+</a>
+
+<a class="flex flex-col gap-2 items-center justify-center text-center hover:bg-primary/5 active:scale-95 transition-transform rounded-lg py-2" href="#">
+
+<span class="material-symbols-outlined text-primary text-2xl">bar_chart</span>
+
+<h3 class="text-text-dark text-xs font-medium leading-tight">Reports</h3>
+
+</a>
+
+<a class="flex flex-col gap-2 items-center justify-center text-center hover:bg-primary/5 active:scale-95 transition-transform rounded-lg py-2" href="#">
+
+<span class="material-symbols-outlined text-primary text-2xl">manage_accounts</span>
+
+<h3 class="text-text-dark text-xs font-medium leading-tight">Manage Staff</h3>
+
+</a>
+
+</div>
+
+</div>
+
+<div class="p-4">
+
+<div class="rounded-lg bg-background-light p-4 shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-gray-200/80">
+
+<h2 class="text-text-dark text-lg font-heading font-bold leading-tight tracking-[-0.015em] pb-3">Sales Trends</h2>
+
+<div class="w-full h-48">
+
+<canvas id="salesTrendChart"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<button class="fixed bottom-24 right-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-white shadow-lg active:scale-95 transition-transform z-20">
+
+<span class="material-symbols-outlined text-4xl">barcode_scanner</span>
+
+</button>
+
+<div class="fixed bottom-0 left-0 right-0 z-20 bg-background-light shadow-[0_-2px_10px_rgba(0,0,0,0.05)] border-t border-gray-200/80">
+
+<div class="flex h-20 items-center justify-around px-2">
+
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+
+<span class="material-symbols-outlined filled">dashboard</span>
+
+<span class="text-xs font-medium">Dashboard</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-secondary-gray" href="#">
+
+<span class="material-symbols-outlined">inventory</span>
+
+<span class="text-xs font-medium">Inventory</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-secondary-gray" href="#">
+
+<span class="material-symbols-outlined">storefront</span>
+
+<span class="text-xs font-medium">Sales</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-secondary-gray" href="#">
+
+<span class="material-symbols-outlined">groups</span>
+
+<span class="text-xs font-medium">Customers</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-secondary-gray" href="#">
+
+<span class="material-symbols-outlined">person</span>
+
+<span class="text-xs font-medium">Profile</span>
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+    const ctx = document.getElementById('salesTrendChart');
+
+    if (ctx) {
+
+        new Chart(ctx, {
+
+            type: 'line',
+
+            data: {
+
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+
+                datasets: [{
+
+                    label: 'Sales ($)',
+
+                    data: [12000, 19000, 15000, 22000, 18000, 25000, 23000],
+
+                    borderColor: '#007BFF',
+
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+
+                    borderWidth: 2,
+
+                    tension: 0.4,
+
+                    fill: true,
+
+                    pointBackgroundColor: '#007BFF',
+
+                    pointRadius: 4,
+
+                    pointHoverRadius: 6,
+
+                }]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+
+                        display: false
+
+                    },
+
+                    tooltip: {
+
+                        backgroundColor: '#212529',
+
+                        titleFont: { family: 'Inter', weight: 'bold' },
+
+                        bodyFont: { family: 'Inter' },
+
+                        padding: 10,
+
+                        cornerRadius: 8,
+
+                        displayColors: false,
+
+                    }
+
+                },
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        grid: {
+
+                            color: '#e9ecef',
+
+                            borderDash: [2, 4],
+
+                        },
+
+                        ticks: {
+
+                           callback: function(value) {
+
+                                return '$' + value / 1000 + 'k';
+
+                            },
+
+                           font: { family: 'Inter' },
+
+                           color: '#6C757D'
+
+                        }
+
+                    },
+
+                    x: {
+
+                         grid: {
+
+                            display: false
+
+                        },
+
+                        ticks: {
+
+                           font: { family: 'Inter' },
+
+                           color: '#6C757D'
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        });
+
+    }
+
+</script>
+
+
+
+</body></html>
+

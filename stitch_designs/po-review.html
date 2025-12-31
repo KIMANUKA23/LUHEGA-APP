@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>PO Review Screen</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+<style>
+
+    .material-symbols-rounded {
+
+      font-variation-settings:
+
+        'FILL' 0,
+
+        'wght' 400,
+
+        'GRAD' 0,
+
+        'opsz' 24
+
+    }
+
+  </style>
+
+<script id="tailwind-config">
+
+    tailwind.config = {
+
+      darkMode: "class",
+
+      theme: {
+
+        extend: {
+
+          colors: {
+
+            "primary": "#007BFF",
+
+            "background-light": "#f5f7f8",
+
+            "background-dark": "#0f1923",
+
+            "surface": "#ffffff",
+
+            "on-surface": "#1C1B1F",
+
+            "secondary-text": "#757575",
+
+            "outline": "#cddbea",
+
+            "error": "#B3261E"
+
+          },
+
+          fontFamily: {
+
+            "display": ["Poppins", "sans-serif"],
+
+            "body": ["Inter", "sans-serif"],
+
+          },
+
+          borderRadius: {
+
+            "DEFAULT": "0.5rem",
+
+            "lg": "12px",
+
+            "xl": "1.5rem",
+
+            "full": "9999px"
+
+          },
+
+        },
+
+      },
+
+    }
+
+  </script>
+
+<style>
+
+      body {
+
+          min-height: max(884px, 100dvh);
+
+      }
+
+  </style>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="font-body bg-background-light dark:bg-background-dark">
+
+<div class="relative mx-auto flex h-full min-h-screen w-full max-w-md flex-col bg-surface dark:bg-background-dark group/design-root" style='font-family: Inter, "Noto Sans", sans-serif;'>
+
+<header class="flex h-16 shrink-0 items-center justify-between border-b border-outline dark:border-gray-800 px-4">
+
+<button class="flex items-center justify-center p-2">
+
+<span class="material-symbols-rounded text-on-surface dark:text-white">arrow_back_ios_new</span>
+
+</button>
+
+<h1 class="font-display text-xl font-semibold text-on-surface dark:text-white">Review Purchase Order</h1>
+
+<div class="w-8"></div>
+
+</header>
+
+<main class="flex-1 overflow-y-auto bg-background-light p-4 dark:bg-black/50">
+
+<div class="space-y-6">
+
+<div class="rounded-lg border border-outline bg-surface p-4 dark:border-gray-700 dark:bg-background-dark">
+
+<div class="space-y-4">
+
+<div>
+
+<p class="text-sm text-secondary-text">Supplier</p>
+
+<p class="font-medium text-on-surface dark:text-white">Reliable Auto Parts Inc.</p>
+
+</div>
+
+<div>
+
+<p class="text-sm text-secondary-text">Expected Delivery Date</p>
+
+<p class="font-medium text-on-surface dark:text-white">October 25, 2023</p>
+
+</div>
+
+<div>
+
+<p class="text-sm text-secondary-text">Notes</p>
+
+<p class="text-on-surface dark:text-white">Please expedite shipping if possible. Items are for stock replenishment.</p>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="rounded-lg border border-outline bg-surface p-4 dark:border-gray-700 dark:bg-background-dark">
+
+<h2 class="pb-4 font-display text-lg font-semibold text-on-surface dark:text-white">Items</h2>
+
+<div class="space-y-4">
+
+<div class="flex items-start justify-between">
+
+<div>
+
+<p class="font-medium text-on-surface dark:text-white">Brake Pad Set - BP-1024</p>
+
+<p class="text-sm text-secondary-text">10 units x $45.00</p>
+
+</div>
+
+<p class="font-medium text-on-surface dark:text-white">$450.00</p>
+
+</div>
+
+<div class="border-t border-outline dark:border-gray-700"></div>
+
+<div class="flex items-start justify-between">
+
+<div>
+
+<p class="font-medium text-on-surface dark:text-white">Oil Filter - OF-3614</p>
+
+<p class="text-sm text-secondary-text">25 units x $8.50</p>
+
+</div>
+
+<p class="font-medium text-on-surface dark:text-white">$212.50</p>
+
+</div>
+
+<div class="border-t border-outline dark:border-gray-700"></div>
+
+<div class="flex items-start justify-between">
+
+<div>
+
+<p class="font-medium text-on-surface dark:text-white">Spark Plugs (4-pack) - SP-789</p>
+
+<p class="text-sm text-secondary-text">15 units x $12.75</p>
+
+</div>
+
+<p class="font-medium text-on-surface dark:text-white">$191.25</p>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="rounded-lg border border-outline bg-surface p-4 dark:border-gray-700 dark:bg-background-dark">
+
+<div class="space-y-2">
+
+<div class="flex items-center justify-between">
+
+<p class="text-secondary-text">Subtotal</p>
+
+<p class="text-on-surface dark:text-white">$853.75</p>
+
+</div>
+
+<div class="flex items-center justify-between">
+
+<p class="text-secondary-text">Tax (8%)</p>
+
+<p class="text-on-surface dark:text-white">$68.30</p>
+
+</div>
+
+<div class="border-t border-outline pt-2 dark:border-gray-700"></div>
+
+<div class="flex items-center justify-between">
+
+<p class="font-display text-lg font-bold text-on-surface dark:text-white">Grand Total</p>
+
+<p class="font-display text-lg font-bold text-on-surface dark:text-white">$922.05</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+<footer class="sticky bottom-0 z-10 w-full shrink-0 border-t border-outline bg-surface p-4 pb-5 shadow-[0_-1px_3px_rgba(0,0,0,0.05)] dark:border-gray-800 dark:bg-background-dark">
+
+<div class="flex items-center space-x-4">
+
+<button class="flex h-12 flex-1 items-center justify-center rounded-lg border border-outline bg-surface text-base font-bold text-on-surface transition-colors hover:bg-gray-100 dark:border-gray-700 dark:bg-background-dark dark:text-white dark:hover:bg-gray-800">Edit PO</button>
+
+<button class="flex h-12 flex-1 items-center justify-center rounded-lg bg-primary text-base font-bold text-white shadow-sm transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 dark:focus:ring-offset-background-dark">Submit PO</button>
+
+</div>
+
+</footer>
+
+<nav class="sticky bottom-0 z-20 flex w-full justify-around border-t border-outline bg-surface py-2 dark:border-gray-800 dark:bg-background-dark">
+
+<a class="flex flex-col items-center justify-center space-y-1 text-secondary-text" href="#">
+
+<span class="material-symbols-rounded">dashboard</span>
+
+<span class="text-xs">Dashboard</span>
+
+</a>
+
+<a class="flex flex-col items-center justify-center space-y-1 text-primary" href="#">
+
+<span class="material-symbols-rounded">inventory_2</span>
+
+<span class="text-xs font-semibold">Inventory</span>
+
+</a>
+
+<a class="flex flex-col items-center justify-center space-y-1 text-secondary-text" href="#">
+
+<span class="material-symbols-rounded">receipt_long</span>
+
+<span class="text-xs">Sales</span>
+
+</a>
+
+<a class="flex flex-col items-center justify-center space-y-1 text-secondary-text" href="#">
+
+<span class="material-symbols-rounded">groups</span>
+
+<span class="text-xs">Customers</span>
+
+</a>
+
+<a class="flex flex-col items-center justify-center space-y-1 text-secondary-text" href="#">
+
+<span class="material-symbols-rounded">person</span>
+
+<span class="text-xs">Profile</span>
+
+</a>
+
+</nav>
+
+</div>
+
+
+
+</body></html>
+

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Receipt Details</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400,FILL@1" rel="stylesheet"/>
+
+<script>
+
+        tailwind.config = {
+
+            darkMode: "class",
+
+            theme: {
+
+                extend: {
+
+                    colors: {
+
+                        "primary": "#4A90E2",
+
+                        "background-light": "#F8F9FA",
+
+                        "background-dark": "#0f1923",
+
+                        "text-primary-light": "#212529",
+
+                        "text-primary-dark": "#F8F9FA",
+
+                        "text-secondary-light": "#6C757D",
+
+                        "text-secondary-dark": "#adb5bd",
+
+                        "card-light": "#FFFFFF",
+
+                        "card-dark": "#1a2938",
+
+                        "border-light": "#E9ECEF",
+
+                        "border-dark": "#343a40",
+
+                    },
+
+                    fontFamily: {
+
+                        "display": ["Inter", "sans-serif"],
+
+                        "heading": ["Poppins", "sans-serif"]
+
+                    },
+
+                    borderRadius: {
+
+                        "DEFAULT": "0.5rem",
+
+                        "lg": "1rem",
+
+                        "xl": "1.5rem",
+
+                        "full": "9999px"
+
+                    },
+
+                },
+
+            },
+
+        }
+
+    </script>
+
+<style type="text/tailwindcss">
+
+        body {
+
+            @apply bg-background-light dark:bg-background-dark font-display text-text-primary-light dark:text-text-primary-dark;
+
+        }
+
+    </style>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="antialiased">
+
+<div class="relative flex min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root">
+
+<div class="flex-1 pb-28">
+
+<!-- Top App Bar -->
+
+<header class="sticky top-0 z-10 flex items-center bg-background-light/80 dark:bg-background-dark/80 px-4 py-3 backdrop-blur-sm border-b border-border-light dark:border-border-dark">
+
+<button class="flex size-10 shrink-0 items-center justify-center text-text-primary-light dark:text-text-primary-dark">
+
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+
+</button>
+
+<h1 class="flex-1 text-center text-lg font-heading font-semibold text-text-primary-light dark:text-text-primary-dark tracking-tight">Receipt Details</h1>
+
+<div class="size-10"></div> <!-- Spacer -->
+
+</header>
+
+<!-- Main Content -->
+
+<main class="p-4 sm:p-6">
+
+<!-- Receipt Container -->
+
+<div class="mx-auto max-w-md rounded-xl bg-card-light dark:bg-card-dark shadow-md overflow-hidden">
+
+<div class="p-6">
+
+<!-- Store Header -->
+
+<div class="flex flex-col items-center text-center pb-5 border-b border-dashed border-border-light dark:border-border-dark">
+
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-16 mb-4" data-alt="The Corner Store logo, an abstract C in a circle" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCzQfbgIgBXfQ_4qu-9iTpp4BKdcyNIvqrBqn6KYtuq9JYRFL0qLrMI2A4n87vFA1W9kOe0MoHw50ZvxxKWFIO3zWXRfqMa1VBGjahEfFhHsOjrYEfRvwuA63Xnb3O2FA-X5cUivyNV-zv73R_TTnhqxsj8RVovw5T5m402KL_KiuoNXKwoawIOAyEJCouzXzbZcn61XpLY8wBPy3PjLFrnL3XiMYErFJLSsmTL-DWGpKzN_8ajv5_D6UMt1FII0St2Aln70P8q4lCa");'></div>
+
+<p class="font-heading text-xl font-bold text-text-primary-light dark:text-text-primary-dark">The Corner Store</p>
+
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">123 Market St, San Francisco, CA 94103</p>
+
+</div>
+
+<!-- Transaction Info -->
+
+<div class="py-4 border-b border-dashed border-border-light dark:border-border-dark">
+
+<div class="flex justify-between items-center text-sm">
+
+<p class="text-text-secondary-light dark:text-text-secondary-dark">Date</p>
+
+<p class="font-medium text-text-primary-light dark:text-text-primary-dark text-right">Oct 26, 2023, 2:45 PM</p>
+
+</div>
+
+<div class="flex justify-between items-center text-sm mt-1.5">
+
+<p class="text-text-secondary-light dark:text-text-secondary-dark">Transaction ID</p>
+
+<p class="font-medium text-text-primary-light dark:text-text-primary-dark text-right">TRN-1029384756</p>
+
+</div>
+
+<div class="flex justify-between items-center text-sm mt-1.5">
+
+<p class="text-text-secondary-light dark:text-text-secondary-dark">Cashier</p>
+
+<p class="font-medium text-text-primary-light dark:text-text-primary-dark text-right">Jane Doe</p>
+
+</div>
+
+</div>
+
+<!-- Customer Info -->
+
+<div class="py-4 border-b border-dashed border-border-light dark:border-border-dark">
+
+<h2 class="font-heading text-sm font-semibold uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark mb-2">Billed to</h2>
+
+<p class="font-medium text-text-primary-light dark:text-text-primary-dark">Alex Smith</p>
+
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">alex.smith@example.com</p>
+
+</div>
+
+<!-- Items List -->
+
+<div class="py-4">
+
+<div class="flex justify-between mb-3">
+
+<h3 class="font-heading text-sm font-semibold uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark">Item</h3>
+
+<h3 class="font-heading text-sm font-semibold uppercase tracking-wider text-text-secondary-light dark:text-text-secondary-dark">Total</h3>
+
+</div>
+
+<div class="space-y-4">
+
+<!-- Item 1 -->
+
+<div class="flex justify-between items-start gap-4">
+
+<div>
+
+<p class="font-medium text-text-primary-light dark:text-text-primary-dark leading-snug">Organic Bananas</p>
+
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">2 lbs x $0.99</p>
+
+</div>
+
+<p class="text-text-primary-light dark:text-text-primary-dark text-right font-medium shrink-0">$1.98</p>
+
+</div>
+
+<!-- Item 2 -->
+
+<div class="flex justify-between items-start gap-4">
+
+<div>
+
+<p class="font-medium text-text-primary-light dark:text-text-primary-dark leading-snug">Almond Milk (Unsweetened)</p>
+
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">1 x $3.49</p>
+
+</div>
+
+<p class="text-text-primary-light dark:text-text-primary-dark text-right font-medium shrink-0">$3.49</p>
+
+</div>
+
+<!-- Item 3 -->
+
+<div class="flex justify-between items-start gap-4">
+
+<div>
+
+<p class="font-medium text-text-primary-light dark:text-text-primary-dark leading-snug">Whole Wheat Bread</p>
+
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">1 x $4.20</p>
+
+</div>
+
+<p class="text-text-primary-light dark:text-text-primary-dark text-right font-medium shrink-0">$4.20</p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Totals Section -->
+
+<div class="pt-4 border-t border-dashed border-border-light dark:border-border-dark">
+
+<div class="space-y-2">
+
+<div class="flex justify-between text-sm">
+
+<p class="text-text-secondary-light dark:text-text-secondary-dark">Subtotal</p>
+
+<p class="text-text-primary-light dark:text-text-primary-dark font-medium">$9.67</p>
+
+</div>
+
+<div class="flex justify-between text-sm">
+
+<p class="text-text-secondary-light dark:text-text-secondary-dark">Tax (8.5%)</p>
+
+<p class="text-text-primary-light dark:text-text-primary-dark font-medium">$0.82</p>
+
+</div>
+
+<div class="flex justify-between text-base font-bold mt-2 pt-2 border-t border-border-light dark:border-border-dark">
+
+<p class="text-text-primary-light dark:text-text-primary-dark">Grand Total</p>
+
+<p class="text-text-primary-light dark:text-text-primary-dark">$10.49</p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Payment Details -->
+
+<div class="pt-4 mt-4 border-t border-dashed border-border-light dark:border-border-dark">
+
+<div class="space-y-2">
+
+<div class="flex justify-between text-sm">
+
+<p class="text-text-secondary-light dark:text-text-secondary-dark">Amount Paid (Visa **** 4242)</p>
+
+<p class="text-text-primary-light dark:text-text-primary-dark font-medium">$15.00</p>
+
+</div>
+
+<div class="flex justify-between text-sm">
+
+<p class="text-text-secondary-light dark:text-text-secondary-dark">Change Due</p>
+
+<p class="text-text-primary-light dark:text-text-primary-dark font-medium">$4.51</p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Footer Message -->
+
+<div class="text-center pt-5 mt-5 border-t border-border-light dark:border-border-dark">
+
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">Thank you for your purchase!</p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Action Buttons -->
+
+<div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto">
+
+<button class="flex items-center justify-center gap-2 w-full bg-primary text-white font-semibold py-3 px-4 rounded-lg shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 dark:focus:ring-offset-background-dark transition-colors">
+
+<span class="material-symbols-outlined text-xl">download</span>
+
+                        Download Receipt
+
+                    </button>
+
+<button class="flex items-center justify-center gap-2 w-full bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary font-semibold py-3 px-4 rounded-lg hover:bg-primary/20 dark:hover:bg-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 dark:focus:ring-offset-background-dark transition-colors">
+
+<span class="material-symbols-outlined text-xl">share</span>
+
+                        Share Receipt
+
+                    </button>
+
+</div>
+
+</main>
+
+</div>
+
+<!-- Bottom Tab Bar -->
+
+<nav class="fixed bottom-0 left-0 right-0 z-10 bg-card-light dark:bg-card-dark border-t border-border-light dark:border-border-dark shadow-[0_-1px_3px_rgba(0,0,0,0.05)]">
+
+<div class="flex justify-around h-16">
+
+<a class="flex flex-col items-center justify-center w-full text-text-secondary-light dark:text-text-secondary-dark hover:text-primary transition-colors" href="#">
+
+<span class="material-symbols-outlined text-2xl">dashboard</span>
+
+<span class="text-xs font-medium mt-1">Dashboard</span>
+
+</a>
+
+<a class="flex flex-col items-center justify-center w-full text-text-secondary-light dark:text-text-secondary-dark hover:text-primary transition-colors" href="#">
+
+<span class="material-symbols-outlined text-2xl">inventory_2</span>
+
+<span class="text-xs font-medium mt-1">Inventory</span>
+
+</a>
+
+<a class="flex flex-col items-center justify-center w-full text-primary transition-colors" href="#">
+
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+
+<span class="text-xs font-bold mt-1">Sales</span>
+
+</a>
+
+<a class="flex flex-col items-center justify-center w-full text-text-secondary-light dark:text-text-secondary-dark hover:text-primary transition-colors" href="#">
+
+<span class="material-symbols-outlined text-2xl">group</span>
+
+<span class="text-xs font-medium mt-1">Customers</span>
+
+</a>
+
+<a class="flex flex-col items-center justify-center w-full text-text-secondary-light dark:text-text-secondary-dark hover:text-primary transition-colors" href="#">
+
+<span class="material-symbols-outlined text-2xl">person</span>
+
+<span class="text-xs font-medium mt-1">Profile</span>
+
+</a>
+
+</div>
+
+</nav>
+
+</div>
+
+</body></html>
+

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Void Sale Request</title>
+
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@700&display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<script id="tailwind-config">
+
+    tailwind.config = {
+
+        darkMode: "class",
+
+        theme: {
+
+            extend: {
+
+                colors: {
+
+                    "primary": "#007BFF",
+
+                    "background-light": "#f5f7f8",
+
+                    "background-dark": "#101922",
+
+                },
+
+                fontFamily: {
+
+                    "display": ["Inter", "sans-serif"],
+
+                    "heading": ["Poppins", "sans-serif"]
+
+                },
+
+                borderRadius: {
+
+                    "DEFAULT": "0.25rem",
+
+                    "lg": "0.5rem",
+
+                    "xl": "0.75rem", // 12px
+
+                    "2xl": "1rem",
+
+                    "3xl": "1.5rem",
+
+                    "full": "9999px"
+
+                },
+
+            },
+
+        },
+
+    }
+
+    </script>
+
+<style>
+
+    .material-symbols-outlined {
+
+        font-variation-settings:
+
+            'FILL' 0,
+
+            'wght' 400,
+
+            'GRAD' 0,
+
+            'opsz' 24
+
+    }
+
+    </style>
+
+<style>
+
+    body {
+
+        min-height: max(884px, 100dvh);
+
+    }
+
+    </style>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body style="font-family: Inter, sans-serif;">
+
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden">
+
+<div class="flex flex-1 flex-col items-center justify-center bg-white dark:bg-slate-900">
+
+<div class="flex w-full max-w-lg flex-col items-stretch p-6 pb-24">
+
+<div class="flex flex-col items-center">
+
+<h1 class="font-heading text-2xl font-bold text-[#1A1A1A] dark:text-slate-100">Void Sale Request</h1>
+
+</div>
+
+<div class="mt-6 flex justify-between rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-4">
+
+<div class="flex flex-col">
+
+<p class="text-sm font-normal text-slate-500 dark:text-slate-400">Sale ID</p>
+
+<p class="text-base font-medium text-[#1A1A1A] dark:text-slate-100">#SALE-00123</p>
+
+</div>
+
+<div class="flex flex-col text-right">
+
+<p class="text-sm font-normal text-slate-500 dark:text-slate-400">Grand Total</p>
+
+<p class="text-base font-medium text-[#1A1A1A] dark:text-slate-100">$124.50</p>
+
+</div>
+
+</div>
+
+<div class="mt-6">
+
+<label class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300" for="void-reason">Reason for Void</label>
+
+<textarea class="form-textarea h-32 w-full resize-none rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-[#1A1A1A] dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-primary/80 focus:ring-2 focus:ring-primary/50" id="void-reason" placeholder="e.g., Customer changed mind, incorrect item, etc."></textarea>
+
+</div>
+
+<div class="mt-6">
+
+<label class="flex cursor-pointer items-center justify-between rounded-lg bg-slate-50 dark:bg-slate-800 p-4">
+
+<span class="text-base font-medium text-[#1A1A1A] dark:text-slate-100">Requires Admin Approval</span>
+
+<input class="peer sr-only" type="checkbox"/>
+
+<div class="relative h-6 w-11 rounded-full bg-slate-200 dark:bg-slate-700 after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-slate-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-primary peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-slate-600"></div>
+
+</label>
+
+</div>
+
+<div class="mt-8">
+
+<button class="flex h-14 w-full items-center justify-center rounded-xl bg-primary">
+
+<p class="font-display text-base font-bold leading-normal text-white">Submit Void Request</p>
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="fixed bottom-0 left-0 right-0 z-10 mx-auto flex h-20 w-full max-w-lg items-center justify-around border-t border-slate-200 bg-white/80 backdrop-blur-md dark:border-slate-700 dark:bg-slate-900/80">
+
+<a class="flex flex-col items-center gap-1 text-slate-500 dark:text-slate-400" href="#">
+
+<span class="material-symbols-outlined text-2xl">grid_view</span>
+
+<span class="text-xs font-medium">Dashboard</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-slate-500 dark:text-slate-400" href="#">
+
+<span class="material-symbols-outlined text-2xl">inventory_2</span>
+
+<span class="text-xs font-medium">Inventory</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-primary dark:text-primary" href="#">
+
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+
+<span class="text-xs font-bold">Sales</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-slate-500 dark:text-slate-400" href="#">
+
+<span class="material-symbols-outlined text-2xl">group</span>
+
+<span class="text-xs font-medium">Customers</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-slate-500 dark:text-slate-400" href="#">
+
+<span class="material-symbols-outlined text-2xl">person</span>
+
+<span class="text-xs font-medium">Profile</span>
+
+</a>
+
+</div>
+
+</div>
+
+
+
+</body></html>
+

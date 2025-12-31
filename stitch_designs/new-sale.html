@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>New Sale - LUHEGA Spare Parts</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+<style>
+
+      .material-symbols-outlined {
+
+        font-variation-settings:
+
+        'FILL' 0,
+
+        'wght' 400,
+
+        'GRAD' 0,
+
+        'opsz' 24
+
+      }
+
+      .material-symbols-outlined.filled {
+
+        font-variation-settings:
+
+        'FILL' 1
+
+      }
+
+    </style>
+
+<script id="tailwind-config">
+
+      tailwind.config = {
+
+        darkMode: "class",
+
+        theme: {
+
+          extend: {
+
+            colors: {
+
+              "primary": "#007BFF",
+
+              "background-light": "#F8F9FA",
+
+              "background-dark": "#0f1923",
+
+              "surface-light": "#ffffff",
+
+              "surface-dark": "#1a2a3a",
+
+              "text-primary-light": "#0d141c",
+
+              "text-primary-dark": "#f0f6fc",
+
+              "text-secondary-light": "#47719e",
+
+              "text-secondary-dark": "#8b949e",
+
+              "input-bg-light": "#eef2f6",
+
+              "input-bg-dark": "#213345",
+
+            },
+
+            fontFamily: {
+
+              "display": ["Inter", "sans-serif"],
+
+              "heading": ["Poppins", "sans-serif"],
+
+            },
+
+            borderRadius: {
+
+                "DEFAULT": "0.75rem", /* 12px */
+
+                "lg": "1rem",
+
+                "xl": "1.5rem",
+
+                "full": "9999px"
+
+            },
+
+            boxShadow: {
+
+                'md': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
+
+            }
+
+          },
+
+        },
+
+      }
+
+    </script>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="bg-background-light dark:bg-background-dark font-display">
+
+<div class="relative mx-auto flex h-auto min-h-screen w-full max-w-md flex-col overflow-x-hidden group/design-root">
+
+<!-- Top App Bar -->
+
+<header class="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between bg-background-light/80 px-4 pt-2 pb-2 backdrop-blur-sm dark:bg-background-dark/80">
+
+<h1 class="font-heading text-xl font-bold text-text-primary-light dark:text-text-primary-dark">New Sale</h1>
+
+<button class="flex h-10 w-10 items-center justify-center text-text-secondary-light dark:text-text-secondary-dark">
+
+<span class="material-symbols-outlined text-2xl">more_vert</span>
+
+</button>
+
+</header>
+
+<!-- Main Content -->
+
+<main class="flex-1 pb-40">
+
+<!-- Search Bar -->
+
+<div class="px-4 py-3">
+
+<div class="flex h-14 w-full items-stretch rounded-full bg-input-bg-light p-1 shadow-sm dark:bg-input-bg-dark">
+
+<div class="flex shrink-0 items-center justify-center pl-4 pr-2">
+
+<span class="material-symbols-outlined text-2xl text-text-secondary-light dark:text-text-secondary-dark">search</span>
+
+</div>
+
+<input class="form-input h-full min-w-0 flex-1 resize-none overflow-hidden border-none bg-transparent px-2 text-base font-normal text-text-primary-light placeholder:text-text-secondary-light focus:outline-0 focus:ring-0 dark:text-text-primary-dark dark:placeholder:text-secondary-dark" placeholder="Search by name or barcode" value=""/>
+
+<div class="flex items-center justify-center pr-2">
+
+<button class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30">
+
+<span class="material-symbols-outlined text-2xl">barcode_scanner</span>
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Section Header -->
+
+<h2 class="font-heading text-lg font-bold tracking-tight text-text-primary-light dark:text-text-primary-dark px-4 pb-2 pt-4">Popular Items</h2>
+
+<!-- Image Grid -->
+
+<div class="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4 p-4">
+
+<div class="flex cursor-pointer flex-col gap-3 rounded-lg bg-surface-light p-3 shadow-md transition-shadow hover:shadow-lg dark:bg-surface-dark">
+
+<div class="w-full rounded bg-center bg-no-repeat aspect-square bg-cover" data-alt="A generic automotive spark plug on a light background." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD56PV73oO2l6CTdj_3eqKHeatSPin8iWKlzziy1khBNI6fK7ulm9hwmEhaEXeWTYYPEP-DrCZ1333zLGHiIg2qojqZMOF42g9QjpacJU3KsusTMfKVve4oPAdOgjm-FMBXokreoHwrSuNrrJXfGQ8CldIcyhWTnOVDRFjmjZsOgGeXq_JkAICJlEvZoKKMarOyQMEqg0VLLXPuo6jzjuKuYXvYAYZXiRBXqNw0dx4EAXv06veTNrlVAKMDZIt83SPhW4SQRoHBH9FX");'></div>
+
+<div>
+
+<p class="font-medium text-text-primary-light dark:text-text-primary-dark text-sm leading-snug">Spark Plug NGK-BPR6ES</p>
+
+<p class="font-semibold text-text-primary-light dark:text-text-primary-dark text-base">$5.50</p>
+
+<p class="text-text-secondary-light dark:text-text-secondary-dark text-xs">Stock: 120</p>
+
+</div>
+
+</div>
+
+<div class="flex cursor-pointer flex-col gap-3 rounded-lg bg-surface-light p-3 shadow-md transition-shadow hover:shadow-lg dark:bg-surface-dark">
+
+<div class="w-full rounded bg-center bg-no-repeat aspect-square bg-cover" data-alt="A yellow and black oil filter." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDSosAivJdUAJEKQYDutJzbl4ppGMnQk2sAMjk1CGK6IxCH2g8IzZ6nV6v6xx75nLc3k6nMvlnkT4P1EMgLvphg3YQ837d40mtUM7BDC5xXbD-SdneDbU9VQvgGQy5JsyoWxxoA3OMH9QA5YY6DyoOPjoEuGNWgVg7tnM0klZJx_-alP7jJftNxGFknTfZZmt4AE93RSbbyDpSBZJhktZCKgmGP5Dyql77YsLW4in6TIb46XDBvGeci-G7wY6p1PWJsuB_-EFQhqFcV");'></div>
+
+<div>
+
+<p class="font-medium text-text-primary-light dark:text-text-primary-dark text-sm leading-snug">Oil Filter Fram-PH6017A</p>
+
+<p class="font-semibold text-text-primary-light dark:text-text-primary-dark text-base">$12.00</p>
+
+<p class="text-text-secondary-light dark:text-text-secondary-dark text-xs">Stock: 75</p>
+
+</div>
+
+</div>
+
+<div class="flex cursor-pointer flex-col gap-3 rounded-lg bg-surface-light p-3 shadow-md transition-shadow hover:shadow-lg dark:bg-surface-dark">
+
+<div class="w-full rounded bg-center bg-no-repeat aspect-square bg-cover" data-alt="A set of front brake pads for a car." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBZpLW5dLL0LiI3ZhGpEtZ9taEwU9w6d-FxFHnE-VBB373JGJqI7U3yOkipTIU0K9AZzoiDuAPT0ldwPh-skI6HsxUaKlLU_pobA2BjojHn-ir6PrWQSW2cCq42GnhS5QYT__yNYdYprI-LIwYQLxhdMzAuOEi3k04lI8quiWlovkHlw9KRk5e9PFeYvKu-R5u8c0zQwqAN1hdIzQK_HZ1zWUcDAsrl_JpgOKD5a_km8ks6BkI8jUt0kf1ifr4egYZSOAFUvkTyd3fD");'></div>
+
+<div>
+
+<p class="font-medium text-text-primary-light dark:text-text-primary-dark text-sm leading-snug">Brake Pads Set - Front</p>
+
+<p class="font-semibold text-text-primary-light dark:text-text-primary-dark text-base">$45.99</p>
+
+<p class="text-text-secondary-light dark:text-text-secondary-dark text-xs">Stock: 32</p>
+
+</div>
+
+</div>
+
+<div class="flex cursor-pointer flex-col gap-3 rounded-lg bg-surface-light p-3 shadow-md transition-shadow hover:shadow-lg dark:bg-surface-dark">
+
+<div class="w-full rounded bg-center bg-no-repeat aspect-square bg-cover" data-alt="A rectangular engine air filter." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuClwJcvvh4nUHCwUABLc8FJUh4p4ublcTjSn1UfF3Kp3O1hmj18TYnKPn8Vqe7zTPJhTdlzamXomMXNUwK4tkdCPNPZIOO9Od-9ULMSYjN7RNj_es5swPpAusQQC_Y4ij-TB31a7wqsKfJThhRyg2ubzC5-QTXkNb76lCC5uwyzd0GQovgt2UL3mpKtufi58WAizPWyxRSH6j4it0pA0yrGSvA8YQf3fm5HhMfs5o8gAKUlqoL2gweGAbgB4pp0ujjy50h65HZUd72M");'></div>
+
+<div>
+
+<p class="font-medium text-text-primary-light dark:text-text-primary-dark text-sm leading-snug">Air Filter - Engine</p>
+
+<p class="font-semibold text-text-primary-light dark:text-text-primary-dark text-base">$21.50</p>
+
+<p class="text-text-secondary-light dark:text-text-secondary-dark text-xs">Stock: 50</p>
+
+</div>
+
+</div>
+
+<div class="flex cursor-pointer flex-col gap-3 rounded-lg bg-surface-light p-3 shadow-md transition-shadow hover:shadow-lg dark:bg-surface-dark">
+
+<div class="w-full rounded bg-center bg-no-repeat aspect-square bg-cover" data-alt="A bottle of motor oil on a reflective surface." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDD92qUU8VlsHZTp9cee4VQ72g1YJLblk1Jl01Xzy_2nwftIA2ndlKulZks3DoLqN0NTh5SahtkgzIgEwl_g7UXRQg-OU8DZlbTZm1-TVIaB2BsS-6eX2HMpM1HEXcZmQQAe9kUiIA023CPQqa_AQ91_-I1aUD2XBosl0zgM5CN-jtCehoqJzOKt8AEJqzgCiK2tTJNG35EqmfdT33URXSl64g6AX9crDgNosgocTMU6ayKkPIY01LAvpj3TxyEJDh1NAIit79qLJ_M");'></div>
+
+<div>
+
+<p class="font-medium text-text-primary-light dark:text-text-primary-dark text-sm leading-snug">Synthetic Motor Oil 5W-30</p>
+
+<p class="font-semibold text-text-primary-light dark:text-text-primary-dark text-base">$32.50</p>
+
+<p class="text-text-secondary-light dark:text-text-secondary-dark text-xs">Stock: 88</p>
+
+</div>
+
+</div>
+
+<div class="flex cursor-pointer flex-col gap-3 rounded-lg bg-surface-light p-3 shadow-md transition-shadow hover:shadow-lg dark:bg-surface-dark">
+
+<div class="w-full rounded bg-center bg-no-repeat aspect-square bg-cover" data-alt="A car battery with red and black terminals." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAFFXN531U9jKZVaq1jorJWUgnmPnxr11oGs94IUvjB1iBMoQTicZQl0kPL700nBwEswdkQPUNSV-4zsvgtYD2AV9gu0t42AnyDWBAd9lL0GxkMjmdZndkL_NUQr9Qj1bbvyqe6cXFFIKg67wK69WJZqFniQD8DwE_J21dBjAFruV1NExVmh89qKSXpP360gIOhses6x15-RoFiM7RCtpuuiTCUaQBhZ38IB70AIiWpjZd2fS8TxLk25uTS2ChEW0Hm6vskzXl4VANr");'></div>
+
+<div>
+
+<p class="font-medium text-text-primary-light dark:text-text-primary-dark text-sm leading-snug">Car Battery - 12V 65Ah</p>
+
+<p class="font-semibold text-text-primary-light dark:text-text-primary-dark text-base">$120.00</p>
+
+<p class="text-text-secondary-light dark:text-text-secondary-dark text-xs">Stock: 15</p>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+<!-- Floating Cart Summary and Bottom Nav -->
+
+<footer class="fixed bottom-0 z-10 w-full max-w-md bg-transparent">
+
+<!-- Cart Summary Bar -->
+
+<div class="flex px-4 pb-3">
+
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 flex-1 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] shadow-lg">
+
+<span class="truncate">View Cart (3 items | $150.00)</span>
+
+</button>
+
+</div>
+
+<!-- Bottom Navigation Bar -->
+
+<nav class="flex h-20 items-center justify-around border-t border-slate-200 bg-surface-light/95 backdrop-blur-sm dark:border-slate-700 dark:bg-surface-dark/95">
+
+<a class="flex flex-col items-center gap-1 text-text-secondary-light dark:text-text-secondary-dark" href="#">
+
+<span class="material-symbols-outlined">dashboard</span>
+
+<span class="text-xs font-medium">Dashboard</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-text-secondary-light dark:text-text-secondary-dark" href="#">
+
+<span class="material-symbols-outlined">inventory_2</span>
+
+<span class="text-xs font-medium">Inventory</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+
+<span class="material-symbols-outlined filled">point_of_sale</span>
+
+<span class="text-xs font-bold">Sales</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-text-secondary-light dark:text-text-secondary-dark" href="#">
+
+<span class="material-symbols-outlined">groups</span>
+
+<span class="text-xs font-medium">Customers</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-text-secondary-light dark:text-text-secondary-dark" href="#">
+
+<span class="material-symbols-outlined">person</span>
+
+<span class="text-xs font-medium">Profile</span>
+
+</a>
+
+</nav>
+
+</footer>
+
+</div>
+
+</body></html>
+

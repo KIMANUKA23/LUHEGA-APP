@@ -1,0 +1,1100 @@
+0 — Project Summary
+
+Mobile-first Spare Parts Inventory System for Luhega shop.
+Roles: Admin and Staff.
+Auth: Clerk (Email/Phone OTP, username/password, social optional).
+Database & Storage: Supabase (Postgres).
+Frontend: React Native (Expo) with NativeWind (Tailwind).
+Currency: Tanzanian Shilling (TZS) — display format: TZS 150,000.
+
+Primary features: Inventory, Sales (cash & debit), Customer Debts, Returns, Purchase Orders, Suppliers, Unauthorized Spares, Inventory Audits, Notifications, Reporting.
+
+1 — High-level Architecture
+Mobile App (Expo RN + NativeWind) <--> Clerk (Auth)
+       ↓                                 |
+       └─(API calls / direct supabase-js)─┴─> Backend (optional Node/Express or Supabase Edge Functions)
+                                           └─> Supabase (Postgres + Storage + Realtime)
+
+
+Auth: Clerk issues session tokens. App uses Clerk SDK for session.
+
+When app needs DB access it either:
+
+Calls a backend service (preferred for service-role ops), or
+
+Calls Supabase directly with service of token/verified backend or via safe RLS (advanced).
+
+Sync: Each Clerk user is mirrored to users table in Supabase (store clerk_id).
+
+2 — Project Folder Structure
+Mobile (React Native / Expo)
+/app
+ ├── assets/
+ ├── app.json
+ ├── App.js
+ ├── src/
+ │    ├── screens/
+ │    │     ├── Auth/
+ │    │     │    ├── LoginChoice.js
+ │    │     │    ├── LoginOtp.js
+ │    │     │    └── LoginPassword.js
+ │    │     ├── Dashboard/
+ │    │     ├── Inventory/
+ │    │     │    ├── InventoryList.js
+ │    │     │    ├── ProductDetail.js
+ │    │     │    └── ProductEdit.js
+ │    │     ├── Sales/
+ │    │     ├── Returns/
+ │    │     ├── PurchaseOrders/
+ │    │     ├── Suppliers/
+ │    │     ├── Audits/
+ │    │     ├── Unauthorized/
+ │    │     └── Profile/
+ │    │
+ │    ├── components/
+ │    │    ├── ui/
+ │    │    ├── forms/
+ │    │    └── lists/
+ │    │
+ │    ├── navigation/
+ │    ├── hooks/
+ │    ├── services/
+ │    │    ├── clerkService.js
+ │    │    ├── supabaseService.js
+ │    │    ├── salesService.js
+ │    │    └── inventoryService.js
+ │    ├── context/
+ │    ├── utils/
+ │    └── styles/
+
+Backend (optional Node / Supabase Edge Functions)
+/backend
+ ├── functions/  (edge functions)
+ ├── api/
+ │    ├── sales/
+ │    ├── returns/
+ │    └── debts/
+ ├── scripts/
+ └── README.md
+
+3 — Database Schema (Supabase Postgres) — Full tables & fields
+
+All money fields must be integers or numeric and displayed as TZS {amount} with thousands separators.
+
+Users
+id uuid PRIMARY KEY DEFAULT gen_random_uuid();
+clerk_id text UNIQUE; -- Clerk user id
+name text;
+username text UNIQUE;
+email text;
+phone text;
+role text; -- 'admin' | 'staff'
+status text; -- active/inactive
+created_at timestamptz DEFAULT now();
+
+Roles (optional)
+role_id PK
+role_name
+permissions JSONB
+
+Suppliers
+supplier_id uuid PK
+name text
+contact_name text
+phone text
+email text
+address text
+payment_terms text
+created_at timestamptz
+
+Categories
+category_id uuid PK
+name text
+description text
+created_at timestamptz
+
+SpareParts
+part_id uuid PK
+sku text UNIQUE
+name text
+category_id uuid FK -> categories
+supplier_id uuid FK -> suppliers
+description text
+cost_price numeric -- store as integer or numeric (TZS)
+selling_price numeric
+quantity_in_stock integer
+reorder_level integer
+image_url text
+created_at timestamptz
+
+Sales
+sale_id uuid PK
+user_id uuid FK -> users
+customer_name text NULL
+customer_phone text NULL
+sale_type text -- 'cash' | 'debit'
+total_amount numeric
+amount_paid numeric
+amount_remaining numeric
+payment_mode text -- cash / mobile_money / partial
+sale_date timestamptz DEFAULT now()
+notes text
+
+SaleItems
+sale_item_id uuid PK
+sale_id uuid FK -> sales
+part_id uuid FK -> spareparts
+quantity integer
+unit_price numeric
+subtotal numeric
+return_status text -- 'none' 'partial' 'full'
+
+CustomerDebts
+debt_id uuid PK
+sale_id uuid FK -> sales
+clerk_customer_id text NULL -- optional if you create customers table
+customer_name text
+customer_phone text
+total_amount numeric
+amount_paid numeric
+balance_remaining numeric
+status text -- 'unpaid' 'partial' 'paid'
+created_at timestamptz
+updated_at timestamptz
+
+Returns
+return_id uuid PK
+sale_item_id uuid FK -> saleitems
+user_id uuid FK -> users
+quantity integer
+reason text
+condition text -- 'good' 'damaged' 'suspected'
+status text -- 'pending' 'approved' 'rejected'
+date_returned timestamptz DEFAULT now()
+notes text
+
+PurchaseOrders
+po_id uuid PK
+supplier_id uuid FK
+created_by uuid FK -> users
+status text -- 'pending' 'delivered' 'cancelled'
+total_cost numeric
+date_created timestamptz
+expected_date timestamptz
+
+PurchaseItems
+po_item_id uuid PK
+po_id uuid FK
+part_id uuid FK
+quantity integer
+unit_cost numeric
+subtotal numeric
+
+UnauthorizedSpares
+incident_id uuid PK
+part_id uuid FK NULLABLE
+reported_by uuid FK -> users
+description text
+photo_url text
+action_taken text
+status text -- 'open' 'in_progress' 'resolved'
+date_reported timestamptz
+
+InventoryAudit
+audit_id uuid PK
+performed_by uuid FK -> users
+part_id uuid FK -> spareparts
+physical_count integer
+system_count integer
+adjustment integer
+reason text
+date timestamptz
+
+Notifications
+notification_id uuid PK
+user_id uuid FK
+type text
+message text
+status text -- 'unread' 'read'
+created_at timestamptz
+read_at timestamptz
+
+4 — RLS & Security Guidance (Supabase)
+
+Principles
+
+Use Clerk for authentication; when calling Supabase from mobile directly, pass a validated token or use backend to verify Clerk token then sign requests.
+
+Store clerk_id in users table for mapping.
+
+Example policies
+
+Allow user to read their own user row:
+
+CREATE POLICY "users_select_own" ON public.users
+FOR SELECT USING (clerk_id = current_setting('jwt.claims.clerk_id', true));
+
+
+For sales table, staff can insert but cannot modify other's sales unless admin:
+
+CREATE POLICY "sales_insert_staff" ON public.sales
+FOR INSERT USING (auth.role() IN ('staff','admin'));
+
+
+Note: Supabase auth.role() requires mapping — if using Clerk, you will verify Clerk token in backend and then set role in your own claims or use backend to perform writes.
+
+Best approach: use server-side API (Edge Functions / Node backend) that accepts Clerk token, verifies with Clerk, maps to internal user, and then uses Supabase service role to perform DB writes.
+
+5 — API endpoints (recommended if you host backend)
+Auth / User sync (backend)
+
+POST /auth/sync — Accept Clerk user info (clerk_id, email, name) and create or update users row in Supabase. Called at first login.
+
+Sales
+
+POST /sales — create sale (body includes items). Handles sale_type (cash|debit). If debit, creates customerdebts row.
+
+GET /sales/:id
+
+GET /sales?start=&end=&user=
+
+POST /sales/:id/payment — add payment to a debt (update CustomerDebts and Sales amount_paid/remaining).
+
+SaleItems
+
+GET /sales/:id/items
+
+Debts
+
+GET /debts
+
+POST /debts/:debt_id/pay — add payment; update status.
+
+Returns
+
+POST /returns — create new return
+
+PATCH /returns/:id/approve — admin endpoint to approve
+
+PATCH /returns/:id/reject
+
+Inventory
+
+GET /parts
+
+GET /parts/:id
+
+POST /parts
+
+PATCH /parts/:id
+
+PATCH /parts/:id/adjust — manual adjustment after audit
+
+Purchase Orders
+
+POST /pos
+
+GET /pos
+
+PATCH /pos/:id/mark_delivered
+
+Unauthorized
+
+POST /unauthorized
+
+GET /unauthorized
+
+Notifications
+
+GET /notifications
+
+PATCH /notifications/:id/read
+
+Security: All endpoints must verify Clerk session token (JWT) server-side — verify signature via Clerk SDK — then map to internal user clerk_id.
+
+6 — Clerk + Supabase Integration (how to sync users)
+
+Flow
+
+User signs in with Clerk in mobile app (Clerk SDK).
+
+App receives Clerk session + user object.
+
+On first login (or every login), call backend endpoint /auth/sync with Clerk session token.
+
+Backend verifies token with Clerk, extracts clerk_user_id, email, name.
+
+Backend upserts row into Supabase users table with clerk_id, name, email, role (default staff unless assigned).
+
+Backend returns mapped user_id (Supabase uuid) and role to app.
+
+Sample server-side pseudo-code
+
+// Node/Express backend
+import Clerk from '@clerk/clerk-sdk-node';
+import { createClient } from '@supabase/supabase-js';
+
+app.post('/auth/sync', async (req, res) => {
+  const { clerkToken } = req.body;
+  const clerkUser = await Clerk.users.getUserByToken(clerkToken); // pseudo
+  const clerkId = clerkUser.id;
+  const email = clerkUser.emailAddresses?.[0]?.emailAddress;
+  const name = clerkUser.fullName || clerkUser.firstName;
+  // upsert to supabase
+  await supabase.from('users').upsert({
+    clerk_id: clerkId,
+    email,
+    name,
+    role: 'staff'
+  }, { onConflict: 'clerk_id' });
+  res.json({ ok: true });
+});
+
+
+Client: after login
+
+store clerk token in secure storage
+
+call /auth/sync once
+
+7 — UI / Screens (complete list — mapping to code)
+
+Auth
+
+LoginChoice
+
+LoginOtp
+
+LoginPassword
+
+Register (Admin only or via contact)
+
+Dashboard (Admin & Staff variant)
+Inventory
+
+InventoryList
+
+ProductDetail
+
+ProductEdit (Admin)
+Sales
+
+NewSale (POS)
+
+Receipt
+
+SalesHistory
+Returns
+
+StartReturn
+
+ReturnRequests (Admin)
+Purchase Orders
+
+POList
+
+CreatePO
+
+PODetail
+Suppliers
+
+SupplierList
+
+SupplierDetail
+Categories
+
+CategoryList
+
+CategoryEdit
+Unauthorized Spares
+
+ReportIncident
+
+IncidentsList (Admin)
+Audits
+
+AuditList
+
+NewAudit
+Notifications
+Settings
+Profile
+Debts
+
+DebtsList
+
+DebtDetail / Payment
+
+8 — UX Rules & Important Behavior
+
+Payment selection at checkout: radio Cash | Debit (Pay later) | Partial
+
+If Debit, require CustomerName and Phone (for tracking).
+
+On Debit create CustomerDebts entry and set sale fields (amount_paid, amount_remaining).
+
+On Partial allow entering amount_paid and set remaining.
+
+On Good return approve → automatically increase spareparts.quantity_in_stock.
+
+On Damaged return approved → no increase; create damage report.
+
+Use barcode/QR scanning for fast POS lookup (Expo barcode scanner).
+
+All monetary displays: TZS {amount} (e.g., TZS 150,000).
+
+9 — Supabase SQL Starter (create tables) — simplified example
+
+Run these in Supabase SQL editor. This is a starting point; adjust types & constraints as needed.
+
+-- Extension for uuid
+create extension if not exists "pgcrypto";
+
+CREATE TABLE users (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  clerk_id text UNIQUE,
+  name text,
+  username text UNIQUE,
+  email text,
+  phone text,
+  role text DEFAULT 'staff',
+  status text DEFAULT 'active',
+  created_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE suppliers (
+  supplier_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text,
+  contact_name text,
+  phone text,
+  email text,
+  address text,
+  payment_terms text,
+  created_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE categories (
+  category_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text,
+  description text,
+  created_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE spareparts (
+  part_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  sku text UNIQUE,
+  name text,
+  category_id uuid REFERENCES categories(category_id),
+  supplier_id uuid REFERENCES suppliers(supplier_id),
+  description text,
+  cost_price numeric,
+  selling_price numeric,
+  quantity_in_stock integer DEFAULT 0,
+  reorder_level integer DEFAULT 0,
+  image_url text,
+  created_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE sales (
+  sale_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid REFERENCES users(id),
+  customer_name text,
+  customer_phone text,
+  sale_type text,
+  total_amount numeric,
+  amount_paid numeric DEFAULT 0,
+  amount_remaining numeric DEFAULT 0,
+  payment_mode text,
+  sale_date timestamptz DEFAULT now(),
+  notes text
+);
+
+CREATE TABLE saleitems (
+  sale_item_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  sale_id uuid REFERENCES sales(sale_id) ON DELETE CASCADE,
+  part_id uuid REFERENCES spareparts(part_id),
+  quantity integer,
+  unit_price numeric,
+  subtotal numeric,
+  return_status text DEFAULT 'none'
+);
+
+CREATE TABLE customerdebts (
+  debt_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  sale_id uuid REFERENCES sales(sale_id),
+  customer_name text,
+  customer_phone text,
+  total_amount numeric,
+  amount_paid numeric DEFAULT 0,
+  balance_remaining numeric,
+  status text DEFAULT 'unpaid',
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz
+);
+
+CREATE TABLE returns (
+  return_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  sale_item_id uuid REFERENCES saleitems(sale_item_id),
+  user_id uuid REFERENCES users(id),
+  quantity integer,
+  reason text,
+  condition text,
+  status text DEFAULT 'pending',
+  date_returned timestamptz DEFAULT now(),
+  notes text
+);
+
+-- and other tables (purchaseorders, purchaseitems, unauthorizedspares, inventoryaudit, notifications)
+
+10 — Sample Client Code Snippets
+Create sale (React Native) — call backend
+// salesService.js (frontend)
+async function createSale({ items, saleType, customerName, customerPhone, amountPaid, paymentMode }) {
+  const clerkToken = await getClerkToken(); // get from Clerk SDK
+  const res = await fetch(`${API_URL}/sales`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${clerkToken}`
+    },
+    body: JSON.stringify({ items, saleType, customerName, customerPhone, amountPaid, paymentMode })
+  });
+  return res.json();
+}
+
+Sync Clerk user to Supabase (frontend -> backend)
+// after Clerk login
+const clerkToken = await clerkClient.session.getToken();
+await fetch(`${API_URL}/auth/sync`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ clerkToken })
+});
+
+11 — Dev Checklist / Milestones (recommended)
+
+Milestone 0 — Prep
+
+Create project repo, branch strategy, CI (optional)
+
+Create Supabase project + buckets
+
+Create Clerk project
+
+Milestone 1 — Step 1 UI
+
+Generate full UI in Stitch AI (use updated brief with TZS)
+
+Use Cursor to generate React Native screens with dummy data
+
+Test navigation & screens
+
+Milestone 2 — DB & Backend
+
+Create Supabase schema & seed data
+
+Setup RLS & policies (test)
+
+Create backend sync & sales endpoints (verify Clerk JWT)
+
+Milestone 3 — Connect UI to Backend
+
+Replace dummy data with supabase calls
+
+Implement Clerk login flows in app
+
+Implement sales (cash/debit), returns, PO functions
+
+Milestone 4 — QA & Polish
+
+Add icons, animation, skeletons
+
+Test offline behavior & caching (local DB or cache)
+
+Test on Android & iOS
+
+Prepare build (Expo EAS or classic)
+
+Milestone 5 — Delivery
+
+Export APK/IPA or publish via Expo
+
+Provide handoff docs: DB schema, API docs, credentials
+
+Handover + training for client
+
+12 — Testing & Edge Cases
+
+Validate quantity_in_stock before sale
+
+Prevent return quantity > sold quantity
+
+Prevent duplicate debt creation for same sale
+
+Rate-limit OTP sends (handled by Clerk)
+
+Handle partial payments and multiple payments on debts
+
+Add audit trail for stock adjustments (who, why, when)
+
+Backups: schedule DB backups (Supabase has backup options)
+
+13 — Useful Libraries & Versions
+
+React Native (Expo SDK latest recommended)
+
+NativeWind (Tailwind RN)
+
+@clerk/clerk-expo (Clerk RN SDK)
+
+@supabase/supabase-js
+
+react-navigation (Expo-ready)
+
+axios / fetch
+
+date-fns or dayjs
+
+zustand or redux for state.  
+  THIS IS THE OLDES CODEBASE READ IT TO
+Build a mobile-first Spare Parts Inventory Management System using:
+
+React Native (Expo)
+
+NativeWind (Tailwind CSS for styling)
+
+Supabase (Auth, Database, Storage, Realtime, Edge Functions)
+
+The system must support two roles: ADMIN and STAFF, with separate permissions.
+
+📂 1. PROJECT STRUCTURE
+/app
+ ├── screens/
+ │     ├── Auth/
+ │     ├── Dashboard/
+ │     ├── Inventory/
+ │     ├── Sales/
+ │     ├── Returns/
+ │     ├── Suppliers/
+ │     ├── PurchaseOrders/
+ │     ├── Unauthorized/
+ │     ├── Audits/
+ │     └── Notifications/
+ │
+ ├── components/
+ │     ├── ui/
+ │     ├── forms/
+ │     └── cards/
+ │
+ ├── hooks/
+ ├── context/
+ ├── services/
+ │      ├── supabase/
+ │      ├── salesService.js
+ │      ├── inventoryService.js
+ │      ├── returnService.js
+ │      ├── auditService.js
+ │      ├── supplierService.js
+ │      └── poService.js
+ │
+ ├── utils/
+ ├── styles/
+ ├── app.json
+ ├── tailwind.config.js
+ └── App.js
+
+🗄️ 2. SUPABASE DATABASE SCHEMA
+Users
+
+UserID
+
+Name
+
+Email
+
+Role (Admin / Staff)
+
+Phone
+
+Status
+
+CreatedAt
+
+Roles
+
+RoleID
+
+RoleName
+
+Permissions (JSON optional)
+
+SpareParts
+
+PartID
+
+CategoryID
+
+SupplierID
+
+Name
+
+Description
+
+CostPrice
+
+SellingPrice
+
+QuantityInStock
+
+ReorderLevel
+
+ImageURL
+
+CreatedAt
+
+Categories
+
+CategoryID
+
+CategoryName
+
+Description
+
+Suppliers
+
+SupplierID
+
+Name
+
+ContactInfo
+
+PaymentTerms
+
+Sales
+
+SaleID
+
+UserID
+
+CustomerName
+
+TotalAmount
+
+PaymentMode
+
+SaleDate
+
+SaleItems
+
+SaleItemID
+
+SaleID
+
+PartID
+
+Quantity
+
+UnitPrice
+
+Subtotal
+
+ReturnStatus (none/partial/full)
+
+Returns
+
+ReturnID
+
+SaleItemID
+
+UserID
+
+Quantity
+
+Reason
+
+Condition (good/damaged/suspected)
+
+Status (pending/approved/rejected)
+
+DateReturned
+
+PurchaseOrders
+
+POID
+
+SupplierID
+
+CreatedBy
+
+Status
+
+TotalCost
+
+DateCreated
+
+PurchaseItems
+
+POItemID
+
+POID
+
+PartID
+
+Quantity
+
+UnitCost
+
+Subtotal
+
+UnauthorizedSpares
+
+IncidentID
+
+PartID
+
+ReportedBy
+
+Description
+
+ActionTaken
+
+DateReported
+
+InventoryAudit
+
+AuditID
+
+PerformedBy
+
+PartID
+
+PhysicalCount
+
+SystemCount
+
+Adjustment
+
+Date
+
+Notifications
+
+NotificationID
+
+UserID
+
+Type
+
+Message
+
+Status
+
+CreatedAt
+
+ReadAt
+
+🔄 3. CORE MODULE LOGIC FLOWS
+➡ Inventory Flow
+Add Part → Stock In (PO Delivery) → Sell Item → Return Item → Audit → Adjust Stock
+
+
+Stock must update automatically on:
+
+Sales (reduce)
+
+Good returns (increase)
+
+Damaged returns (no increase)
+
+PO deliveries (increase)
+
+Manual audit adjustments (increase/decrease)
+
+➡ Sales Flow
+
+Staff selects spare parts
+
+System checks availability
+
+Add to cart
+
+Checkout and create sale
+
+SaleItems created for each product
+
+Stock decreases
+
+➡ Return Module Flow
+
+Staff selects sale
+
+Select item to return
+
+Enter reason + condition
+
+System validates
+
+If suspicious/damaged → set status pending
+
+Admin approves or rejects
+
+If approved good item → stock increases
+
+If damaged → stock stays same
+
+➡ Supplier & PO Flow
+
+Admin creates Purchase Order
+
+Add items + cost
+
+Supplier delivers
+
+Admin confirms delivery
+
+Stock increases
+
+PO closed
+
+➡ Unauthorized Spares Flow
+
+Triggered when:
+
+Fraudulent returns
+
+Missing stock
+
+Wrong delivery
+
+Suspicious stock movement
+
+Admin must review & resolve.
+
+➡ Audit Flow
+
+Admin or Staff enters physical count
+
+System compares with QuantityInStock
+
+Adjustment created
+
+InventoryAudit record saved
+
+➡ Notifications Flow
+
+System sends:
+
+Low stock alerts
+
+Return approvals/rejections
+
+PO delivery notifications
+
+Unauthorized spare alerts
+
+👑 4. ADMIN FEATURES
+
+Full user management
+
+Add/edit/delete spare parts
+
+Create purchase orders
+
+Receive & approve deliveries
+
+Approve/Reject returns
+
+Complete stock adjustments
+
+Manage suppliers and categories
+
+View all sales
+
+Generate reports
+
+Review unauthorized spares
+
+Manage system notifications
+
+Perform audits
+
+👷 5. STAFF FEATURES
+
+Login to mobile app
+
+Perform sales
+
+Scan products (QR/Barcode)
+
+Process return requests
+
+View product list & availability
+
+View notifications
+
+Report unauthorized spares
+
+View personal sales history
+
+Assist customers
+
+🎨 6. UI RULES (NativeWind / Tailwind)
+
+Use className for styling
+
+Use rounded-xl, p-4, gap-3, shadow-sm
+
+Use reusable UI components:
+
+Card
+
+Button
+
+Input
+
+Badge
+
+Modal
+
+📡 7. SUPABASE INTEGRATION RULES
+
+Use supabase-js client
+
+Use RLS policies (Admin vs Staff)
+
+Storage: save spare part images
+
+Use Realtime for notifications
+
+Use policies to restrict Staff from editing stock
+
+⚙ 8. NON-FUNCTIONAL REQUIREMENTS
+
+Must support offline caching
+
+Must use secure RLS policies
+
+Must handle errors gracefully
+
+Must use loading states
+
+Must log actions for audit history
+
+🧠 9. WHAT CURSOR MUST GENERATE
+
+Cursor should generate:
+
+All screens: Inventory, Sales, Returns, PO, Audit, Unauthorized
+
+All services (Supabase CRUD)
+
+All API helpers
+
+UI components using NativeWind
+
+Full database integration
+
+Authentication flows
+
+Dashboard & lists
+
+Data validation logic

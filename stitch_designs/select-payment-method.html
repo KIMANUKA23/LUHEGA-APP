@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Select Payment Method</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+<style>
+
+      .material-symbols-outlined {
+
+        font-variation-settings:
+
+        'FILL' 0,
+
+        'wght' 400,
+
+        'GRAD' 0,
+
+        'opsz' 24
+
+      }
+
+      .active .material-symbols-outlined {
+
+        font-variation-settings:
+
+        'FILL' 1
+
+      }
+
+    </style>
+
+<script id="tailwind-config">
+
+      tailwind.config = {
+
+        darkMode: "class",
+
+        theme: {
+
+          extend: {
+
+            colors: {
+
+              "primary": "#4A90E2",
+
+              "background-light": "#F7F8FC",
+
+              "background-dark": "#0f1923",
+
+              "text-light": "#1D2A39",
+
+              "text-dark": "#F0F2F5",
+
+            },
+
+            fontFamily: {
+
+              "display": ["Inter", "sans-serif"],
+
+              "heading": ["Poppins", "sans-serif"]
+
+            },
+
+            borderRadius: {
+
+              "DEFAULT": "0.5rem",
+
+              "md": "12px",
+
+              "lg": "1rem",
+
+              "xl": "1.5rem",
+
+              "full": "9999px"
+
+            },
+
+          },
+
+        },
+
+      }
+
+    </script>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark">
+
+<div class="relative mx-auto flex h-screen max-w-sm flex-col overflow-hidden">
+
+<!-- Top App Bar -->
+
+<header class="flex items-center p-4">
+
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-black/5 dark:hover:bg-white/5">
+
+<span class="material-symbols-outlined text-2xl text-text-light dark:text-text-dark">arrow_back</span>
+
+</button>
+
+<h1 class="flex-1 text-center text-lg font-heading font-semibold text-text-light dark:text-text-dark">Select Payment Method</h1>
+
+<div class="size-10 shrink-0"></div>
+
+</header>
+
+<!-- Main Content -->
+
+<main class="flex-1 overflow-y-auto px-4 pt-4 pb-24">
+
+<!-- Headline Text (Total Amount) -->
+
+<div class="mb-8 text-center">
+
+<p class="mb-1 text-base text-text-light/70 dark:text-text-dark/70">Grand Total</p>
+
+<h2 class="font-heading text-4xl font-bold tracking-tight text-text-light dark:text-text-dark">KES 5,000</h2>
+
+</div>
+
+<!-- Payment Options List -->
+
+<div class="space-y-4">
+
+<!-- List Item: Cash -->
+
+<div class="flex cursor-pointer items-center gap-4 rounded-md border border-slate-200 bg-white p-4 transition-all hover:border-primary/50 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-primary/50">
+
+<div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+
+<span class="material-symbols-outlined text-2xl">payments</span>
+
+</div>
+
+<p class="flex-1 font-heading text-base font-semibold text-text-light dark:text-text-dark">Cash</p>
+
+<div class="shrink-0 text-text-light/50 dark:text-text-dark/50">
+
+<span class="material-symbols-outlined text-2xl">chevron_right</span>
+
+</div>
+
+</div>
+
+<!-- List Item: Debit -->
+
+<div class="flex cursor-pointer items-center gap-4 rounded-md border border-slate-200 bg-white p-4 transition-all hover:border-primary/50 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-primary/50">
+
+<div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+
+<span class="material-symbols-outlined text-2xl">credit_card</span>
+
+</div>
+
+<p class="flex-1 font-heading text-base font-semibold text-text-light dark:text-text-dark">Debit</p>
+
+<div class="shrink-0 text-text-light/50 dark:text-text-dark/50">
+
+<span class="material-symbols-outlined text-2xl">chevron_right</span>
+
+</div>
+
+</div>
+
+<!-- List Item: Partial Payment -->
+
+<div class="flex cursor-pointer items-center gap-4 rounded-md border border-slate-200 bg-white p-4 transition-all hover:border-primary/50 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-primary/50">
+
+<div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+
+<span class="material-symbols-outlined text-2xl">pie_chart</span>
+
+</div>
+
+<p class="flex-1 font-heading text-base font-semibold text-text-light dark:text-text-dark">Partial Payment</p>
+
+<div class="shrink-0 text-text-light/50 dark:text-text-dark/50">
+
+<span class="material-symbols-outlined text-2xl">chevron_right</span>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+<!-- Bottom Navigation Bar -->
+
+<nav class="absolute bottom-0 left-0 right-0 border-t border-slate-200 bg-white/80 backdrop-blur-sm dark:border-slate-700 dark:bg-background-dark/80">
+
+<div class="flex h-20 items-center justify-around text-slate-500 dark:text-slate-400">
+
+<a class="flex flex-col items-center gap-1 p-2 transition-colors hover:text-primary" href="#">
+
+<span class="material-symbols-outlined">dashboard</span>
+
+<span class="text-xs font-medium">Dashboard</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 p-2 transition-colors hover:text-primary" href="#">
+
+<span class="material-symbols-outlined">inventory_2</span>
+
+<span class="text-xs font-medium">Inventory</span>
+
+</a>
+
+<a class="active flex flex-col items-center gap-1 p-2 text-primary transition-colors" href="#">
+
+<span class="material-symbols-outlined">point_of_sale</span>
+
+<span class="text-xs font-medium">Sales</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 p-2 transition-colors hover:text-primary" href="#">
+
+<span class="material-symbols-outlined">group</span>
+
+<span class="text-xs font-medium">Customers</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 p-2 transition-colors hover:text-primary" href="#">
+
+<span class="material-symbols-outlined">person</span>
+
+<span class="text-xs font-medium">Profile</span>
+
+</a>
+
+</div>
+
+</nav>
+
+</div>
+
+</body></html>
+

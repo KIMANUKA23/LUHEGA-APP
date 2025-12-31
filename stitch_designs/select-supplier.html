@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Select Supplier</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+<style>
+
+        .material-symbols-rounded {
+
+            font-variation-settings:
+
+            'FILL' 0,
+
+            'wght' 400,
+
+            'GRAD' 0,
+
+            'opsz' 24
+
+        }
+
+        .material-symbols-rounded.filled {
+
+            font-variation-settings:
+
+            'FILL' 1,
+
+            'wght' 400,
+
+            'GRAD' 0,
+
+            'opsz' 24
+
+        }
+
+    </style>
+
+<script id="tailwind-config">
+
+        tailwind.config = {
+
+            darkMode: "class",
+
+            theme: {
+
+                extend: {
+
+                    colors: {
+
+                        "primary": "#007BFF",
+
+                        "on-primary": "#ffffff",
+
+                        "primary-container": "#D6E3FF",
+
+                        "on-primary-container": "#001B3F",
+
+                        "background-light": "#f5f7f8", // Slightly custom to match M3 feel
+
+                        "background-dark": "#121212",
+
+                        "surface": "#ffffff",
+
+                        "on-surface": "#1C1B1F",
+
+                        "surface-variant": "#E1E2EC",
+
+                        "on-surface-variant": "#44474F",
+
+                        "secondary-text": "#5E5F62", // M3 uses on-surface-variant more
+
+                        "outline": "#74777F",
+
+                        "outline-variant": "#C4C6D0",
+
+                        "shadow-color": "rgba(0, 0, 0, 0.15)"
+
+                    },
+
+                    fontFamily: {
+
+                        "display": ["Poppins", "sans-serif"],
+
+                        "body": ["Inter", "sans-serif"],
+
+                    },
+
+                    borderRadius: {
+
+                        "DEFAULT": "0.5rem",
+
+                        "lg": "12px",
+
+                        "xl": "1rem", // 16px
+
+                        "2xl": "1.5rem", // 24px
+
+                        "full": "9999px"
+
+                    },
+
+                    boxShadow: {
+
+                        'soft': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
+
+                        'md': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
+
+                    },
+
+                },
+
+            },
+
+        }
+
+    </script>
+
+<style>body {
+
+        padding-bottom: calc(72px + env(safe-area-inset-bottom, 0));
+
+      }
+
+    </style>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="bg-background-light font-body text-on-surface">
+
+<div class="flex h-screen flex-col">
+
+<header class="sticky top-0 z-10 flex w-full flex-col bg-background-light px-4 pt-4 pb-3 shadow-sm">
+
+<div class="flex items-center justify-between pb-4">
+
+<h1 class="font-display text-2xl font-bold">Select Supplier</h1>
+
+<button class="flex h-10 w-10 items-center justify-center rounded-full transition-colors hover:bg-gray-200">
+
+<span class="material-symbols-rounded">more_vert</span>
+
+</button>
+
+</div>
+
+<div class="relative">
+
+<span class="material-symbols-rounded pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+
+<input class="w-full rounded-lg border border-outline-variant bg-surface py-3 pl-10 pr-4 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="Search supplier by name" type="text"/>
+
+</div>
+
+</header>
+
+<main class="flex-1 overflow-y-auto px-4 pt-4 pb-8">
+
+<div class="space-y-3">
+
+<div class="flex cursor-pointer flex-col gap-2 rounded-lg border border-outline-variant bg-surface p-4 shadow-soft transition-shadow hover:shadow-md">
+
+<h2 class="font-display text-lg font-semibold text-on-surface">AutoParts Inc.</h2>
+
+<div class="flex items-center gap-2 text-sm text-secondary-text">
+
+<span class="material-symbols-rounded text-base">person</span>
+
+<span>John Doe</span>
+
+</div>
+
+<div class="flex items-center gap-2 text-sm text-secondary-text">
+
+<span class="material-symbols-rounded text-base">location_on</span>
+
+<span>New York, USA</span>
+
+</div>
+
+</div>
+
+<div class="flex cursor-pointer flex-col gap-2 rounded-lg border border-outline-variant bg-surface p-4 shadow-soft transition-shadow hover:shadow-md">
+
+<h2 class="font-display text-lg font-semibold text-on-surface">Global Spares Ltd.</h2>
+
+<div class="flex items-center gap-2 text-sm text-secondary-text">
+
+<span class="material-symbols-rounded text-base">person</span>
+
+<span>Jane Smith</span>
+
+</div>
+
+<div class="flex items-center gap-2 text-sm text-secondary-text">
+
+<span class="material-symbols-rounded text-base">location_on</span>
+
+<span>London, UK</span>
+
+</div>
+
+</div>
+
+<div class="flex cursor-pointer flex-col gap-2 rounded-lg border border-outline-variant bg-surface p-4 shadow-soft transition-shadow hover:shadow-md">
+
+<h2 class="font-display text-lg font-semibold text-on-surface">Tokyo Motors Supply</h2>
+
+<div class="flex items-center gap-2 text-sm text-secondary-text">
+
+<span class="material-symbols-rounded text-base">person</span>
+
+<span>Kenji Tanaka</span>
+
+</div>
+
+<div class="flex items-center gap-2 text-sm text-secondary-text">
+
+<span class="material-symbols-rounded text-base">location_on</span>
+
+<span>Tokyo, Japan</span>
+
+</div>
+
+</div>
+
+<div class="flex cursor-pointer flex-col gap-2 rounded-lg border border-outline-variant bg-surface p-4 shadow-soft transition-shadow hover:shadow-md">
+
+<h2 class="font-display text-lg font-semibold text-on-surface">Berlin Auto Parts</h2>
+
+<div class="flex items-center gap-2 text-sm text-secondary-text">
+
+<span class="material-symbols-rounded text-base">person</span>
+
+<span>Klaus Mueller</span>
+
+</div>
+
+<div class="flex items-center gap-2 text-sm text-secondary-text">
+
+<span class="material-symbols-rounded text-base">location_on</span>
+
+<span>Berlin, Germany</span>
+
+</div>
+
+</div>
+
+<div class="flex cursor-pointer flex-col gap-2 rounded-lg border border-outline-variant bg-surface p-4 shadow-soft transition-shadow hover:shadow-md">
+
+<h2 class="font-display text-lg font-semibold text-on-surface">Sydney Automotive</h2>
+
+<div class="flex items-center gap-2 text-sm text-secondary-text">
+
+<span class="material-symbols-rounded text-base">person</span>
+
+<span>Chloe Williams</span>
+
+</div>
+
+<div class="flex items-center gap-2 text-sm text-secondary-text">
+
+<span class="material-symbols-rounded text-base">location_on</span>
+
+<span>Sydney, Australia</span>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+<button class="fixed bottom-24 right-6 z-20 flex h-14 w-14 items-center justify-center rounded-xl bg-primary-container text-on-primary-container shadow-lg transition-transform hover:scale-105">
+
+<span class="material-symbols-rounded">add</span>
+
+</button>
+
+<nav class="fixed bottom-0 left-0 right-0 z-30 h-[72px] border-t border-outline-variant bg-surface px-2 pb-[env(safe-area-inset-bottom,0)]">
+
+<div class="flex h-full w-full items-center justify-around">
+
+<a class="flex h-16 w-full flex-col items-center justify-center gap-1" href="#">
+
+<span class="material-symbols-rounded">dashboard</span>
+
+<span class="text-xs font-medium">Dashboard</span>
+
+</a>
+
+<a class="flex h-16 w-full flex-col items-center justify-center gap-1 rounded-full bg-primary-container text-on-primary-container" href="#">
+
+<span class="material-symbols-rounded filled">inventory_2</span>
+
+<span class="text-xs font-bold">Inventory</span>
+
+</a>
+
+<a class="flex h-16 w-full flex-col items-center justify-center gap-1" href="#">
+
+<span class="material-symbols-rounded">point_of_sale</span>
+
+<span class="text-xs font-medium">Sales</span>
+
+</a>
+
+<a class="flex h-16 w-full flex-col items-center justify-center gap-1" href="#">
+
+<span class="material-symbols-rounded">group</span>
+
+<span class="text-xs font-medium">Customers</span>
+
+</a>
+
+<a class="flex h-16 w-full flex-col items-center justify-center gap-1" href="#">
+
+<span class="material-symbols-rounded">person</span>
+
+<span class="text-xs font-medium">Profile</span>
+
+</a>
+
+</div>
+
+</nav>
+
+</div>
+
+
+
+</body></html>
+

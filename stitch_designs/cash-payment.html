@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Cash Payment</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+<style>
+
+    .material-symbols-outlined {
+
+      font-variation-settings:
+
+      'FILL' 0,
+
+      'wght' 400,
+
+      'GRAD' 0,
+
+      'opsz' 24
+
+    }
+
+    .material-symbols-outlined.fill {
+
+      font-variation-settings: 'FILL' 1;
+
+    }
+
+  </style>
+
+<script id="tailwind-config">
+
+    tailwind.config = {
+
+      darkMode: "class",
+
+      theme: {
+
+        extend: {
+
+          colors: {
+
+            "primary": "#007bff",
+
+            "background-light": "#f5f7f8",
+
+            "background-dark": "#0f1923",
+
+          },
+
+          fontFamily: {
+
+            "display": ["Inter", "sans-serif"],
+
+            "heading": ["Poppins", "sans-serif"]
+
+          },
+
+          borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px", "md": "12px"},
+
+        },
+
+      },
+
+    }
+
+  </script>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-[#1D1B20] dark:text-gray-200">
+
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden" style="max-width: 480px; margin: auto;">
+
+<!-- Top App Bar -->
+
+<header class="flex items-center p-4 pb-2 justify-between shrink-0">
+
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10">
+
+<span aria-hidden="true" class="material-symbols-outlined text-[#1D1B20] dark:text-gray-200">arrow_back</span>
+
+</button>
+
+<h1 class="text-[#1D1B20] dark:text-gray-200 text-xl font-heading font-medium leading-tight tracking-tight flex-1 text-center">Cash Payment</h1>
+
+<div class="size-10 shrink-0"></div> <!-- Spacer for centering title -->
+
+</header>
+
+<!-- Main Content -->
+
+<main class="flex-1 flex flex-col items-center px-4 pt-8 pb-4">
+
+<!-- Payment Details Card -->
+
+<div class="w-full flex flex-col items-center space-y-8">
+
+<!-- Total Amount Due -->
+
+<div class="flex flex-col items-center">
+
+<p class="text-base font-heading font-medium text-gray-600 dark:text-gray-400">Total Amount Due</p>
+
+<h2 class="text-[#1D1B20] dark:text-white tracking-tight text-5xl font-bold font-heading leading-tight pt-1">KES 5,000</h2>
+
+</div>
+
+<!-- Amount Received Input -->
+
+<div class="w-full max-w-sm">
+
+<label class="flex flex-col min-w-40 flex-1">
+
+<p class="text-[#1D1B20] dark:text-gray-200 text-base font-medium leading-normal pb-2">Amount Received</p>
+
+<div class="relative">
+
+<span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-500 dark:text-gray-400">KES</span>
+
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-md text-[#1D1B20] dark:text-white dark:placeholder:text-gray-400 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-gray-400/80 dark:border-gray-600 bg-background-light dark:bg-background-dark focus:border-primary dark:focus:border-primary h-14 placeholder:text-gray-500 p-3.5 pl-14 text-lg font-normal leading-normal" placeholder="5,500" type="number" value="5,500"/>
+
+</div>
+
+</label>
+
+</div>
+
+<!-- Change Due -->
+
+<div class="flex flex-col items-center">
+
+<p class="text-base font-heading font-medium text-gray-600 dark:text-gray-400">Change Due</p>
+
+<h3 class="text-primary text-4xl font-bold font-heading leading-tight pt-1">KES 500</h3>
+
+</div>
+
+</div>
+
+</main>
+
+<!-- Action Button -->
+
+<div class="px-4 py-6 mt-auto shrink-0">
+
+<button class="flex w-full items-center justify-center rounded-full bg-primary text-white text-lg font-medium h-14 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:text-gray-500 dark:disabled:text-gray-400">Complete Sale</button>
+
+</div>
+
+<!-- Bottom Navigation Bar -->
+
+<nav class="sticky bottom-0 flex w-full justify-around bg-background-light dark:bg-[#1a2632] border-t border-gray-200 dark:border-gray-800 py-2 shrink-0">
+
+<a class="flex flex-col items-center justify-center text-center text-gray-600 dark:text-gray-400 w-1/5 py-1" href="#">
+
+<span class="material-symbols-outlined text-2xl">dashboard</span>
+
+<span class="text-xs mt-1">Dashboard</span>
+
+</a>
+
+<a class="flex flex-col items-center justify-center text-center text-gray-600 dark:text-gray-400 w-1/5 py-1" href="#">
+
+<span class="material-symbols-outlined text-2xl">inventory_2</span>
+
+<span class="text-xs mt-1">Inventory</span>
+
+</a>
+
+<a class="flex flex-col items-center justify-center text-center text-primary w-1/5 py-1" href="#">
+
+<div class="relative">
+
+<span class="material-symbols-outlined fill text-2xl">receipt_long</span>
+
+<div class="absolute -top-3 -right-3 h-2 w-full scale-125">
+
+<div class="h-1 w-full rounded-full bg-primary"></div>
+
+</div>
+
+</div>
+
+<span class="text-xs mt-1 font-semibold">Sales</span>
+
+</a>
+
+<a class="flex flex-col items-center justify-center text-center text-gray-600 dark:text-gray-400 w-1/5 py-1" href="#">
+
+<span class="material-symbols-outlined text-2xl">group</span>
+
+<span class="text-xs mt-1">Customers</span>
+
+</a>
+
+<a class="flex flex-col items-center justify-center text-center text-gray-600 dark:text-gray-400 w-1/5 py-1" href="#">
+
+<span class="material-symbols-outlined text-2xl">person</span>
+
+<span class="text-xs mt-1">Profile</span>
+
+</a>
+
+</nav>
+
+</div>
+
+</body></html>
+

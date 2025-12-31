@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Debts List</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Poppins:wght@600;700&amp;display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+
+<style>
+
+      .material-symbols-outlined {
+
+        font-variation-settings:
+
+        'FILL' 0,
+
+        'wght' 400,
+
+        'GRAD' 0,
+
+        'opsz' 24
+
+      }
+
+      .material-symbols-outlined.filled {
+
+        font-variation-settings:
+
+        'FILL' 1
+
+      }
+
+    </style>
+
+<script id="tailwind-config">
+
+      tailwind.config = {
+
+        darkMode: "class",
+
+        theme: {
+
+          extend: {
+
+            colors: {
+
+              "primary": "#007bff",
+
+              "warning": "#F5A623",
+
+              "background-light": "#f5f7f8",
+
+              "background-dark": "#0f1923",
+
+            },
+
+            fontFamily: {
+
+              "display": ["Inter", "sans-serif"],
+
+              "heading": ["Poppins", "sans-serif"]
+
+            },
+
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px", "md": "12px"},
+
+          },
+
+        },
+
+      }
+
+    </script>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111827] dark:text-gray-200">
+
+<div class="relative flex h-screen w-full flex-col group/design-root overflow-hidden">
+
+<main class="flex-1 overflow-y-auto pb-24">
+
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 justify-between sticky top-0 z-10 border-b border-gray-200 dark:border-gray-800">
+
+<h1 class="text-xl font-heading font-bold text-[#0c141d] dark:text-gray-100 flex-1">Debts</h1>
+
+<button class="flex size-10 shrink-0 items-center justify-center">
+
+<span class="material-symbols-outlined text-2xl text-[#0c141d] dark:text-gray-300">tune</span>
+
+</button>
+
+</div>
+
+<div class="flex gap-2 px-4 py-3">
+
+<button class="px-4 py-1.5 bg-primary/20 text-primary dark:bg-primary/30 dark:text-gray-100 rounded-lg text-sm font-medium">All</button>
+
+<button class="px-4 py-1.5 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium">Overdue</button>
+
+</div>
+
+<div class="flex flex-col gap-4 px-4">
+
+<div class="flex flex-col w-full rounded-md border border-warning/50 bg-white dark:bg-gray-800 shadow-sm p-4 gap-3">
+
+<div class="flex justify-between items-start">
+
+<div>
+
+<p class="text-base font-bold text-[#0c141d] dark:text-gray-100">Jane Doe</p>
+
+<p class="text-sm text-warning font-medium">Due: 2023-11-15 (Overdue)</p>
+
+</div>
+
+</div>
+
+<div class="w-full h-px bg-gray-200 dark:bg-gray-700"></div>
+
+<div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+
+<div>
+
+<p class="text-gray-500 dark:text-gray-400">Original</p>
+
+<p class="font-medium text-[#0c141d] dark:text-gray-200">KES 5,000</p>
+
+</div>
+
+<div>
+
+<p class="text-gray-500 dark:text-gray-400">Paid</p>
+
+<p class="font-medium text-[#0c141d] dark:text-gray-200">KES 2,000</p>
+
+</div>
+
+<div class="col-span-2">
+
+<p class="text-gray-500 dark:text-gray-400">Balance</p>
+
+<p class="font-bold text-base text-warning">KES 3,000</p>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="flex flex-col w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm p-4 gap-3">
+
+<div class="flex justify-between items-start">
+
+<div>
+
+<p class="text-base font-bold text-[#0c141d] dark:text-gray-100">Mike Ross</p>
+
+<p class="text-sm text-gray-600 dark:text-gray-400">Due: 2024-08-30</p>
+
+</div>
+
+</div>
+
+<div class="w-full h-px bg-gray-200 dark:bg-gray-700"></div>
+
+<div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+
+<div>
+
+<p class="text-gray-500 dark:text-gray-400">Original</p>
+
+<p class="font-medium text-[#0c141d] dark:text-gray-200">KES 12,500</p>
+
+</div>
+
+<div>
+
+<p class="text-gray-500 dark:text-gray-400">Paid</p>
+
+<p class="font-medium text-[#0c141d] dark:text-gray-200">KES 10,000</p>
+
+</div>
+
+<div class="col-span-2">
+
+<p class="text-gray-500 dark:text-gray-400">Balance</p>
+
+<p class="font-bold text-base text-primary">KES 2,500</p>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="flex flex-col w-full rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm p-4 gap-3">
+
+<div class="flex justify-between items-start">
+
+<div>
+
+<p class="text-base font-bold text-[#0c141d] dark:text-gray-100">Sarah Connor</p>
+
+<p class="text-sm text-gray-600 dark:text-gray-400">Due: 2024-07-20</p>
+
+</div>
+
+</div>
+
+<div class="w-full h-px bg-gray-200 dark:bg-gray-700"></div>
+
+<div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+
+<div>
+
+<p class="text-gray-500 dark:text-gray-400">Original</p>
+
+<p class="font-medium text-[#0c141d] dark:text-gray-200">KES 8,000</p>
+
+</div>
+
+<div>
+
+<p class="text-gray-500 dark:text-gray-400">Paid</p>
+
+<p class="font-medium text-[#0c141d] dark:text-gray-200">KES 8,000</p>
+
+</div>
+
+<div class="col-span-2">
+
+<p class="text-gray-500 dark:text-gray-400">Balance</p>
+
+<p class="font-bold text-base text-green-600">KES 0</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+<div class="absolute bottom-24 right-4 z-20">
+
+<button class="flex items-center justify-center h-16 w-16 bg-primary text-white rounded-xl shadow-lg hover:bg-primary/90 transition-colors">
+
+<span class="material-symbols-outlined text-3xl">add</span>
+
+</button>
+
+</div>
+
+<footer class="sticky bottom-0 bg-background-light dark:bg-background-dark">
+
+<div class="flex justify-around items-center h-20 border-t border-gray-200 dark:border-gray-700 bg-background-light dark:bg-gray-800 pb-3">
+
+<div class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 w-1/5 pt-2">
+
+<span class="material-symbols-outlined">dashboard</span>
+
+<span class="text-xs">Dashboard</span>
+
+</div>
+
+<div class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 w-1/5 pt-2">
+
+<span class="material-symbols-outlined">inventory_2</span>
+
+<span class="text-xs">Inventory</span>
+
+</div>
+
+<div class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 w-1/5 pt-2">
+
+<span class="material-symbols-outlined">receipt_long</span>
+
+<span class="text-xs">Sales</span>
+
+</div>
+
+<div class="flex flex-col items-center justify-center text-primary w-1/5 pt-2">
+
+<span class="material-symbols-outlined filled">group</span>
+
+<span class="text-xs font-bold">Customers</span>
+
+</div>
+
+<div class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 w-1/5 pt-2">
+
+<span class="material-symbols-outlined">person</span>
+
+<span class="text-xs">Profile</span>
+
+</div>
+
+</div>
+
+</footer>
+
+</div>
+
+
+
+</body></html>
+

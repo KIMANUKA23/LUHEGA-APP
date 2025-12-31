@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Payment Summary</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<style type="text/tailwindcss">
+
+        .material-symbols-outlined {
+
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+
+        }
+
+        .active-nav .material-symbols-outlined {
+
+            font-variation-settings: 'FILL' 1, 'wght' 600;
+
+        }
+
+    </style>
+
+<script id="tailwind-config">
+
+        tailwind.config = {
+
+            darkMode: "class",
+
+            theme: {
+
+                extend: {
+
+                    colors: {
+
+                        "primary": "#007bff",
+
+                        "background-light": "#f9fafb", // User specified #F9FAFB
+
+                        "background-dark": "#0f1923", // Default dark mode
+
+                        "surface-light": "#ffffff", // User specified #FFFFFF
+
+                        "surface-dark": "#1f2937", // A slightly lighter dark for cards
+
+                        "text-primary-light": "#111827", // User specified
+
+                        "text-primary-dark": "#f9fafb", // Default dark mode text
+
+                        "text-secondary-light": "#6b7280", // User specified
+
+                        "text-secondary-dark": "#9ca3af", // Lighter gray for dark mode
+
+                    },
+
+                    fontFamily: {
+
+                        "display": ["Inter", "sans-serif"],
+
+                        "heading": ["Poppins", "sans-serif"]
+
+                    },
+
+                    borderRadius: {
+
+                        "DEFAULT": "0.5rem",
+
+                        "lg": "1rem",
+
+                        "xl": "1.5rem",
+
+                        "full": "9999px"
+
+                    },
+
+                },
+
+            },
+
+        }
+
+    </script>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-text-primary-light dark:text-text-primary-dark">
+
+<div class="relative flex min-h-screen w-full flex-col">
+
+<!-- Top App Bar -->
+
+<header class="sticky top-0 z-10 flex h-16 items-center border-b border-slate-200/80 bg-background-light/80 px-4 backdrop-blur-sm dark:border-slate-800/80 dark:bg-background-dark/80">
+
+<button class="flex size-10 items-center justify-center rounded-full text-text-primary-light dark:text-text-primary-dark">
+
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+
+</button>
+
+<h1 class="flex-1 text-center text-xl font-bold font-heading text-text-primary-light dark:text-text-primary-dark">Payment Summary</h1>
+
+<div class="size-10"></div>
+
+</header>
+
+<!-- Main Content -->
+
+<main class="flex-1 px-4 pb-36 pt-6">
+
+<div class="flex flex-col gap-6">
+
+<!-- Order Summary Card -->
+
+<div class="w-full rounded-xl bg-surface-light p-4 shadow-sm dark:bg-surface-dark">
+
+<h2 class="mb-4 text-lg font-bold font-heading text-text-primary-light dark:text-text-primary-dark">Order Summary</h2>
+
+<div class="flex flex-col divide-y divide-slate-100 dark:divide-slate-700">
+
+<!-- List Item -->
+
+<div class="flex items-center gap-4 py-3">
+
+<img class="aspect-square size-14 rounded-lg object-cover" data-alt="A modern red and white sports shoe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2DdnPlYU35j8WoamkuYFU7C1JmlWDO8pC5kwQ4b2AkEMZkHNChqx9ztjOxgi7NqbZb50U9s6qB0eCWroIL2hWKDvKTVSBTeyFcrHvEGNPHRtH_FJlUPA7mgX2OJ5Ck9PmKRhapz29VJ_8B8eXpkcAeFr43Cxzo7t5sJyaxYpoBefLHPkPIorHLMkzDq5IGreJYEYG21VJR2dgCwcIYeGq3m_OOl_d0qHwbqsctISACAF6tREA62ESwlD_4B8IXdEq1KMSTzgIzjCD"/>
+
+<div class="flex-1">
+
+<p class="font-medium leading-normal text-text-primary-light dark:text-text-primary-dark">Product A</p>
+
+<p class="text-sm leading-normal text-text-secondary-light dark:text-text-secondary-dark">Qty: 2</p>
+
+</div>
+
+<p class="shrink-0 font-medium text-text-primary-light dark:text-text-primary-dark">$20.00</p>
+
+</div>
+
+<!-- List Item -->
+
+<div class="flex items-center gap-4 py-3">
+
+<img class="aspect-square size-14 rounded-lg object-cover" data-alt="A pair of black over-ear headphones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4LfoKy6gFKIMcHHWJFPlqW7KyplSknT9xGdTvfhosvV0se2JX5j6H8OVU5qE665m5yighWikm2Dx9rcKe9a-Ldrbh83ILx016M4rpHVZAELoxBtsHqMwDJzkBeNdD-fB1V5CVExllU5w8oCNG06Q_4lkrBLQDNWWwz3c_OuS4BO-ZpCLMfs3nDrEpS_WL2M6HecxA4-XxEXWXfUUh5CAZtuzlogdvVVUCKVzsr70tqjvZcR0FBZiphKI9UfEMgx3e84hwabwJ4gKs"/>
+
+<div class="flex-1">
+
+<p class="font-medium leading-normal text-text-primary-light dark:text-text-primary-dark">Product B</p>
+
+<p class="text-sm leading-normal text-text-secondary-light dark:text-text-secondary-dark">Qty: 1</p>
+
+</div>
+
+<p class="shrink-0 font-medium text-text-primary-light dark:text-text-primary-dark">$15.50</p>
+
+</div>
+
+<!-- List Item -->
+
+<div class="flex items-center gap-4 py-3">
+
+<img class="aspect-square size-14 rounded-lg object-cover" data-alt="A classic analog wristwatch with a brown leather strap." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKu6Q0rgoWsxE6osVm39nD0_PcTOyNfqEkTpb1s7o0SnPaX-mnn6N9-jq2vgZhmTGgirmKAOykwY3fBMXqflbuoyi6IglPSBf6k_3RyRjDI6TOVsFdLZiGRJTmxMf3w7mMzs1ybX_EP5sykX-bOSkGmmiqRvwp7lHl7NQXAkqbP0GnvLuQK06RXY3y7htFVutbI_rHDcS9rhV6qbVem1cRM9aDC_K7fhBc60qeBeNQchwb02DDXi_fKIAP8fSuwgdYgo2cEOmeMRAM"/>
+
+<div class="flex-1">
+
+<p class="font-medium leading-normal text-text-primary-light dark:text-text-primary-dark">Product C</p>
+
+<p class="text-sm leading-normal text-text-secondary-light dark:text-text-secondary-dark">Qty: 3</p>
+
+</div>
+
+<p class="shrink-0 font-medium text-text-primary-light dark:text-text-primary-dark">$45.00</p>
+
+</div>
+
+</div>
+
+<!-- Totals Section -->
+
+<div class="mt-4 flex flex-col gap-2 border-t border-slate-100 pt-4 dark:border-slate-700">
+
+<div class="flex justify-between text-sm">
+
+<p class="text-text-secondary-light dark:text-text-secondary-dark">Subtotal</p>
+
+<p class="font-medium text-text-primary-light dark:text-text-primary-dark">$80.50</p>
+
+</div>
+
+<div class="flex justify-between text-sm">
+
+<p class="text-text-secondary-light dark:text-text-secondary-dark">Tax (10%)</p>
+
+<p class="font-medium text-text-primary-light dark:text-text-primary-dark">$8.05</p>
+
+</div>
+
+<div class="flex justify-between text-sm">
+
+<p class="text-text-secondary-light dark:text-secondary-dark">Discount</p>
+
+<p class="font-medium text-text-primary-light dark:text-text-primary-dark">-$5.00</p>
+
+</div>
+
+<div class="mt-2 flex justify-between pt-2">
+
+<p class="text-lg font-bold font-heading text-text-primary-light dark:text-text-primary-dark">Grand Total</p>
+
+<p class="text-lg font-bold text-text-primary-light dark:text-text-primary-dark">$83.55</p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Payment Details Card -->
+
+<div class="w-full rounded-xl bg-surface-light p-4 shadow-sm dark:bg-surface-dark">
+
+<h2 class="mb-4 text-lg font-bold font-heading text-text-primary-light dark:text-text-primary-dark">Payment Details</h2>
+
+<div class="flex flex-col gap-3">
+
+<div class="flex justify-between">
+
+<p class="text-text-secondary-light dark:text-text-secondary-dark">Payment Method</p>
+
+<p class="font-medium text-text-primary-light dark:text-text-primary-dark">Cash</p>
+
+</div>
+
+<div class="flex justify-between">
+
+<p class="text-text-secondary-light dark:text-text-secondary-dark">Amount Paid</p>
+
+<p class="font-medium text-text-primary-light dark:text-text-primary-dark">$90.00</p>
+
+</div>
+
+<div class="mt-2 flex justify-between border-t border-slate-100 pt-3 dark:border-slate-700">
+
+<p class="text-text-secondary-light dark:text-text-secondary-dark">Change Due</p>
+
+<p class="font-bold text-primary">$6.45</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+<!-- CTA & Bottom Nav Wrapper -->
+
+<footer class="fixed bottom-0 left-0 right-0 z-10 flex flex-col items-center bg-background-light/90 pt-4 backdrop-blur-lg dark:bg-background-dark/90">
+
+<!-- Finalize Sale Button -->
+
+<div class="w-full px-4">
+
+<button class="w-full rounded-lg bg-primary py-4 text-base font-bold text-white shadow-lg shadow-primary/30 transition-transform duration-200 active:scale-95">Finalize Sale</button>
+
+</div>
+
+<!-- Bottom Tab Bar -->
+
+<nav class="mt-3 flex w-full justify-around border-t border-slate-200/80 bg-background-light/0 py-1 dark:border-slate-800/80 dark:bg-background-dark/0">
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 py-2 text-xs text-text-secondary-light dark:text-text-secondary-dark" href="#">
+
+<span class="material-symbols-outlined text-2xl">dashboard</span>
+
+                    Dashboard
+
+                </a>
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 py-2 text-xs text-text-secondary-light dark:text-text-secondary-dark" href="#">
+
+<span class="material-symbols-outlined text-2xl">inventory_2</span>
+
+                    Inventory
+
+                </a>
+
+<a class="active-nav flex flex-1 flex-col items-center justify-center gap-1 py-2 text-xs text-primary" href="#">
+
+<span class="material-symbols-outlined text-2xl">receipt_long</span>
+
+                    Sales
+
+                </a>
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 py-2 text-xs text-text-secondary-light dark:text-text-secondary-dark" href="#">
+
+<span class="material-symbols-outlined text-2xl">group</span>
+
+                    Customers
+
+                </a>
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 py-2 text-xs text-text-secondary-light dark:text-text-secondary-dark" href="#">
+
+<span class="material-symbols-outlined text-2xl">person</span>
+
+                    Profile
+
+                </a>
+
+</nav>
+
+</footer>
+
+</div>
+
+</body></html>
+

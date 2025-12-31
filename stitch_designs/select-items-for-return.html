@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+
+
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Select Items for Return</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+<style>
+
+      .material-symbols-outlined {
+
+        font-variation-settings:
+
+        'FILL' 0,
+
+        'wght' 400,
+
+        'GRAD' 0,
+
+        'opsz' 24
+
+      }
+
+      .material-symbols-outlined.filled {
+
+        font-variation-settings:
+
+        'FILL' 1,
+
+        'wght' 400,
+
+        'GRAD' 0,
+
+        'opsz' 24
+
+      }
+
+    </style>
+
+<script id="tailwind-config">
+
+      tailwind.config = {
+
+        darkMode: "class",
+
+        theme: {
+
+          extend: {
+
+            colors: {
+
+              "primary": "#007BFF",
+
+              "background-light": "#F8F9FA",
+
+              "background-dark": "#101922",
+
+              "surface-light": "#FFFFFF",
+
+              "surface-dark": "#1E293B",
+
+              "text-primary-light": "#212529",
+
+              "text-primary-dark": "#F8F9FA",
+
+              "text-secondary-light": "#6C757D",
+
+              "text-secondary-dark": "#94A3B8"
+
+            },
+
+            fontFamily: {
+
+              "display": ["Inter", "sans-serif"],
+
+              "heading": ["Poppins", "sans-serif"]
+
+            },
+
+            borderRadius: {
+
+                "DEFAULT": "0.25rem", 
+
+                "lg": "0.5rem", 
+
+                "xl": "0.75rem", /* 12px */
+
+                "full": "9999px"
+
+            },
+
+          },
+
+        },
+
+      }
+
+    </script>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-text-primary-light dark:text-text-primary-dark">
+
+<div class="relative flex min-h-screen w-full flex-col">
+
+<!-- Top App Bar -->
+
+<header class="sticky top-0 z-10 flex items-center bg-background-light/80 dark:bg-background-dark/80 p-4 backdrop-blur-sm">
+
+<button class="flex h-10 w-10 shrink-0 items-center justify-center text-text-primary-light dark:text-text-primary-dark">
+
+<span class="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
+
+</button>
+
+<h1 class="flex-1 text-center text-lg font-heading font-semibold leading-tight tracking-tight text-text-primary-light dark:text-text-primary-dark">Select Items for Return</h1>
+
+<div class="w-10"></div> <!-- Spacer -->
+
+</header>
+
+<!-- Main Content -->
+
+<main class="flex-1 px-4 pb-48">
+
+<!-- Headline Text -->
+
+<h2 class="font-heading text-xl font-bold leading-tight tracking-tight text-text-primary-light dark:text-text-primary-dark pt-4 pb-4">Items from Sale #SALE-00123</h2>
+
+<!-- Product List -->
+
+<div class="space-y-3">
+
+<!-- Product Card 1 (Checked) -->
+
+<label class="relative block cursor-pointer">
+
+<input checked="" class="peer absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 rounded border-slate-300 dark:border-slate-600 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-0 focus:ring-offset-0" type="checkbox"/>
+
+<div class="flex items-center gap-4 rounded-xl border-2 border-primary bg-surface-light dark:bg-surface-dark p-4 shadow-sm peer-checked:border-primary">
+
+<img class="h-16 w-16 rounded-lg object-cover" data-alt="Red and white sports shoe" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBz6v99bdRJEBjoPrdWh2TzABBKf6Ym6JkB6Nm58Gfvsi2Oq8bHn5wxNmekBKwSmGv4JWsmc0nMSzkRbl1DNQhyNRrmxeFOXQ5h5wAQoVIUMUjqG2NDH4t2Y-Vq7zi4WRVRySmTppYqgkPMOxLCnKDqyqpDnjPEd89MSI5cI-uxAmHa0FQNYVdoUgpE7HEJ-tcx0s8ZujO2nFtrllniOPAR9mP3_cb22dVdUiqskE_22ktBHMVghsdp3dO6zdpsulbz_S02iZPjRKeV"/>
+
+<div class="flex-1">
+
+<p class="font-semibold text-base text-text-primary-light dark:text-text-primary-dark">Product Name A</p>
+
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">SKU: RUN-RD-42</p>
+
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">Qty: 2 | $19.99</p>
+
+</div>
+
+</div>
+
+</label>
+
+<!-- Product Card 2 (Checked) -->
+
+<label class="relative block cursor-pointer">
+
+<input checked="" class="peer absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 rounded border-slate-300 dark:border-slate-600 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-0 focus:ring-offset-0" type="checkbox"/>
+
+<div class="flex items-center gap-4 rounded-xl border-2 border-primary bg-surface-light dark:bg-surface-dark p-4 shadow-sm peer-checked:border-primary">
+
+<img class="h-16 w-16 rounded-lg object-cover" data-alt="Vintage style camera" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9bGSZayPKc5WOpwm_tmSl8dMrWnxzBVVVMaPhINg8G_8L93IV6DFQZALcCAuOnWho0rboP6olfa75lgiUod2i0vz8GX-XHZFNJPY3Gl3EfQjGdHHN5va6xsVktrHwbmjI01HAwm6q2p63Tv8KIsXHJFIQqIHDfFel8FymYvGc6aPvpLYH8_s2x8vfooeg8SxwfUp9MwMM8g2cEh1bcPdRTYqOShGgC34yDgKApFIFUxOcgbBBQoCCYJr_X3Srow9Xkl165-vsNW6V"/>
+
+<div class="flex-1">
+
+<p class="font-semibold text-base text-text-primary-light dark:text-text-primary-dark">Product Name B</p>
+
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">SKU: CAM-VNT-01</p>
+
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">Qty: 1 | $45.50</p>
+
+</div>
+
+</div>
+
+</label>
+
+<!-- Product Card 3 (Unchecked) -->
+
+<label class="relative block cursor-pointer">
+
+<input class="peer absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 rounded border-slate-300 dark:border-slate-600 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-0 focus:ring-offset-0" type="checkbox"/>
+
+<div class="flex items-center gap-4 rounded-xl border-2 border-transparent bg-surface-light dark:bg-surface-dark p-4 shadow-sm peer-checked:border-primary">
+
+<img class="h-16 w-16 rounded-lg object-cover" data-alt="Black sunglasses with yellow lenses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKGywIUtG3PrzAyWcuF7V2R-bt4csqN6EltS8k4Pud8wLOFonBsVvTZUMShn_-M6vZqkPSno6BZRezIKABgvy7--mrPw2cvNsPimyjXcFZhgCCuQqDeu-8MnlmFean34CZVAp8BMef76QAlwab4zUzC4OAj0UIb6mpYzdhTZY5lbfU8qwTAnWUBfC5VnFPwf0j5HGwicd1uQ4Sg0VPXjm8g4cdUscI1VFycJkUBgFmeKHEUlgYJFFxx8utbSZXLG6ZTdP4gkWHs3S_"/>
+
+<div class="flex-1">
+
+<p class="font-semibold text-base text-text-primary-light dark:text-text-primary-dark">Product Name C</p>
+
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">SKU: SUN-BLK-YL</p>
+
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">Qty: 5 | $5.00</p>
+
+</div>
+
+</div>
+
+</label>
+
+<!-- Product Card 4 (Unchecked) -->
+
+<label class="relative block cursor-pointer">
+
+<input class="peer absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 rounded border-slate-300 dark:border-slate-600 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-0 focus:ring-offset-0" type="checkbox"/>
+
+<div class="flex items-center gap-4 rounded-xl border-2 border-transparent bg-surface-light dark:bg-surface-dark p-4 shadow-sm peer-checked:border-primary">
+
+<img class="h-16 w-16 rounded-lg object-cover" data-alt="A silver analog watch" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLX5CyDVnZ5Kdv8quuUurK3SIh8kdd5SEUnyvYEyfp87zQ2kHVDJLN8AdDXx7ssD6K3jsWM5N-J4t2Z-mnbPa5epSrYqPREWZK7FoFA3430kfBAd2BxSZIN4rylrEI0Qagsnkfs-3o7HRTan5VV-uBByhTS9Lx9dqANVIUQS-NpADslAENLIruLuueN4TBhPauBhFUlsZ-jAiZhaUolx0_PHqhVyusvFLQaLxNTvj_QcuiXmU-BDJ58poiMXOUQq8t9w9WnKFFlADH"/>
+
+<div class="flex-1">
+
+<p class="font-semibold text-base text-text-primary-light dark:text-text-primary-dark">Product Name D</p>
+
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">SKU: WTCH-SLV-01</p>
+
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">Qty: 1 | $120.00</p>
+
+</div>
+
+</div>
+
+</label>
+
+</div>
+
+</main>
+
+<!-- Sticky Footer Area -->
+
+<footer class="fixed bottom-0 left-0 right-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm">
+
+<!-- Summary and Action Button -->
+
+<div class="border-t border-slate-200 dark:border-slate-700 px-4 pt-4 pb-5">
+
+<p class="text-center text-base font-medium leading-normal text-text-primary-light dark:text-text-primary-dark pb-3">2 Items Selected</p>
+
+<button class="flex h-12 w-full min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-primary px-5 text-base font-bold leading-normal tracking-[0.015em] text-white">
+
+<span class="truncate">Next</span>
+
+</button>
+
+</div>
+
+<!-- Bottom Tab Bar -->
+
+<nav class="flex w-full items-center justify-around border-t border-slate-200 dark:border-slate-700 bg-background-light dark:bg-background-dark py-2">
+
+<a class="flex flex-col items-center gap-1 text-text-secondary-light dark:text-text-secondary-dark" href="#">
+
+<span class="material-symbols-outlined">dashboard</span>
+
+<span class="text-xs">Dashboard</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-text-secondary-light dark:text-text-secondary-dark" href="#">
+
+<span class="material-symbols-outlined">inventory_2</span>
+
+<span class="text-xs">Inventory</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-primary dark:text-primary" href="#">
+
+<span class="material-symbols-outlined filled">receipt_long</span>
+
+<span class="text-xs font-bold">Sales</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-text-secondary-light dark:text-text-secondary-dark" href="#">
+
+<span class="material-symbols-outlined">groups</span>
+
+<span class="text-xs">Customers</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-text-secondary-light dark:text-text-secondary-dark" href="#">
+
+<span class="material-symbols-outlined">person</span>
+
+<span class="text-xs">Profile</span>
+
+</a>
+
+</nav>
+
+</footer>
+
+</div>
+
+</body></html>
+

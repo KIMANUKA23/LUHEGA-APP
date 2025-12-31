@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Share Receipt Modal</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+<style>
+
+      .material-symbols-outlined {
+
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+
+      }
+
+    </style>
+
+<script id="tailwind-config">
+
+      tailwind.config = {
+
+        darkMode: "class",
+
+        theme: {
+
+          extend: {
+
+            colors: {
+
+              "primary": "#4A90E2",
+
+              "background-light": "#F0F2F5",
+
+              "background-dark": "#0f1923",
+
+              "surface-light": "#ffffff",
+
+              "surface-dark": "#1a2836",
+
+              "text-primary-light": "#212121",
+
+              "text-primary-dark": "#f0f2f5",
+
+              "text-secondary-light": "#666666",
+
+              "text-secondary-dark": "#a0b3c6",
+
+            },
+
+            fontFamily: {
+
+              "display": ["Inter", "sans-serif"],
+
+              "heading": ["Poppins", "sans-serif"],
+
+            },
+
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+
+          },
+
+        },
+
+      }
+
+    </script>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-text-primary-light dark:text-text-primary-dark">
+
+<div class="relative flex min-h-screen w-full flex-col justify-end bg-black/40 group/design-root overflow-x-hidden">
+
+<!-- Bottom Sheet Modal -->
+
+<div class="flex w-full flex-col items-stretch rounded-t-xl bg-surface-light dark:bg-surface-dark">
+
+<!-- Handle -->
+
+<div class="flex h-5 w-full items-center justify-center pt-3">
+
+<div class="h-1 w-9 rounded-full bg-slate-200 dark:bg-slate-600"></div>
+
+</div>
+
+<!-- Top App Bar -->
+
+<div class="flex items-center p-4 pb-2">
+
+<div class="flex size-12 shrink-0 items-center justify-start"></div>
+
+<h2 class="flex-1 text-center font-heading text-lg font-semibold leading-tight tracking-[-0.015em] text-text-primary-light dark:text-text-primary-dark">Share Receipt</h2>
+
+<div class="flex w-12 items-center justify-end">
+
+<button class="flex h-12 max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-transparent text-text-secondary-light dark:text-text-secondary-dark min-w-0 p-0">
+
+<span class="material-symbols-outlined">close</span>
+
+</button>
+
+</div>
+
+</div>
+
+<div class="px-4 pb-6">
+
+<!-- Receipt Preview -->
+
+<div class="w-full grow rounded-lg border border-slate-200 dark:border-slate-700 bg-background-light dark:bg-background-dark p-4">
+
+<div class="w-full gap-1 overflow-hidden">
+
+<div class="w-full flex">
+
+<div class="flex-1">
+
+<div class="flex items-center gap-3">
+
+<div class="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20 text-primary">
+
+<span class="material-symbols-outlined text-3xl">receipt_long</span>
+
+</div>
+
+<div>
+
+<p class="font-heading font-semibold text-text-primary-light dark:text-text-primary-dark">Sale_Receipt_0524.pdf</p>
+
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">PDF Document - 128 KB</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Section Header -->
+
+<h4 class="px-4 py-4 text-center font-heading text-sm font-semibold leading-normal tracking-[0.015em] text-text-secondary-light dark:text-text-secondary-dark">Share via</h4>
+
+<!-- Sharing Options Grid -->
+
+<div class="grid grid-cols-4 gap-4 text-center">
+
+<div class="flex flex-col items-center gap-2">
+
+<button class="flex h-14 w-14 items-center justify-center rounded-xl bg-background-light dark:bg-surface-dark">
+
+<img alt="WhatsApp icon" class="h-8 w-8" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDAboEQA6VbBv2DB90REr6ojusr90AEaj4LPXIEf4XJa3qS8LYXSSaSEG1biYdC-zC4InAiBJTO6APqsOj--LD93PG0uhTiFBKKgB9AX6ZqdAdIJ3PY9LwOXIqP9EE0EHGnBvBTI-zgMEp53s_QRf9ufh8VInYimyQleYf7lqIg0lzpHi-BKCaom1Fbowxt5q5Y2ApvUbaCgrZXeIiNeF2QNXVz5JHiopKl1k1azLoSRQkKIRfMeYn7SdSSWrnW3eQJ55UHU3T3nNi"/>
+
+</button>
+
+<span class="text-xs text-text-secondary-light dark:text-text-secondary-dark">WhatsApp</span>
+
+</div>
+
+<div class="flex flex-col items-center gap-2">
+
+<button class="flex h-14 w-14 items-center justify-center rounded-xl bg-background-light dark:bg-surface-dark">
+
+<img alt="Messages icon" class="h-8 w-8" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqyscn1zdOxaB9egk0uEHKhYgE_5JVKZC9Zs8My0xsdz81cc22AaLDnACe4jqsh7PxoMRP_gjGj6mUa13lEspV7AS6Kqkby1VgfN8g2jWdM8vZMflaAKIT8UdmzkTXnvBBx13zblK4pH8mZKg2TKRdLJEH40GVt-RPdDWLwGpCZqSzyVBwLknvl5WD0hyZHMirvIKG72c2HlzAXCLvD8MHmDuKJe4aq-vE0DyLQd_9V2TtdF3QijTmvbQ74Pku7BUGbBKes_C1_6g7"/>
+
+</button>
+
+<span class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Messages</span>
+
+</div>
+
+<div class="flex flex-col items-center gap-2">
+
+<button class="flex h-14 w-14 items-center justify-center rounded-xl bg-background-light dark:bg-surface-dark">
+
+<img alt="Gmail icon" class="h-8 w-8" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyiYH_flrUpyrx05xdM62mwkvQaMe3N7pik6cR5C__4XTMrIt8M9wnXL9dlkLAIPGv8B8u9F0ghtu8fcTp5MLXa1cxGxAuw0V2SRafmjPnVZBsoF48toNlKGpKzt15ffyDCVHEPNNCyydBUjyoHTXmflrAwTYfrRXCsR72Vg6BodKYaIzLsaebMtoJRD06B7J8m5ItAzutatHJ616W6Wzrrf0ccZ1etKyr-sWesPqivE0kjkT1ecjU6ly1V2Ckuf_5lIgqVgOAgf7t"/>
+
+</button>
+
+<span class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Email</span>
+
+</div>
+
+<div class="flex flex-col items-center gap-2">
+
+<button class="flex h-14 w-14 items-center justify-center rounded-xl bg-background-light dark:bg-surface-dark">
+
+<img alt="AirDrop icon" class="h-8 w-8" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMFQv1chL8T46O1KWGm3xyswcm-Kno3Jj19yrKA7dTcGlczmFPtARKDUfg1RRCiYuh6G1HWy7Fpllu8XkM0maVFDkT2VC_w194gVkaG3Bm_q8x-7D0g6MjKE8Z6x_YOPd53L-Wg5DtvQcgXGuqsFv5MvOCNyQIlHjUkhKI-a-p-uhBAhIJ-G3QaXpyXtaVs24xGkbuRV-MkDVLXd8nOXhbeA2kuz4EywMIhgNVQ8GRCwN_iHgXXtlQ5XkKlmgBS74uhehjSMFYcm4E"/>
+
+</button>
+
+<span class="text-xs text-text-secondary-light dark:text-text-secondary-dark">AirDrop</span>
+
+</div>
+
+<div class="flex flex-col items-center gap-2">
+
+<button class="flex h-14 w-14 items-center justify-center rounded-xl bg-background-light dark:bg-surface-dark">
+
+<img alt="Messenger icon" class="h-8 w-8" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByg4GHZo5W2hehPtD3OfgfFVuZd_A-Uv66wTxNhKKC7MkJ2nI-GB5i247cEBuWebWaUEebduBsnZumllavptv1Bxdl4of62DqcbJZYxN7Oynb8C_cdaWcPVgutolP0kz1jbqNBYzmnMF4VhRNTCIjteNknJ4ix-l0_fS7hGo9GMLfL-lhLRYunT1dKj8VnLXq0yPAmOzEJFfjCFrwDsuYSlcOxAEm-QlxEEbNvggNNA9VyAIpZJK3YAeflGG6D2X0MK4l7fgDwdm3T"/>
+
+</button>
+
+<span class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Messenger</span>
+
+</div>
+
+<div class="flex flex-col items-center gap-2">
+
+<button class="flex h-14 w-14 items-center justify-center rounded-xl bg-background-light dark:bg-surface-dark">
+
+<img alt="Slack icon" class="h-8 w-8" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpefc00zsXfOWsryaCB-rCFg64NNesPtUM_zoblREINOGdDnWfgfyzDaPjk9O67jreqhzD-m85v06WW-BaRLbQLTz0CQP_CctAq_QYlvytZ0_eC2Ba_47Cy1sZnfLE_54IbENqho5Q8MVsiov7dqX1f2-LtIRMyIwHR-RKr2ak4jkwy25uggLUGzhH7My27B6_vofUXt0psRhWXuj9rF-dNjOv-whDUMlY_g1jhV7ZvBQ3IfVfUbNHnzGFtITKXf6O-T_6lXTL1NAJ"/>
+
+</button>
+
+<span class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Slack</span>
+
+</div>
+
+<div class="flex flex-col items-center gap-2">
+
+<button class="flex h-14 w-14 items-center justify-center rounded-xl bg-background-light dark:bg-surface-dark">
+
+<img alt="Telegram icon" class="h-8 w-8" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARHqf89ajy0X5u3qrb311jKd8-XybN_TUgwGPYcF5Vvc3bkyrJTFVUDNa1N5zBvmmLBRBZBz_obi6Qx8EliIrLzL17iv-_Z6_R-INEJTfJh1y9XZjiWCJcflnfNJBdmi1qPE6F5DMVUEw29IPieLTf7Ppztmfhzu0adybZc0-g7jH0sZ3ezwcvfR5WkYjI5Ioc8lRr3FM8Gve3V7iR7UN_iEBy5JbM_535_YytP7StZSWwBx_zJu_Mk_-hqJACaY_wxDwGn3R3Brd0"/>
+
+</button>
+
+<span class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Telegram</span>
+
+</div>
+
+<div class="flex flex-col items-center gap-2">
+
+<button class="flex h-14 w-14 items-center justify-center rounded-xl bg-background-light dark:bg-surface-dark text-text-secondary-light dark:text-text-secondary-dark">
+
+<span class="material-symbols-outlined">more_horiz</span>
+
+</button>
+
+<span class="text-xs text-text-secondary-light dark:text-text-secondary-dark">More</span>
+
+</div>
+
+</div>
+
+<!-- Primary Action Button -->
+
+<button class="mt-6 flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-primary py-3 text-base font-bold leading-normal text-white">
+
+                    Share Receipt
+
+                </button>
+
+</div>
+
+</div>
+
+</div>
+
+</body></html>
+

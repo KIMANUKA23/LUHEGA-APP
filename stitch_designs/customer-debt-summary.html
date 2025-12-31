@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Customer Debt Summary</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Poppins:wght@600;700&amp;display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+<style>
+
+      .material-symbols-outlined {
+
+        font-variation-settings:
+
+        'FILL' 0,
+
+        'wght' 400,
+
+        'GRAD' 0,
+
+        'opsz' 24
+
+      }
+
+    </style>
+
+<script id="tailwind-config">
+
+      tailwind.config = {
+
+        darkMode: "class",
+
+        theme: {
+
+          extend: {
+
+            colors: {
+
+              "primary": "#4A90E2",
+
+              "background-light": "#F8F9FA",
+
+              "background-dark": "#0f1923",
+
+              "surface": "#FFFFFF",
+
+              "text-primary": "#212529",
+
+              "text-secondary": "#6C757D",
+
+              "accent-debt": "#FFC107",
+
+            },
+
+            fontFamily: {
+
+              "display": ["Inter", "sans-serif"],
+
+              "heading": ["Poppins", "sans-serif"],
+
+            },
+
+            borderRadius: {
+
+              "DEFAULT": "0.5rem",
+
+              "lg": "0.75rem", /* 12px */
+
+              "xl": "1.5rem",
+
+              "full": "9999px"
+
+            },
+
+          },
+
+        },
+
+      }
+
+    </script>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="bg-background-light dark:bg-background-dark font-display">
+
+<div class="relative mx-auto flex h-auto min-h-screen w-full max-w-md flex-col group/design-root overflow-x-hidden">
+
+<!-- Top App Bar -->
+
+<header class="sticky top-0 z-10 flex flex-col gap-1 bg-background-light/80 dark:bg-background-dark/80 px-4 pb-2 pt-4 backdrop-blur-sm">
+
+<div class="flex h-12 items-center justify-between">
+
+<div class="flex size-10 shrink-0 items-center justify-center text-text-primary dark:text-white">
+
+<span class="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
+
+</div>
+
+<h1 class="font-heading text-lg font-semibold text-text-primary dark:text-white">Debt Summary</h1>
+
+<div class="size-10 shrink-0"></div>
+
+</div>
+
+<p class="font-heading text-2xl font-bold leading-tight tracking-tight text-text-primary dark:text-white">Jane Doe</p>
+
+</header>
+
+<!-- Main Content -->
+
+<main class="flex-1 pb-28">
+
+<!-- Total Debt Card -->
+
+<div class="p-4">
+
+<div class="flex flex-col items-stretch justify-start rounded-lg bg-surface dark:bg-slate-800 shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:shadow-none">
+
+<div class="flex w-full grow flex-col items-stretch justify-center gap-1 p-5">
+
+<p class="font-display text-base font-normal leading-normal text-text-secondary dark:text-slate-400">Total Outstanding Debt</p>
+
+<p class="font-heading text-4xl font-bold tracking-tight text-accent-debt">KES 7,500</p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Debt List -->
+
+<div class="flex flex-col gap-3 px-4">
+
+<!-- List Item 1 -->
+
+<div class="flex items-center gap-4 rounded-lg bg-surface dark:bg-slate-800 px-4 py-3 shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:shadow-none">
+
+<div class="flex shrink-0 items-center justify-center rounded-full bg-primary/10 size-12 text-primary">
+
+<span class="material-symbols-outlined">receipt_long</span>
+
+</div>
+
+<div class="flex flex-1 flex-col justify-center">
+
+<p class="font-display text-base font-medium leading-normal text-text-primary dark:text-white">Sale #1024</p>
+
+<p class="font-display text-sm font-normal leading-normal text-text-secondary dark:text-slate-400">Balance: KES 2,500</p>
+
+<p class="font-display text-sm font-normal leading-normal text-text-secondary dark:text-slate-400">Original: KES 5,000 | Paid: KES 2,500</p>
+
+</div>
+
+<div class="shrink-0">
+
+<span class="material-symbols-outlined text-text-secondary dark:text-slate-500">chevron_right</span>
+
+</div>
+
+</div>
+
+<!-- List Item 2 -->
+
+<div class="flex items-center gap-4 rounded-lg bg-surface dark:bg-slate-800 px-4 py-3 shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:shadow-none">
+
+<div class="flex shrink-0 items-center justify-center rounded-full bg-primary/10 size-12 text-primary">
+
+<span class="material-symbols-outlined">receipt_long</span>
+
+</div>
+
+<div class="flex flex-1 flex-col justify-center">
+
+<p class="font-display text-base font-medium leading-normal text-text-primary dark:text-white">Sale #1021</p>
+
+<p class="font-display text-sm font-normal leading-normal text-text-secondary dark:text-slate-400">Balance: KES 5,000</p>
+
+<p class="font-display text-sm font-normal leading-normal text-text-secondary dark:text-slate-400">Original: KES 8,000 | Paid: KES 3,000</p>
+
+</div>
+
+<div class="shrink-0">
+
+<span class="material-symbols-outlined text-text-secondary dark:text-slate-500">chevron_right</span>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+<!-- Floating Action Button -->
+
+<div class="fixed bottom-24 right-6 z-20">
+
+<button class="flex h-14 w-auto items-center justify-center gap-2 rounded-full bg-primary px-5 text-white shadow-lg transition-transform hover:scale-105 active:scale-95">
+
+<span class="material-symbols-outlined">add</span>
+
+<span class="font-display text-base font-medium">Record Payment</span>
+
+</button>
+
+</div>
+
+<!-- Bottom Tab Bar -->
+
+<nav class="fixed bottom-0 left-0 right-0 z-30 mx-auto max-w-md border-t border-slate-200 bg-background-light/90 dark:border-slate-700 dark:bg-background-dark/90 backdrop-blur-sm">
+
+<div class="flex h-20 items-center justify-around px-2">
+
+<a class="flex flex-col items-center gap-1 text-text-secondary dark:text-slate-400" href="#">
+
+<span class="material-symbols-outlined">dashboard</span>
+
+<span class="font-display text-xs">Dashboard</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-text-secondary dark:text-slate-400" href="#">
+
+<span class="material-symbols-outlined">inventory_2</span>
+
+<span class="font-display text-xs">Inventory</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-text-secondary dark:text-slate-400" href="#">
+
+<span class="material-symbols-outlined">point_of_sale</span>
+
+<span class="font-display text-xs">Sales</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-primary dark:text-primary" href="#">
+
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
+
+<span class="font-display text-xs font-medium">Customers</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-text-secondary dark:text-slate-400" href="#">
+
+<span class="material-symbols-outlined">account_circle</span>
+
+<span class="font-display text-xs">Profile</span>
+
+</a>
+
+</div>
+
+</nav>
+
+</div>
+
+</body></html>
+

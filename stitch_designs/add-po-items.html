@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+
+
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Add PO Items</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Poppins:wght@600;700&amp;display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0..200" rel="stylesheet"/>
+
+<style>
+
+      .material-symbols-outlined {
+
+        font-variation-settings:
+
+        'FILL' 0,
+
+        'wght' 400,
+
+        'GRAD' 0,
+
+        'opsz' 24
+
+      }
+
+    </style>
+
+<script id="tailwind-config">
+
+      tailwind.config = {
+
+        darkMode: "class",
+
+        theme: {
+
+          extend: {
+
+            colors: {
+
+              "primary": "#007bff",
+
+              "background-light": "#f5f7f8",
+
+              "background-dark": "#0f1923",
+
+              "ios-blue": "#007AFF",
+
+              "ios-green": "#34C759",
+
+              "ios-bg-white": "#FFFFFF",
+
+              "ios-text-dark": "#1C1C1E",
+
+              "ios-text-medium": "#8A8A8E",
+
+              "ios-border-light": "#E5E5EA",
+
+            },
+
+            fontFamily: {
+
+              "display": ["Inter", "sans-serif"],
+
+              "heading": ["Poppins", "sans-serif"],
+
+            },
+
+            borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+
+          },
+
+        },
+
+      }
+
+    </script>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="bg-ios-bg-white dark:bg-background-dark font-display text-ios-text-dark">
+
+<div class="relative mx-auto flex h-[844px] w-full max-w-[390px] flex-col overflow-hidden border border-ios-border-light dark:border-gray-700 rounded-xl">
+
+<!-- Top App Bar -->
+
+<header class="sticky top-0 z-20 flex-shrink-0 border-b border-ios-border-light bg-ios-bg-white/80 backdrop-blur-sm dark:border-background-dark dark:bg-background-dark/80">
+
+<div class="relative flex h-14 items-center px-4">
+
+<button class="flex h-10 w-10 items-center justify-start text-ios-blue dark:text-primary">
+
+<span class="material-symbols-outlined text-3xl">arrow_back_ios_new</span>
+
+</button>
+
+<h1 class="absolute left-1/2 -translate-x-1/2 font-heading text-lg font-semibold text-ios-text-dark dark:text-background-light">Add PO Items</h1>
+
+</div>
+
+</header>
+
+<!-- Main Content -->
+
+<main class="flex-1 overflow-y-auto">
+
+<!-- Search Bar -->
+
+<div class="sticky top-14 z-10 bg-ios-bg-white px-4 pb-3 pt-4 dark:bg-background-dark">
+
+<div class="relative">
+
+<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+
+<span class="material-symbols-outlined text-ios-text-medium">search</span>
+
+</div>
+
+<input class="w-full rounded-lg border-none bg-background-light py-2.5 pl-10 pr-4 text-base text-ios-text-dark placeholder:text-ios-text-medium focus:outline-none focus:ring-2 focus:ring-ios-blue dark:bg-gray-800 dark:text-background-light" placeholder="Search product to add" type="search"/>
+
+</div>
+
+</div>
+
+<!-- Product List -->
+
+<div class="flex flex-col">
+
+<!-- List Item 1 -->
+
+<div class="flex cursor-pointer items-center gap-4 px-4 py-3 active:bg-background-light dark:active:bg-gray-800">
+
+<img class="h-[70px] w-[70px] flex-shrink-0 rounded-lg object-cover" data-alt="A bottle of organic coffee beans with a rustic label." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJDn6uSbycSDirdbMN1yepvSmQxmcAJtZ54rzmDq4bgl-G9unQOyg6rG94sDZmWoh93cdZ-Yvlosq7jKZceOR-_c2zr7UMU97kACbzYsExc4SH82odXEqfAeq-rF87T0ooyF5n29Cjts20peCV39sSQ1mhXT1eF2YVU22b9CO_6X-M8Tzp4NTY6VPmDAd-IaOCL6hRvV64J0SqFZ47MfcInFZ5jXl1j2fZaEierIcWZ_6Afvmb1dLJyUg-RQZbq0Rvw9sXddoWpwW_"/>
+
+<div class="flex-1">
+
+<p class="font-medium text-ios-text-dark dark:text-background-light">Organic Coffee Beans</p>
+
+<p class="text-sm text-ios-text-medium">150 in stock</p>
+
+<p class="text-sm text-ios-text-medium">SKU: CB-001</p>
+
+</div>
+
+<div class="shrink-0">
+
+<span class="material-symbols-outlined text-ios-border-light">chevron_right</span>
+
+</div>
+
+</div>
+
+<div class="h-px w-full bg-ios-border-light pl-24 dark:bg-gray-700"></div>
+
+<!-- List Item 2 -->
+
+<div class="flex cursor-pointer items-center gap-4 px-4 py-3 active:bg-background-light dark:active:bg-gray-800">
+
+<img class="h-[70px] w-[70px] flex-shrink-0 rounded-lg object-cover" data-alt="A modern, stainless steel espresso machine on a kitchen counter." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCstlMqqTBKNIlH_vTUPzy3PIyNt0Lf6ECzwrwln-gwJlN5-T7GDKG7aYwSJxLpOz7TvyIm5XjQs60qqJPESsNCJCNXzSxjCMNy4emBxpes-_7IcBU-xxItpQFhSap7EXPayAwI8Y6ly5ttdbgjBGKuBfnjC1Z_keyMNiyUldPBQlps4BNFX1UWVZ2W61iE1QEBK1KQNpsd6knwTZOJeBdflHRlxdmYA5U499jLNjSk1r_7cjOb-NU7SVml1ssTrIS2yxzexQQFu3xc"/>
+
+<div class="flex-1">
+
+<p class="font-medium text-ios-text-dark dark:text-background-light">Espresso Machine</p>
+
+<p class="text-sm text-ios-text-medium">12 in stock</p>
+
+<p class="text-sm text-ios-text-medium">SKU: EM-004</p>
+
+</div>
+
+<div class="shrink-0">
+
+<span class="material-symbols-outlined text-ios-border-light">chevron_right</span>
+
+</div>
+
+</div>
+
+<div class="h-px w-full bg-ios-border-light pl-24 dark:bg-gray-700"></div>
+
+<!-- List Item 3 -->
+
+<div class="flex cursor-pointer items-center gap-4 px-4 py-3 active:bg-background-light dark:active:bg-gray-800">
+
+<img class="h-[70px] w-[70px] flex-shrink-0 rounded-lg object-cover" data-alt="A stack of white 12 oz paper cups." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAh9i6NTkPpxz554RXZ91epWtuZrBNsTtebpd8GK0lr7g-FqxgtEKimHvmG2OOvT8qKEFjlCMwiev9hTmbFO8rUP-mt8aCK3Mxf6zPLdDLnHl6mAdcXIWdSSb3IncRpPQS4zs2EEGxdsHhHM0tzUR-TpxqYejdQ8i4HFm688dorpw3RZe4ytXCRfmJ5_Z1bAJU5cUNJbJj6w6MvXwto90-_SgSRthPIocy2bJn7rEkQDIXY9AVLJdBUluxAwWHAn4nsEHdVQTvMYSJS"/>
+
+<div class="flex-1">
+
+<p class="font-medium text-ios-text-dark dark:text-background-light">Paper Cups (12 oz)</p>
+
+<p class="text-sm text-ios-text-medium">5000 in stock</p>
+
+<p class="text-sm text-ios-text-medium">SKU: PC-12-500</p>
+
+</div>
+
+<div class="shrink-0">
+
+<span class="material-symbols-outlined text-ios-border-light">chevron_right</span>
+
+</div>
+
+</div>
+
+<div class="h-px w-full bg-ios-border-light pl-24 dark:bg-gray-700"></div>
+
+<!-- List Item 4 -->
+
+<div class="flex cursor-pointer items-center gap-4 px-4 py-3 active:bg-background-light dark:active:bg-gray-800">
+
+<img class="h-[70px] w-[70px] flex-shrink-0 rounded-lg object-cover" data-alt="A handheld electric milk frother next to a glass of milk." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBJ--2XqiO3CqlO_bCZxECfhJ0oxwXbt9LU2Pv55Z5AncP_Xy_bZD4O-_6e344bZp7r-Nc83A1HLT4m8LoEOZUhG2T_Z1SMwmPOh3996KMyWUN5ZfQqYvwf3GPn91IV2vIJk6NiVPtfU2KnKNXM3TpaHaN3gAR-00ZZCeyiNz3JhJAjZ06PWnPL-XaieyTQgLyQeuZ6VAIlCAEok44O2w-2Rccrwf1H3QPFzNnvsXZlPcn66fXBijGslyJL3gp5_MAOrBcsdg0j07m"/>
+
+<div class="flex-1">
+
+<p class="font-medium text-ios-text-dark dark:text-background-light">Milk Frother</p>
+
+<p class="text-sm text-ios-text-medium">45 in stock</p>
+
+<p class="text-sm text-ios-text-medium">SKU: MF-011</p>
+
+</div>
+
+<div class="shrink-0">
+
+<span class="material-symbols-outlined text-ios-border-light">chevron_right</span>
+
+</div>
+
+</div>
+
+<div class="h-px w-full bg-ios-border-light dark:bg-gray-700"></div>
+
+</div>
+
+</main>
+
+<!-- Floating Action Button -->
+
+<button class="absolute bottom-28 right-4 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-ios-blue text-white shadow-lg active:bg-blue-600 dark:bg-primary dark:active:bg-blue-500">
+
+<span class="material-symbols-outlined text-2xl">shopping_cart</span>
+
+<span class="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-ios-bg-white bg-ios-green text-sm font-semibold text-white dark:border-background-dark">3</span>
+
+</button>
+
+<!-- Bottom Tab Bar -->
+
+<footer class="flex-shrink-0 border-t border-ios-border-light bg-ios-bg-white/80 backdrop-blur-sm dark:border-gray-700 dark:bg-background-dark/80">
+
+<nav class="flex h-20 items-start justify-around pt-2">
+
+<a class="flex flex-col items-center gap-1 text-ios-text-medium dark:text-gray-400" href="#">
+
+<span class="material-symbols-outlined">dashboard</span>
+
+<span class="text-xs">Dashboard</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-ios-blue dark:text-primary" href="#">
+
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+
+<span class="text-xs">Inventory</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-ios-text-medium dark:text-gray-400" href="#">
+
+<span class="material-symbols-outlined">point_of_sale</span>
+
+<span class="text-xs">Sales</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-ios-text-medium dark:text-gray-400" href="#">
+
+<span class="material-symbols-outlined">group</span>
+
+<span class="text-xs">Customers</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-ios-text-medium dark:text-gray-400" href="#">
+
+<span class="material-symbols-outlined">person</span>
+
+<span class="text-xs">Profile</span>
+
+</a>
+
+</nav>
+
+</footer>
+
+<!-- Modal Overlay -->
+
+<div class="absolute inset-0 z-30 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
+
+<div class="w-full max-w-sm rounded-xl bg-background-light p-6 shadow-xl dark:bg-gray-800">
+
+<div class="flex flex-col items-center text-center">
+
+<img class="mb-4 h-20 w-20 rounded-lg object-cover" data-alt="A bottle of organic coffee beans with a rustic label." src="https://lh3.googleusercontent.com/aida-public/AB6AXuByBzdJm0JV6Z90igCExcLEqgUiXwYE_ksqigg2-tMA45CbFErnkMeBQJClk9fl79jMm4JccpdE2hWfULVhLNRQFC5GneSJT7iuWRjqdzK2KrUuBr8hPXo83K76a7CCJtfdqBIb0JFVp1Mwts3OL2EcvKdWk0Q7OAWcgNlRdYQrGB75-XKL_pgjfkKgUXwtWMS05U03SPLqL6w7wS1UsCmeK8uoJ--xD6XEHwryW-VulmEeBeYale8kjqh3K5drnhpS_1GIqGq0V50T"/>
+
+<h3 class="font-heading text-lg font-semibold text-ios-text-dark dark:text-background-light">Organic Coffee Beans</h3>
+
+</div>
+
+<div class="mt-6 space-y-4">
+
+<div>
+
+<label class="text-sm font-medium text-ios-text-medium dark:text-gray-400" for="quantity">Quantity to Order</label>
+
+<input class="mt-1 w-full rounded-lg border border-ios-border-light bg-ios-bg-white p-3 text-center text-lg text-ios-text-dark focus:border-ios-blue focus:ring-ios-blue dark:border-gray-600 dark:bg-gray-700 dark:text-background-light" id="quantity" placeholder="0" type="number"/>
+
+</div>
+
+<div>
+
+<label class="text-sm font-medium text-ios-text-medium dark:text-gray-400" for="price">Unit Purchase Price</label>
+
+<div class="relative mt-1">
+
+<span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-lg text-ios-text-medium">$</span>
+
+<input class="w-full rounded-lg border border-ios-border-light bg-ios-bg-white p-3 text-center text-lg text-ios-text-dark focus:border-ios-blue focus:ring-ios-blue dark:border-gray-600 dark:bg-gray-700 dark:text-background-light" id="price" placeholder="0.00" type="text" value="18.50"/>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="mt-6 grid grid-cols-2 gap-3">
+
+<button class="rounded-lg bg-ios-border-light py-3 font-semibold text-ios-blue active:bg-gray-300 dark:bg-gray-700 dark:text-primary dark:active:bg-gray-600">Cancel</button>
+
+<button class="rounded-lg bg-ios-blue py-3 font-semibold text-white active:bg-blue-600 dark:bg-primary dark:active:bg-blue-500">Add to PO</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</body></html>
+

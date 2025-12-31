@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>PO Status: Pending</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Poppins:wght@600;700&amp;display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+
+<script>
+
+        tailwind.config = {
+
+            darkMode: "class",
+
+            theme: {
+
+                extend: {
+
+                    colors: {
+
+                        "primary": "#007AFF",
+
+                        "warning": "#F5A623",
+
+                        "background-light": "#F9F9F9",
+
+                        "background-dark": "#0f1923",
+
+                        "card-light": "#FFFFFF",
+
+                        "card-dark": "#1A242E",
+
+                        "text-primary-light": "#333333",
+
+                        "text-primary-dark": "#E5E7EB",
+
+                        "text-secondary-light": "#888888",
+
+                        "text-secondary-dark": "#9CA3AF"
+
+                    },
+
+                    fontFamily: {
+
+                        "display": ["Inter", "sans-serif"],
+
+                        "heading": ["Poppins", "sans-serif"]
+
+                    },
+
+                    borderRadius: {
+
+                        "DEFAULT": "0.75rem",
+
+                        "lg": "1rem",
+
+                        "xl": "1.5rem",
+
+                        "full": "9999px"
+
+                    },
+
+                },
+
+            },
+
+        }
+
+    </script>
+
+<style>
+
+        .material-symbols-outlined {
+
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+
+        }
+
+    </style>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-text-primary-light dark:text-text-primary-dark">
+
+<div class="relative mx-auto flex h-screen min-h-[640px] w-full max-w-[480px] flex-col overflow-hidden bg-background-light dark:bg-background-dark">
+
+<!-- Top App Bar -->
+
+<header class="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between bg-background-light/80 px-4 backdrop-blur-sm dark:bg-background-dark/80">
+
+<h1 class="font-heading text-xl font-bold text-text-primary-light dark:text-text-primary-dark">POs (Pending)</h1>
+
+<button class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-text-secondary-light hover:bg-black/5 dark:text-text-secondary-dark dark:hover:bg-white/5">
+
+<span class="material-symbols-outlined text-2xl">tune</span>
+
+</button>
+
+</header>
+
+<!-- Scrollable PO List -->
+
+<main class="flex-1 overflow-y-auto">
+
+<div class="flex flex-col gap-4 p-4">
+
+<!-- PO Card 1 -->
+
+<div class="flex flex-col items-stretch justify-start rounded-lg border-l-4 border-warning bg-card-light shadow-sm dark:bg-card-dark">
+
+<div class="flex w-full grow flex-col items-stretch justify-center gap-2 p-4">
+
+<div class="flex items-center justify-between">
+
+<p class="font-heading text-lg font-semibold text-text-primary-light dark:text-text-primary-dark">PO #1024</p>
+
+<p class="text-lg font-bold text-text-primary-light dark:text-text-primary-dark">$1,500.00</p>
+
+</div>
+
+<div class="flex flex-col gap-1 text-sm text-text-secondary-light dark:text-text-secondary-dark">
+
+<p>Supplier: Global Tech Inc.</p>
+
+<p>Date: 23 Oct 2023</p>
+
+</div>
+
+<div class="mt-2 flex items-center justify-end">
+
+<div class="flex cursor-pointer items-center justify-center rounded-full bg-warning/20 px-3 py-1 text-xs font-medium text-yellow-800 dark:text-yellow-300">
+
+<span class="truncate">Pending</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- PO Card 2 -->
+
+<div class="flex flex-col items-stretch justify-start rounded-lg border-l-4 border-warning bg-card-light shadow-sm dark:bg-card-dark">
+
+<div class="flex w-full grow flex-col items-stretch justify-center gap-2 p-4">
+
+<div class="flex items-center justify-between">
+
+<p class="font-heading text-lg font-semibold text-text-primary-light dark:text-text-primary-dark">PO #1025</p>
+
+<p class="text-lg font-bold text-text-primary-light dark:text-text-primary-dark">$2,340.50</p>
+
+</div>
+
+<div class="flex flex-col gap-1 text-sm text-text-secondary-light dark:text-text-secondary-dark">
+
+<p>Supplier: Creative Solutions LLC</p>
+
+<p>Date: 22 Oct 2023</p>
+
+</div>
+
+<div class="mt-2 flex items-center justify-end">
+
+<div class="flex cursor-pointer items-center justify-center rounded-full bg-warning/20 px-3 py-1 text-xs font-medium text-yellow-800 dark:text-yellow-300">
+
+<span class="truncate">Pending</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- PO Card 3 -->
+
+<div class="flex flex-col items-stretch justify-start rounded-lg border-l-4 border-warning bg-card-light shadow-sm dark:bg-card-dark">
+
+<div class="flex w-full grow flex-col items-stretch justify-center gap-2 p-4">
+
+<div class="flex items-center justify-between">
+
+<p class="font-heading text-lg font-semibold text-text-primary-light dark:text-text-primary-dark">PO #1026</p>
+
+<p class="text-lg font-bold text-text-primary-light dark:text-text-primary-dark">$899.00</p>
+
+</div>
+
+<div class="flex flex-col gap-1 text-sm text-text-secondary-light dark:text-text-secondary-dark">
+
+<p>Supplier: Office Supplies Co.</p>
+
+<p>Date: 21 Oct 2023</p>
+
+</div>
+
+<div class="mt-2 flex items-center justify-end">
+
+<div class="flex cursor-pointer items-center justify-center rounded-full bg-warning/20 px-3 py-1 text-xs font-medium text-yellow-800 dark:text-yellow-300">
+
+<span class="truncate">Pending</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+<!-- Bottom Tab Bar -->
+
+<footer class="sticky bottom-0 z-10 flex h-20 shrink-0 items-center justify-around border-t border-black/10 bg-background-light/80 backdrop-blur-sm dark:border-white/10 dark:bg-background-dark/80">
+
+<a class="flex flex-col items-center gap-1 text-text-secondary-light dark:text-text-secondary-dark" href="#">
+
+<span class="material-symbols-outlined text-2xl">dashboard</span>
+
+<span class="text-xs">Dashboard</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1">inventory_2</span>
+
+<span class="text-xs font-medium">Inventory</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-text-secondary-light dark:text-text-secondary-dark" href="#">
+
+<span class="material-symbols-outlined text-2xl">receipt_long</span>
+
+<span class="text-xs">Sales</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-text-secondary-light dark:text-text-secondary-dark" href="#">
+
+<span class="material-symbols-outlined text-2xl">groups</span>
+
+<span class="text-xs">Customers</span>
+
+</a>
+
+<a class="flex flex-col items-center gap-1 text-text-secondary-light dark:text-text-secondary-dark" href="#">
+
+<span class="material-symbols-outlined text-2xl">person</span>
+
+<span class="text-xs">Profile</span>
+
+</a>
+
+</footer>
+
+</div>
+
+</body></html>
+

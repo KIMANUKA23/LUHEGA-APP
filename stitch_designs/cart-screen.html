@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Cart Screen</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+<script id="tailwind-config">
+
+      tailwind.config = {
+
+        darkMode: "class",
+
+        theme: {
+
+          extend: {
+
+            colors: {
+
+              "primary": "#007BFF",
+
+              "background-light": "#f8f9fa",
+
+              "background-dark": "#101922",
+
+              "text-primary-light": "#212529",
+
+              "text-primary-dark": "#f8f9fa",
+
+              "text-secondary-light": "#6C757D",
+
+              "text-secondary-dark": "#aeb5bc",
+
+              "border-light": "#e9ecef",
+
+              "border-dark": "#343a40",
+
+              "card-light": "#ffffff",
+
+              "card-dark": "#1a242f",
+
+              "destructive": "#DC3545",
+
+            },
+
+            fontFamily: {
+
+              "display": ["Inter", "sans-serif"],
+
+              "heading": ["Poppins", "sans-serif"]
+
+            },
+
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+
+          },
+
+        },
+
+      }
+
+    </script>
+
+<style>
+
+      .material-symbols-outlined {
+
+        font-variation-settings:
+
+        'FILL' 0,
+
+        'wght' 400,
+
+        'GRAD' 0,
+
+        'opsz' 24
+
+      }
+
+    </style>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="font-display bg-background-light dark:bg-background-dark text-text-primary-light dark:text-text-primary-dark">
+
+<div class="relative flex h-screen w-full flex-col group/design-root overflow-hidden">
+
+<!-- Top App Bar -->
+
+<div class="flex items-center bg-card-light dark:bg-card-dark p-4 pb-3 justify-between sticky top-0 z-10 border-b border-border-light dark:border-border-dark">
+
+<div class="flex size-12 shrink-0 items-center">
+
+<!-- Placeholder for back button or menu icon if needed -->
+
+</div>
+
+<h1 class="text-lg font-heading font-semibold tracking-tight flex-1 text-center">Cart</h1>
+
+<div class="flex w-12 items-center justify-end">
+
+<button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 w-10 text-destructive">
+
+<span class="material-symbols-outlined">delete</span>
+
+</button>
+
+</div>
+
+</div>
+
+<!-- Main Content: Cart Items List -->
+
+<main class="flex-1 overflow-y-auto px-4 pt-4 pb-2">
+
+<!-- List Item 1 -->
+
+<div class="flex gap-4 bg-card-light dark:bg-card-dark p-4 rounded-lg justify-between mb-3">
+
+<div class="flex items-start gap-4 flex-grow">
+
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-[70px]" data-alt="Brake Pad Set Box" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCaz-Jstk7sWKdIK9s2MpmsSccxMsynP7LzHnFfWlnhsGR-ek8lp1hZrJTOF_v6NifAIvIUUEe19UkCnfoalzyy-tSX9uMd_k-E2DRjYsrS9vXXDbZj0p_jAb7S4_sjkiuXw7IiIxEe2NuxmLX2TfVbunjlMtFTVdAYNEo9U__odZvz7kcMvkTDl0aAlIPjALa3jlRce6AG-ZKErE70PfZ7_C_EE_LsrlDiD8KKs6yoYc4HHqjIvd_ojEKXTBCJC5wVSv8ZjQ_uFEPA");'></div>
+
+<div class="flex flex-1 flex-col justify-center gap-1">
+
+<p class="text-base font-medium leading-normal text-text-primary-light dark:text-text-primary-dark">Brake Pad Set</p>
+
+<p class="text-sm font-normal leading-normal text-text-secondary-light dark:text-text-secondary-dark">KES 800</p>
+
+<p class="text-sm font-medium leading-normal text-text-primary-light dark:text-text-primary-dark">Total: KES 1,600</p>
+
+</div>
+
+</div>
+
+<div class="shrink-0">
+
+<div class="flex items-center gap-2 text-text-primary-light dark:text-text-primary-dark">
+
+<button class="text-base font-medium leading-normal flex h-7 w-7 items-center justify-center rounded-full bg-primary/20 text-primary cursor-pointer">-</button>
+
+<span class="text-base font-medium leading-normal w-4 text-center">2</span>
+
+<button class="text-base font-medium leading-normal flex h-7 w-7 items-center justify-center rounded-full bg-primary/20 text-primary cursor-pointer">+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<hr class="border-border-light dark:border-border-dark my-1 mx-4 border-dashed"/>
+
+<!-- List Item 2 -->
+
+<div class="flex gap-4 bg-card-light dark:bg-card-dark p-4 rounded-lg justify-between my-3">
+
+<div class="flex items-start gap-4 flex-grow">
+
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-[70px]" data-alt="Bottle of Engine Oil" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBb3Nolw7MGs8K-tI9r_yIs1D9JtgxOkRSb6OCcKGUYvhXrrvOfdHFzLJ7Vq8Wpf3Kt15rn1BX8hWrOEf93eGy-c_HhDlqCW8PEhfGmvq8SMW8WGoocXMJKzjSgkUwDN28Um5FJfABNNNCUWAfSfBwIAYge97_5dJLmqsuWRo_1QVgpqcC0bbKxP_8MJFi4Wgp5-VHHGRmpVyplWfAU83pygvNJED8OdSibNT46SGzkOFE-0NTKbdlOWuMoSC9E--unDvLsZ8shdIDx");'></div>
+
+<div class="flex flex-1 flex-col justify-center gap-1">
+
+<p class="text-base font-medium leading-normal text-text-primary-light dark:text-text-primary-dark">Engine Oil</p>
+
+<p class="text-sm font-normal leading-normal text-text-secondary-light dark:text-text-secondary-dark">KES 1,200</p>
+
+<p class="text-sm font-medium leading-normal text-text-primary-light dark:text-text-primary-dark">Total: KES 1,200</p>
+
+</div>
+
+</div>
+
+<div class="shrink-0">
+
+<div class="flex items-center gap-2 text-text-primary-light dark:text-text-primary-dark">
+
+<button class="text-base font-medium leading-normal flex h-7 w-7 items-center justify-center rounded-full bg-primary/20 text-primary cursor-pointer">-</button>
+
+<span class="text-base font-medium leading-normal w-4 text-center">1</span>
+
+<button class="text-base font-medium leading-normal flex h-7 w-7 items-center justify-center rounded-full bg-primary/20 text-primary cursor-pointer">+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<hr class="border-border-light dark:border-border-dark my-1 mx-4 border-dashed"/>
+
+<!-- List Item 3 -->
+
+<div class="flex gap-4 bg-card-light dark:bg-card-dark p-4 rounded-lg justify-between my-3">
+
+<div class="flex items-start gap-4 flex-grow">
+
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg size-[70px]" data-alt="Set of four spark plugs" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDeMxgOUIlsVFdF3bVlogE7aXdbHXi88CdRO5av-c7sXUbTGyt67v_eQpewSYhelvbz5lgDEUL6yeT1ZAmRk3jnjKPbG1tHjC5ejw2tbcOq9dOCjzztXvKANKNCjEk31P_nDJgwuNQNJbl34-TVUJxyg4uxu-YQg_zSKFcYh4DbMt7n_K3gFtZbkhRLDS5Qen7D-0CsSdMhPNlBes50s1M5S2TCFXFJmKXaRtKolOvDMXUowIzx-qiTEitiTayobNdQRllg9BsVmH2S");'></div>
+
+<div class="flex flex-1 flex-col justify-center gap-1">
+
+<p class="text-base font-medium leading-normal text-text-primary-light dark:text-text-primary-dark">Spark Plugs</p>
+
+<p class="text-sm font-normal leading-normal text-text-secondary-light dark:text-text-secondary-dark">KES 550</p>
+
+<p class="text-sm font-medium leading-normal text-text-primary-light dark:text-text-primary-dark">Total: KES 2,200</p>
+
+</div>
+
+</div>
+
+<div class="shrink-0">
+
+<div class="flex items-center gap-2 text-text-primary-light dark:text-text-primary-dark">
+
+<button class="text-base font-medium leading-normal flex h-7 w-7 items-center justify-center rounded-full bg-primary/20 text-primary cursor-pointer">-</button>
+
+<span class="text-base font-medium leading-normal w-4 text-center">4</span>
+
+<button class="text-base font-medium leading-normal flex h-7 w-7 items-center justify-center rounded-full bg-primary/20 text-primary cursor-pointer">+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+<!-- Summary & CTA Section -->
+
+<div class="sticky bottom-0 mt-auto bg-card-light dark:bg-card-dark w-full p-4 border-t border-border-light dark:border-border-dark" style="box-shadow: 0 -4px 12px -1px rgb(0 0 0 / 0.05);">
+
+<div class="space-y-2">
+
+<div class="flex justify-between gap-x-6">
+
+<p class="text-sm font-normal leading-normal text-text-secondary-light dark:text-text-secondary-dark">Subtotal</p>
+
+<p class="text-sm font-medium leading-normal text-right text-text-primary-light dark:text-text-primary-dark">KES 5,000</p>
+
+</div>
+
+<div class="flex justify-between gap-x-6">
+
+<p class="text-sm font-normal leading-normal text-text-secondary-light dark:text-text-secondary-dark">Tax (16%)</p>
+
+<p class="text-sm font-medium leading-normal text-right text-text-primary-light dark:text-text-primary-dark">KES 800</p>
+
+</div>
+
+<hr class="border-border-light dark:border-border-dark my-2"/>
+
+<div class="flex justify-between gap-x-6">
+
+<p class="text-base font-semibold leading-normal text-text-primary-light dark:text-text-primary-dark">Grand Total</p>
+
+<p class="text-base font-semibold leading-normal text-right text-text-primary-light dark:text-text-primary-dark">KES 5,800</p>
+
+</div>
+
+</div>
+
+<button class="flex max-w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-primary text-white gap-2 text-base font-bold leading-normal tracking-wide w-full mt-4">Proceed to Payment</button>
+
+</div>
+
+<!-- Bottom Tab Bar -->
+
+<nav class="sticky bottom-0 z-10 grid grid-cols-5 items-center bg-card-light dark:bg-card-dark border-t border-border-light dark:border-border-dark h-20 text-text-secondary-light dark:text-text-secondary-dark text-xs">
+
+<a class="flex flex-col items-center justify-center gap-1 text-center" href="#">
+
+<span class="material-symbols-outlined">dashboard</span>
+
+                Dashboard
+
+            </a>
+
+<a class="flex flex-col items-center justify-center gap-1 text-center" href="#">
+
+<span class="material-symbols-outlined">inventory_2</span>
+
+                Inventory
+
+            </a>
+
+<a class="flex flex-col items-center justify-center gap-1 text-center text-primary" href="#">
+
+<span class="material-symbols-outlined">receipt_long</span>
+
+                Sales
+
+            </a>
+
+<a class="flex flex-col items-center justify-center gap-1 text-center" href="#">
+
+<span class="material-symbols-outlined">groups</span>
+
+                Customers
+
+            </a>
+
+<a class="flex flex-col items-center justify-center gap-1 text-center" href="#">
+
+<span class="material-symbols-outlined">person</span>
+
+                Profile
+
+            </a>
+
+</nav>
+
+</div>
+
+</body></html>
+

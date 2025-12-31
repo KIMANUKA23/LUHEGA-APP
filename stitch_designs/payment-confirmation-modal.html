@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Payment Confirmation Modal</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Poppins:wght@600;700&amp;display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+
+<style>
+
+      .material-symbols-outlined {
+
+        font-variation-settings:
+
+        'FILL' 0,
+
+        'wght' 400,
+
+        'GRAD' 0,
+
+        'opsz' 24
+
+      }
+
+      .material-symbols-outlined.filled {
+
+        font-variation-settings:
+
+        'FILL' 1
+
+      }
+
+    </style>
+
+<script id="tailwind-config">
+
+      tailwind.config = {
+
+        darkMode: "class",
+
+        theme: {
+
+          extend: {
+
+            colors: {
+
+              "primary": "#007BFF",
+
+              "secondary": "#6C757D",
+
+              "background-light": "#f5f7f8",
+
+              "background-dark": "#0f1923",
+
+            },
+
+            fontFamily: {
+
+              "display": ["Inter", "sans-serif"],
+
+              "heading": ["Poppins", "sans-serif"]
+
+            },
+
+            borderRadius: {
+
+              "DEFAULT": "0.5rem",
+
+              "lg": "1rem",
+
+              "xl": "1.5rem","full": "9999px",
+
+              "md": "12px"
+
+            },
+
+          },
+
+        },
+
+      }
+
+    </script>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111827] dark:text-gray-200">
+
+<div class="relative flex h-screen w-full flex-col group/design-root overflow-hidden">
+
+<div class="absolute inset-0 bg-black/30 backdrop-blur-sm z-10 flex items-end justify-center">
+
+<div class="bg-background-light dark:bg-background-dark w-full max-w-sm rounded-t-xl p-6 flex flex-col gap-6">
+
+<h1 class="text-2xl font-heading font-bold text-center text-[#0c141d] dark:text-gray-100">Confirm Payment?</h1>
+
+<p class="text-center text-base text-gray-600 dark:text-gray-300">Are you sure you want to record KES 1,000 payment for Jane Doe for Sale #SALE-00123?</p>
+
+<div class="flex flex-col gap-4">
+
+<div class="flex justify-between items-center text-sm">
+
+<span class="text-gray-500 dark:text-gray-400">Amount Paid</span>
+
+<span class="font-bold text-[#0c141d] dark:text-gray-100">KES 1,000</span>
+
+</div>
+
+<div class="border-t border-gray-200 dark:border-gray-700"></div>
+
+<div class="flex justify-between items-center text-sm">
+
+<span class="text-gray-500 dark:text-gray-400">Remaining Balance After Payment</span>
+
+<span class="font-bold text-[#0c141d] dark:text-gray-100">KES 4,000</span>
+
+</div>
+
+</div>
+
+<div class="flex gap-4 w-full">
+
+<button class="w-full bg-secondary/20 dark:bg-secondary/30 text-secondary dark:text-gray-200 font-bold h-12 rounded-full text-base flex items-center justify-center transition-colors hover:bg-secondary/30 dark:hover:bg-secondary/40">Cancel</button>
+
+<button class="w-full bg-primary text-white font-bold h-12 rounded-full text-base flex items-center justify-center transition-colors hover:bg-primary/90">Confirm</button>
+
+</div>
+
+</div>
+
+</div>
+
+<main class="flex-1 opacity-20">
+
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between sticky top-0">
+
+<div class="flex size-12 shrink-0 items-center justify-start">
+
+<span class="material-symbols-outlined text-2xl text-[#0c141d] dark:text-gray-300">arrow_back_ios_new</span>
+
+</div>
+
+<h1 class="text-lg font-heading font-bold text-[#0c141d] dark:text-gray-100 flex-1 text-center -ml-6">Record Payment</h1>
+
+<div class="size-6"></div>
+
+</div>
+
+</main>
+
+</div>
+
+
+
+</body></html>
+

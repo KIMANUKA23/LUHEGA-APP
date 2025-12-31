@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>LUHEGA - Adjust Stock</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+<style>
+
+    .material-symbols-rounded {
+
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+
+    }
+
+    .material-symbols-rounded.filled {
+
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+
+    }
+
+  </style>
+
+<script id="tailwind-config">
+
+    tailwind.config = {
+
+      darkMode: "class",
+
+      theme: {
+
+        extend: {
+
+          colors: {
+
+            "primary": "#007BFF",
+
+            "background-light": "#f5f7f8",
+
+            "background-dark": "#0f1923",
+
+            "surface": "#ffffff",
+
+            "on-surface": "#1C1B1F",
+
+            "on-surface-variant": "#49454F",
+
+            "secondary-text": "#757575",
+
+            "outline": "#cddbea",
+
+            "error": "#B3261E"
+
+          },
+
+          fontFamily: {
+
+            "display": ["Poppins", "sans-serif"],
+
+            "body": ["Inter", "sans-serif"],
+
+          },
+
+          borderRadius: {
+
+            "DEFAULT": "0.5rem",
+
+            "lg": "12px",
+
+            "xl": "1.5rem",
+
+            "full": "9999px"
+
+          },
+
+        },
+
+      },
+
+    }
+
+  </script>
+
+<style>
+
+    body {
+
+      min-height: 100dvh;
+
+      background-color: #f5f7f8;
+
+    }
+
+  </style>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="font-body text-on-surface">
+
+<div class="flex h-screen flex-col bg-background-light">
+
+<header class="flex h-16 shrink-0 items-center border-b border-outline bg-surface px-4">
+
+<h1 class="font-display text-xl font-semibold text-on-surface">Adjust Stock</h1>
+
+</header>
+
+<main class="flex-1 overflow-y-auto p-6 pb-24">
+
+<div class="space-y-6">
+
+<div class="rounded-lg border border-outline bg-surface p-4">
+
+<h2 class="font-display text-lg font-medium text-on-surface">Spark Plug NGK Iridium</h2>
+
+<p class="font-body text-sm text-secondary-text">Current Stock: 25</p>
+
+</div>
+
+<div class="space-y-4">
+
+<div>
+
+<label class="block pb-2 font-body text-sm font-medium text-on-surface-variant" for="adjustment-type">Adjustment Type</label>
+
+<div class="relative">
+
+<select class="form-select block h-14 w-full appearance-none rounded-lg border-outline bg-surface pl-4 pr-10 text-base focus:border-primary focus:ring-2 focus:ring-primary/50" id="adjustment-type" name="adjustment-type">
+
+<option>Increase</option>
+
+<option>Decrease</option>
+
+</select>
+
+<span class="material-symbols-rounded pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-secondary-text">arrow_drop_down</span>
+
+</div>
+
+</div>
+
+<div>
+
+<label class="block pb-2 font-body text-sm font-medium text-on-surface-variant" for="quantity">Quantity</label>
+
+<input class="form-input block h-14 w-full rounded-lg border-outline bg-surface px-4 text-base focus:border-primary focus:ring-2 focus:ring-primary/50" id="quantity" name="quantity" placeholder="Enter quantity to adjust" type="number"/>
+
+</div>
+
+<div>
+
+<label class="block pb-2 font-body text-sm font-medium text-on-surface-variant" for="reason">Reason</label>
+
+<div class="relative">
+
+<select class="form-select block h-14 w-full appearance-none rounded-lg border-outline bg-surface pl-4 pr-10 text-base focus:border-primary focus:ring-2 focus:ring-primary/50" id="reason" name="reason">
+
+<option>Inventory Count</option>
+
+<option>Damage</option>
+
+<option>Returns</option>
+
+<option>Sale Correction</option>
+
+</select>
+
+<span class="material-symbols-rounded pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-secondary-text">arrow_drop_down</span>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="pt-4">
+
+<button class="flex h-12 w-full items-center justify-center rounded-lg bg-primary px-6 text-base font-bold text-white shadow-sm transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-primary/50">
+
+            Apply Adjustment
+
+          </button>
+
+</div>
+
+</div>
+
+</main>
+
+<nav class="fixed bottom-0 left-0 right-0 z-10 border-t border-outline bg-surface">
+
+<div class="mx-auto flex h-20 max-w-md justify-around">
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-secondary-text hover:text-primary" href="#">
+
+<span class="material-symbols-rounded">dashboard</span>
+
+<span class="text-xs font-medium">Dashboard</span>
+
+</a>
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+
+<span class="material-symbols-rounded filled">inventory_2</span>
+
+<span class="text-xs font-medium">Inventory</span>
+
+</a>
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-secondary-text hover:text-primary" href="#">
+
+<span class="material-symbols-rounded">point_of_sale</span>
+
+<span class="text-xs font-medium">Sales</span>
+
+</a>
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-secondary-text hover:text-primary" href="#">
+
+<span class="material-symbols-rounded">group</span>
+
+<span class="text-xs font-medium">Customers</span>
+
+</a>
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-secondary-text hover:text-primary" href="#">
+
+<span class="material-symbols-rounded">account_circle</span>
+
+<span class="text-xs font-medium">Profile</span>
+
+</a>
+
+</div>
+
+</nav>
+
+</div>
+
+
+
+</body></html>
+

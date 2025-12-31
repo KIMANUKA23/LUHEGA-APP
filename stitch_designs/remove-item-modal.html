@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+
+
+
+<html lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Remove Item Confirmation</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@600&display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+<style>
+
+      .font-poppins {
+
+        font-family: 'Poppins', sans-serif;
+
+      }
+
+    </style>
+
+<script id="tailwind-config">
+
+      tailwind.config = {
+
+        darkMode: "class",
+
+        theme: {
+
+          extend: {
+
+            colors: {
+
+              "primary": "#067bf9",
+
+              "background-light": "#f5f7f8",
+
+              "background-dark": "#0f1923",
+
+            },
+
+            fontFamily: {
+
+              "display": ["Inter", "sans-serif"]
+
+            },
+
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "24px", "full": "9999px"},
+
+          },
+
+        },
+
+      }
+
+    </script>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="font-display">
+
+<div class="relative flex min-h-screen w-full flex-col items-center justify-center bg-background-light dark:bg-background-dark p-4 group/design-root overflow-hidden">
+
+<!-- Scrim/Overlay -->
+
+<div class="absolute inset-0 bg-black/40"></div>
+
+<!-- Modal -->
+
+<div class="relative flex w-full max-w-sm flex-col overflow-hidden rounded-2xl bg-[#F8F9FA] dark:bg-[#1A1C1E]">
+
+<div class="flex flex-col items-center p-6 text-center">
+
+<h3 class="font-poppins text-2xl font-semibold text-[#1F2937] dark:text-slate-100">Remove Item?</h3>
+
+<p class="mt-4 text-base font-normal leading-normal text-[#1F2937] dark:text-slate-300">Are you sure you want to remove 'Spark Plug NGK Iridium' from the cart?</p>
+
+</div>
+
+<div class="flex items-center justify-end gap-2 px-6 pb-6 pt-2">
+
+<button class="flex min-h-[48px] min-w-[48px] cursor-pointer items-center justify-center rounded-full px-6 py-2 text-sm font-medium tracking-wide text-[#6C757D] dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/10">
+
+<span>Cancel</span>
+
+</button>
+
+<button class="flex min-h-[48px] min-w-[48px] cursor-pointer items-center justify-center rounded-full bg-[#EF4444] px-6 py-2 text-sm font-medium tracking-wide text-white hover:bg-red-600">
+
+<span>Remove</span>
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</body></html>
+

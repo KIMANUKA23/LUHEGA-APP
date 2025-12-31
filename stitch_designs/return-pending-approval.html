@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Return Pending Screen</title>
+
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<style type="text/tailwindcss">
+
+    .material-symbols-rounded {
+
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+
+    }
+
+    h3 {
+
+      font-family: 'Poppins', sans-serif;
+
+    }
+
+  </style>
+
+<script id="tailwind-config">
+
+    tailwind.config = {
+
+      darkMode: "class",
+
+      theme: {
+
+        extend: {
+
+          colors: {
+
+            "primary": "#007bff",
+
+            "warning": "#F5A623",
+
+            "background-light": "#f5f7f8",
+
+            "background-dark": "#0f1923",
+
+            "neutral-100": "#ffffff",
+
+            "neutral-200": "#f8f9fa",
+
+            "neutral-300": "#e9ecef",
+
+            "neutral-400": "#d1d5db",
+
+            "neutral-500": "#adb5bd",
+
+            "neutral-600": "#6c757d",
+
+            "neutral-700": "#495057",
+
+            "neutral-800": "#343a40",
+
+            "neutral-900": "#1f2937",
+
+          },
+
+          fontFamily: {
+
+            "display": ["Inter", "sans-serif"],
+
+            "heading": ["Poppins", "sans-serif"]
+
+          },
+
+          borderRadius: {
+
+            "DEFAULT": "0.5rem",
+
+            "lg": "1rem",
+
+            "xl": "1.5rem",
+
+            "full": "9999px"
+
+          },
+
+        },
+
+      },
+
+    }
+
+  </script>
+
+<style>
+
+      body {
+
+        min-height: 100vh;
+
+        min-height: 100dvh;
+
+      }
+
+      .material-symbols-rounded {
+
+        font-family: 'Material Symbols Rounded';
+
+        font-weight: normal;
+
+        font-style: normal;
+
+        font-size: 24px;
+
+        line-height: 1;
+
+        letter-spacing: normal;
+
+        text-transform: none;
+
+        display: inline-block;
+
+        white-space: nowrap;
+
+        word-wrap: normal;
+
+        direction: ltr;
+
+        -webkit-font-feature-settings: 'liga';
+
+        -webkit-font-smoothing: antialiased;
+
+      }
+
+  </style>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="font-display bg-background-light dark:bg-background-dark">
+
+<div class="relative flex min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root" style='font-family: Inter, "Noto Sans", sans-serif;'>
+
+<div class="flex flex-1 flex-col items-center justify-center p-6 text-center">
+
+<div class="flex h-24 w-24 items-center justify-center rounded-full bg-warning/10 text-warning dark:bg-warning/20">
+
+<span class="material-symbols-rounded text-6xl">hourglass_top</span>
+
+</div>
+
+<h3 class="mt-6 font-heading text-2xl font-bold text-neutral-900 dark:text-neutral-100">Return Pending Approval</h3>
+
+<p class="mt-2 max-w-sm text-base text-neutral-600 dark:text-neutral-400">Your return request for Sale #SALE-00123 has been submitted and is awaiting administrator review.</p>
+
+<div class="mt-8 flex w-full max-w-xs flex-col gap-4">
+
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 w-full bg-primary text-base font-bold leading-normal tracking-[0.015em] text-white">
+
+<span class="truncate">View Return Status</span>
+
+</button>
+
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 w-full bg-transparent text-base font-bold leading-normal tracking-[0.015em] text-primary">
+
+<span class="truncate">Go to Home</span>
+
+</button>
+
+</div>
+
+</div>
+
+<div class="sticky bottom-0 w-full border-t border-neutral-300 bg-neutral-100/80 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/80">
+
+<div class="flex h-16 justify-around">
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+
+<span class="material-symbols-rounded">dashboard</span>
+
+<span class="text-xs font-medium">Dashboard</span>
+
+</a>
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-neutral-600 dark:text-neutral-400" href="#">
+
+<span class="material-symbols-rounded">inventory_2</span>
+
+<span class="text-xs font-medium">Inventory</span>
+
+</a>
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-neutral-600 dark:text-neutral-400" href="#">
+
+<span class="material-symbols-rounded">receipt_long</span>
+
+<span class="text-xs font-medium">Sales</span>
+
+</a>
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-neutral-600 dark:text-neutral-400" href="#">
+
+<span class="material-symbols-rounded">groups</span>
+
+<span class="text-xs font-medium">Customers</span>
+
+</a>
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-neutral-600 dark:text-neutral-400" href="#">
+
+<span class="material-symbols-rounded">person</span>
+
+<span class="text-xs font-medium">Profile</span>
+
+</a>
+
+</div>
+
+<div class="h-safe-area-bottom bg-neutral-100 dark:bg-neutral-900"></div>
+
+</div>
+
+</div>
+
+
+
+</body></html>
+

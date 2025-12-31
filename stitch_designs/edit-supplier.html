@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+
+<meta charset="utf-8"/>
+
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+
+<title>Edit Supplier</title>
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&amp;family=Inter:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+<style>
+
+    .material-symbols-outlined {
+
+      font-variation-settings:
+
+        'FILL' 0,
+
+        'wght' 400,
+
+        'GRAD' 0,
+
+        'opsz' 24
+
+    }
+
+  </style>
+
+<script id="tailwind-config">
+
+    tailwind.config = {
+
+      darkMode: "class",
+
+      theme: {
+
+        extend: {
+
+          colors: {
+
+            "primary": "#007BFF",
+
+            "background-light": "#F8F9FA",
+
+            "background-dark": "#101922",
+
+            "surface-light": "#FFFFFF",
+
+            "surface-dark": "#182431",
+
+            "on-surface-light": "#1A1C1E",
+
+            "on-surface-dark": "#E2E2E6",
+
+            "outline-light": "#E0E2E6",
+
+            "outline-dark": "#44474B"
+
+          },
+
+          fontFamily: {
+
+            "display": ["Poppins", "sans-serif"],
+
+            "body": ["Inter", "sans-serif"]
+
+          },
+
+          borderRadius: {
+
+            "DEFAULT": "0.75rem",
+
+            "lg": "1rem",
+
+            "xl": "1.5rem",
+
+            "full": "9999px"
+
+          },
+
+          boxShadow: {
+
+            'md': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
+
+          }
+
+        },
+
+      },
+
+    }
+
+  </script>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+    .form-input {
+
+        @apply w-full rounded-[12px] border-outline-light bg-surface-light px-4 py-3 text-on-surface-light placeholder:text-on-surface-light/50 focus:border-primary focus:ring-2 focus:ring-primary/50 dark:border-outline-dark dark:bg-surface-dark dark:text-on-surface-dark dark:placeholder:text-on-surface-dark/50 dark:focus:border-primary;
+
+    }
+
+    .form-label {
+
+        @apply mb-2 block text-sm font-medium text-on-surface-light/80 dark:text-on-surface-dark/80;
+
+    }
+
+    select[multiple] {
+
+        @apply pr-10;}
+
+  </style>
+
+<style>
+
+    body {
+
+      min-height: max(884px, 100dvh);
+
+    }
+
+  </style>
+
+  </head>
+
+<body class="font-body bg-background-light dark:bg-background-dark text-on-surface-light dark:text-on-surface-dark">
+
+<div class="relative flex min-h-screen w-full flex-col">
+
+<header class="sticky top-0 z-10 flex h-16 items-center bg-background-light/80 px-4 backdrop-blur-sm dark:bg-background-dark/80">
+
+<button class="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full">
+
+<span class="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
+
+</button>
+
+<h1 class="font-display flex-1 text-center text-xl font-bold text-on-surface-light dark:text-on-surface-dark">Edit Supplier</h1>
+
+<div class="w-12"></div> 
+
+</header>
+
+<main class="flex-1 space-y-6 p-4 pb-24">
+
+<form class="space-y-4">
+
+<div>
+
+<label class="form-label" for="supplier-name">Supplier Name</label>
+
+<input class="form-input" id="supplier-name" type="text" value="AutoParts Kenya Ltd."/>
+
+</div>
+
+<div>
+
+<label class="form-label" for="contact-person">Contact Person</label>
+
+<input class="form-input" id="contact-person" type="text" value="John Mwangi"/>
+
+</div>
+
+<div>
+
+<label class="form-label" for="phone-number">Phone Number</label>
+
+<input class="form-input" id="phone-number" type="tel" value="+254 712 345 678"/>
+
+</div>
+
+<div>
+
+<label class="form-label" for="email">Email Address</label>
+
+<input class="form-input" id="email" type="email" value="sales@autopartskenya.co.ke"/>
+
+</div>
+
+<div>
+
+<label class="form-label" for="address">Physical Address</label>
+
+<textarea class="form-input" id="address" rows="3">Kirinyaga Road, Nairobi</textarea>
+
+</div>
+
+<div>
+
+<label class="form-label" for="categories">Supplied Product Categories</label>
+
+<div class="relative">
+
+<select class="form-input" id="categories" multiple="">
+
+<option>Engine Parts</option>
+
+<option selected="">Suspension Parts</option>
+
+<option>Braking Systems</option>
+
+<option selected="">Filters &amp; Fluids</option>
+
+<option>Electrical Parts</option>
+
+</select>
+
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
+
+<span class="material-symbols-outlined text-on-surface-light/50 dark:text-on-surface-dark/50">unfold_more</span>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="pt-4">
+
+<button class="w-full rounded-[12px] bg-primary py-3.5 text-center font-bold text-white shadow-md transition-colors hover:bg-primary/90" type="submit">
+
+              Save Changes
+
+          </button>
+
+</div>
+
+</form>
+
+</main>
+
+<nav class="fixed bottom-0 left-0 right-0 z-10 flex h-20 items-center justify-around border-t border-outline-light bg-surface-light/95 backdrop-blur-sm dark:border-outline-dark dark:bg-surface-dark/95">
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-on-surface-light/70 dark:text-on-surface-dark/70" href="#">
+
+<span class="material-symbols-outlined">dashboard</span>
+
+<span class="text-xs font-medium">Dashboard</span>
+
+</a>
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-on-surface-light/70 dark:text-on-surface-dark/70" href="#">
+
+<span class="material-symbols-outlined">inventory_2</span>
+
+<span class="text-xs font-medium">Inventory</span>
+
+</a>
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-on-surface-light/70 dark:text-on-surface-dark/70" href="#">
+
+<span class="material-symbols-outlined">point_of_sale</span>
+
+<span class="text-xs font-medium">Sales</span>
+
+</a>
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-on-surface-light/70 dark:text-on-surface-dark/70" href="#">
+
+<span class="material-symbols-outlined">group</span>
+
+<span class="text-xs font-medium">Customers</span>
+
+</a>
+
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-on-surface-light/70 dark:text-on-surface-dark/70" href="#">
+
+<span class="material-symbols-outlined">person</span>
+
+<span class="text-xs font-medium">Profile</span>
+
+</a>
+
+</nav>
+
+</div>
+
+
+
+</body></html>
+
