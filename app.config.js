@@ -50,9 +50,6 @@ module.exports = {
       favicon: "./assets/favicon.png"
     },
     extra: {
-      eas: {
-        projectId: "e0ea0551-4961-4f19-8133-de9245593745"
-      },
       // These will be available via Constants.expoConfig.extra
       supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://jfrydmnmbelwxbdsuepo.supabase.co',
       supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpmcnlkbW5tYmVsd3hiZHN1ZXBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0NTQ4OTIsImV4cCI6MjA3OTAzMDg5Mn0.2WMQX3dXZveRj2rEvHFpw0QlHq0O1GveWiUWD5Iiy9k',
