@@ -9,6 +9,7 @@ import {
   StatusBar,
   Dimensions,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -19,6 +20,7 @@ import { BarChart } from "react-native-gifted-charts";
 import { useTheme } from "../../src/context/ThemeContext";
 import * as reportService from "../../src/services/reportService";
 import { useSafeBottomPadding } from "../../src/hooks/useSafePadding";
+import { generateReportPDF, ReportData } from "../../src/utils/reportGenerator";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -46,6 +48,38 @@ export default function ProfitLossScreen() {
       console.log("Error loading P&L data:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExport = async () => {
+    try {
+      const reportData: ReportData = {
+        title: 'Profit & Loss Report',
+        subtitle: 'Financial Performance Summary',
+        date: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+        kpis: [
+          { label: "Revenue", value: formatTZS(currentRevenue) },
+          { label: "Cost of Goods", value: formatTZS(currentCost) },
+          { label: "Gross Profit", value: formatTZS(currentProfit) },
+          { label: "Margin", value: `${profitMargin.toFixed(1)}%` },
+        ],
+        sections: [
+          {
+            title: 'Monthly Breakdown (Last 6 Months)',
+            columns: ['Month', 'Revenue', 'Cost', 'Profit'],
+            rows: monthlyBreakdown.map(d => [
+              d.month,
+              formatTZS(d.revenue),
+              formatTZS(d.cost),
+              formatTZS(d.profit)
+            ])
+          }
+        ]
+      };
+
+      await generateReportPDF(reportData);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to generate report PDF');
     }
   };
 
@@ -141,7 +175,7 @@ export default function ProfitLossScreen() {
         </Text>
 
         <TouchableOpacity
-          onPress={() => { }}
+          onPress={handleExport}
           style={{
             width: 40,
             height: 40,

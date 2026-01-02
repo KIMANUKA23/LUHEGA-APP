@@ -139,7 +139,7 @@ export default function AdminDashboard() {
   const loadDashboardData = async () => {
     try {
       // Refresh all core data and capture the fresh results
-      const [freshReturns, freshSales, _, freshDebts, unreadCount, audits] = await Promise.all([
+      const [freshReturns, freshSales, freshProducts, freshDebts, unreadCount, audits] = await Promise.all([
         refreshReturns(),
         refreshSales(),
         refreshProducts(),
@@ -174,8 +174,11 @@ export default function AdminDashboard() {
       const pendingReturns = allReturns.filter((r: any) => r.status === 'pending').length;
       console.log(`📊 [AdminDashboard] Fresh Returns: ${allReturns.length}, Pending: ${pendingReturns}`);
 
-      // Low stock count
-      const lowStockItems = getLowStockProducts();
+      // Low stock count using fresh data
+      const allProducts = freshProducts || [];
+      const lowStockCount = allProducts.filter((p: any) =>
+        p.status !== 'archived' && p.quantityInStock <= p.reorderLevel
+      ).length;
 
       // Debt service for pending debit sales
       const debts = freshDebts && freshDebts.length > 0 ? freshDebts : getAllDebts();
@@ -194,7 +197,7 @@ export default function AdminDashboard() {
         totalRevenue: salesReport.totalSales,
         totalOrders: salesReport.transactionCount,
         newCustomers: recentCustomers,
-        lowStockCount: lowStockItems.length,
+        lowStockCount,
         pendingReturns,
         pendingDebitSales: pendingDebit,
       });
@@ -283,7 +286,7 @@ export default function AdminDashboard() {
       <View
         style={{
           backgroundColor: colors.card,
-          paddingTop: !isOffline ? Math.max(insets.top, StatusBar.currentHeight || 0) + 32 : 32,
+          paddingTop: insets.top + (isOffline ? 8 : 24),
           paddingBottom: 16,
           paddingHorizontal: 16,
           borderBottomWidth: 1,
@@ -418,30 +421,51 @@ export default function AdminDashboard() {
             onPress={() => router.push("/reports")}
             style={{
               width: (screenWidth - 48) / 2,
-              borderRadius: 16,
-              overflow: "hidden",
-              elevation: 4,
-              shadowColor: colors.primary,
+              backgroundColor: isDark ? "#1E293B" : "#FFFFFF",
+              borderRadius: 20,
+              padding: 20,
+              borderWidth: 1,
+              borderColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+              shadowColor: "#000",
               shadowOffset: { width: 0, height: 8 },
-              shadowOpacity: isDark ? 0.4 : 0.2,
-              shadowRadius: 12,
+              shadowOpacity: isDark ? 0.4 : 0.08,
+              shadowRadius: 16,
+              elevation: 4,
             }}
-            activeOpacity={0.9}
+            activeOpacity={0.7}
           >
-            <LinearGradient
-              colors={isDark ? ["#1E40AF", "#1E3A8A"] : ["#3B82F6", "#1D4ED8"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={{ padding: 16, height: 100, justifyContent: "space-between" }}
+            <View style={{
+              width: 32,
+              height: 32,
+              borderRadius: 10,
+              backgroundColor: "rgba(0, 123, 255, 0.1)",
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: 12
+            }}>
+              <MaterialIcons name="payments" size={18} color={colors.primary} />
+            </View>
+            <Text
+              style={{
+                fontSize: 13,
+                fontWeight: "500",
+                color: colors.textSecondary,
+                marginBottom: 4,
+              }}
             >
-              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                <Text style={{ fontSize: 13, fontWeight: "600", color: "rgba(255,255,255,0.8)" }}>Revenue</Text>
-                <MaterialIcons name="payments" size={18} color="rgba(255,255,255,0.6)" />
-              </View>
-              <Text style={{ fontSize: 20, fontWeight: "800", color: "#FFFFFF", fontFamily: "Poppins_700Bold" }}>
-                {loading ? <ActivityIndicator size="small" color="#FFF" /> : formatTZSShort(dashboardStats.totalRevenue)}
-              </Text>
-            </LinearGradient>
+              Revenue
+            </Text>
+            <Text
+              style={{
+                fontSize: 22,
+                fontWeight: "700",
+                color: colors.primary,
+                letterSpacing: -0.5,
+                fontFamily: "Poppins_700Bold",
+              }}
+            >
+              {loading ? <ActivityIndicator size="small" color={colors.primary} /> : formatTZSShort(dashboardStats.totalRevenue)}
+            </Text>
           </TouchableOpacity>
 
           {/* Total Orders */}
@@ -449,30 +473,51 @@ export default function AdminDashboard() {
             onPress={() => router.push("/sales/history")}
             style={{
               width: (screenWidth - 48) / 2,
-              borderRadius: 16,
-              overflow: "hidden",
-              elevation: 4,
-              shadowColor: colors.success,
+              backgroundColor: isDark ? "#1E293B" : "#FFFFFF",
+              borderRadius: 20,
+              padding: 20,
+              borderWidth: 1,
+              borderColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+              shadowColor: "#000",
               shadowOffset: { width: 0, height: 8 },
-              shadowOpacity: isDark ? 0.4 : 0.2,
-              shadowRadius: 12,
+              shadowOpacity: isDark ? 0.4 : 0.08,
+              shadowRadius: 16,
+              elevation: 4,
             }}
-            activeOpacity={0.9}
+            activeOpacity={0.7}
           >
-            <LinearGradient
-              colors={isDark ? ["#065F46", "#044E39"] : ["#10B981", "#059669"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={{ padding: 16, height: 100, justifyContent: "space-between" }}
+            <View style={{
+              width: 32,
+              height: 32,
+              borderRadius: 10,
+              backgroundColor: "rgba(16, 185, 129, 0.1)",
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: 12
+            }}>
+              <MaterialIcons name="shopping-bag" size={18} color="#10B981" />
+            </View>
+            <Text
+              style={{
+                fontSize: 13,
+                fontWeight: "500",
+                color: colors.textSecondary,
+                marginBottom: 4,
+              }}
             >
-              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                <Text style={{ fontSize: 13, fontWeight: "600", color: "rgba(255,255,255,0.8)" }}>Orders</Text>
-                <MaterialIcons name="shopping-bag" size={18} color="rgba(255,255,255,0.6)" />
-              </View>
-              <Text style={{ fontSize: 22, fontWeight: "800", color: "#FFFFFF", fontFamily: "Poppins_700Bold" }}>
-                {loading ? <ActivityIndicator size="small" color="#FFF" /> : dashboardStats.totalOrders}
-              </Text>
-            </LinearGradient>
+              Orders
+            </Text>
+            <Text
+              style={{
+                fontSize: 22,
+                fontWeight: "700",
+                color: colors.text,
+                letterSpacing: -0.5,
+                fontFamily: "Poppins_700Bold",
+              }}
+            >
+              {loading ? <ActivityIndicator size="small" color={colors.text} /> : dashboardStats.totalOrders}
+            </Text>
           </TouchableOpacity>
 
           {/* New Customers */}
@@ -480,30 +525,51 @@ export default function AdminDashboard() {
             onPress={() => router.push("/(tabs)/customers")}
             style={{
               width: (screenWidth - 48) / 2,
-              borderRadius: 16,
-              overflow: "hidden",
-              elevation: 4,
-              shadowColor: "#8B5CF6",
+              backgroundColor: isDark ? "#1E293B" : "#FFFFFF",
+              borderRadius: 20,
+              padding: 20,
+              borderWidth: 1,
+              borderColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+              shadowColor: "#000",
               shadowOffset: { width: 0, height: 8 },
-              shadowOpacity: isDark ? 0.4 : 0.2,
-              shadowRadius: 12,
+              shadowOpacity: isDark ? 0.4 : 0.08,
+              shadowRadius: 16,
+              elevation: 4,
             }}
-            activeOpacity={0.9}
+            activeOpacity={0.7}
           >
-            <LinearGradient
-              colors={isDark ? ["#5B21B6", "#4C1D95"] : ["#8B5CF6", "#6D28D9"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={{ padding: 16, height: 100, justifyContent: "space-between" }}
+            <View style={{
+              width: 32,
+              height: 32,
+              borderRadius: 10,
+              backgroundColor: "rgba(139, 92, 246, 0.1)",
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: 12
+            }}>
+              <MaterialIcons name="people" size={18} color="#8B5CF6" />
+            </View>
+            <Text
+              style={{
+                fontSize: 13,
+                fontWeight: "500",
+                color: colors.textSecondary,
+                marginBottom: 4,
+              }}
             >
-              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                <Text style={{ fontSize: 13, fontWeight: "600", color: "rgba(255,255,255,0.8)" }}>Customers</Text>
-                <MaterialIcons name="people" size={18} color="rgba(255,255,255,0.6)" />
-              </View>
-              <Text style={{ fontSize: 22, fontWeight: "800", color: "#FFFFFF", fontFamily: "Poppins_700Bold" }}>
-                {loading ? <ActivityIndicator size="small" color="#FFF" /> : dashboardStats.newCustomers}
-              </Text>
-            </LinearGradient>
+              Customers
+            </Text>
+            <Text
+              style={{
+                fontSize: 22,
+                fontWeight: "700",
+                color: colors.text,
+                letterSpacing: -0.5,
+                fontFamily: "Poppins_700Bold",
+              }}
+            >
+              {loading ? <ActivityIndicator size="small" color={colors.text} /> : dashboardStats.newCustomers}
+            </Text>
           </TouchableOpacity>
 
           {/* Low Stock Items */}
@@ -511,30 +577,51 @@ export default function AdminDashboard() {
             onPress={() => router.push("/reports/inventory")}
             style={{
               width: (screenWidth - 48) / 2,
-              borderRadius: 16,
-              overflow: "hidden",
-              elevation: 4,
-              shadowColor: colors.warning,
+              backgroundColor: isDark ? "#1E293B" : "#FFFFFF",
+              borderRadius: 20,
+              padding: 20,
+              borderWidth: 1,
+              borderColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+              shadowColor: "#000",
               shadowOffset: { width: 0, height: 8 },
-              shadowOpacity: isDark ? 0.4 : 0.2,
-              shadowRadius: 12,
+              shadowOpacity: isDark ? 0.4 : 0.08,
+              shadowRadius: 16,
+              elevation: 4,
             }}
-            activeOpacity={0.9}
+            activeOpacity={0.7}
           >
-            <LinearGradient
-              colors={isDark ? ["#92400E", "#78350F"] : ["#F59E0B", "#D97706"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={{ padding: 16, height: 100, justifyContent: "space-between" }}
+            <View style={{
+              width: 32,
+              height: 32,
+              borderRadius: 10,
+              backgroundColor: "rgba(245, 158, 11, 0.1)",
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: 12
+            }}>
+              <MaterialIcons name="warning" size={18} color="#F59E0B" />
+            </View>
+            <Text
+              style={{
+                fontSize: 13,
+                fontWeight: "500",
+                color: colors.textSecondary,
+                marginBottom: 4,
+              }}
             >
-              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                <Text style={{ fontSize: 13, fontWeight: "600", color: "rgba(255,255,255,0.8)" }}>Low Stock</Text>
-                <MaterialIcons name="warning" size={18} color="rgba(255,255,255,0.6)" />
-              </View>
-              <Text style={{ fontSize: 22, fontWeight: "800", color: "#FFFFFF", fontFamily: "Poppins_700Bold" }}>
-                {loading ? <ActivityIndicator size="small" color="#FFF" /> : dashboardStats.lowStockCount}
-              </Text>
-            </LinearGradient>
+              Low Stock
+            </Text>
+            <Text
+              style={{
+                fontSize: 22,
+                fontWeight: "700",
+                color: dashboardStats.lowStockCount > 0 ? colors.error : colors.text,
+                letterSpacing: -0.5,
+                fontFamily: "Poppins_700Bold",
+              }}
+            >
+              {loading ? <ActivityIndicator size="small" color={colors.text} /> : dashboardStats.lowStockCount}
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -543,7 +630,7 @@ export default function AdminDashboard() {
           <View
             style={{
               backgroundColor: colors.card,
-              borderRadius: 20,
+              borderRadius: 24,
               padding: 24,
               borderWidth: 1,
               borderColor: colors.border,
@@ -566,13 +653,13 @@ export default function AdminDashboard() {
                 <TouchableOpacity
                   key={i}
                   onPress={() => router.push(action.path as any)}
-                  style={{ width: (screenWidth - 48 - 48) / 4, alignItems: "center", gap: 10 }}
+                  style={{ width: (screenWidth - 48 - 64) / 4, alignItems: "center", gap: 10 }}
                   activeOpacity={0.7}
                 >
-                  <View style={{ width: 48, height: 48, borderRadius: 14, backgroundColor: action.bg, alignItems: "center", justifyContent: "center" }}>
-                    <MaterialIcons name={action.icon as any} size={24} color={action.color} />
+                  <View style={{ width: 50, height: 50, borderRadius: 15, backgroundColor: isDark ? "rgba(255,255,255,0.05)" : action.bg, alignItems: "center", justifyContent: "center" }}>
+                    <MaterialIcons name={action.icon as any} size={22} color={action.color} />
                   </View>
-                  <Text style={{ fontSize: 10, fontWeight: "600", color: colors.text, textAlign: "center" }} numberOfLines={1}>{action.label}</Text>
+                  <Text style={{ fontSize: 10, fontWeight: "600", color: colors.textSecondary, textAlign: "center" }} numberOfLines={1}>{action.label}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -580,21 +667,21 @@ export default function AdminDashboard() {
             {/* Row 2: Management */}
             <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
               {[
-                { label: "Reports", icon: "bar-chart", path: "/reports", color: colors.success, bg: "rgba(22, 163, 74, 0.1)" },
+                { label: "Reports", icon: "bar-chart", path: "/reports", color: "#10B981", bg: "rgba(16, 185, 129, 0.1)" },
                 { label: "Staff", icon: "manage-accounts", path: "/staff", color: "#6366F1", bg: "rgba(99, 102, 241, 0.1)" },
-                { label: "Customers", icon: "people", path: "/(tabs)/customers", color: "#10B981", bg: "rgba(16, 185, 129, 0.1)" },
+                { label: "Customers", icon: "people", path: "/(tabs)/customers", color: "#8B5CF6", bg: "rgba(139, 92, 246, 0.1)" },
                 { label: "Suppliers", icon: "local-shipping", path: "/suppliers", color: "#F43F5E", bg: "rgba(244, 63, 94, 0.1)" },
               ].map((action, i) => (
                 <TouchableOpacity
                   key={i}
                   onPress={() => router.push(action.path as any)}
-                  style={{ width: (screenWidth - 48 - 48) / 4, alignItems: "center", gap: 10 }}
+                  style={{ width: (screenWidth - 48 - 64) / 4, alignItems: "center", gap: 10 }}
                   activeOpacity={0.7}
                 >
-                  <View style={{ width: 48, height: 48, borderRadius: 14, backgroundColor: action.bg, alignItems: "center", justifyContent: "center" }}>
-                    <MaterialIcons name={action.icon as any} size={24} color={action.color} />
+                  <View style={{ width: 50, height: 50, borderRadius: 15, backgroundColor: isDark ? "rgba(255,255,255,0.05)" : action.bg, alignItems: "center", justifyContent: "center" }}>
+                    <MaterialIcons name={action.icon as any} size={22} color={action.color} />
                   </View>
-                  <Text style={{ fontSize: 10, fontWeight: "600", color: colors.text, textAlign: "center" }} numberOfLines={1}>{action.label}</Text>
+                  <Text style={{ fontSize: 10, fontWeight: "600", color: colors.textSecondary, textAlign: "center" }} numberOfLines={1}>{action.label}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -610,13 +697,13 @@ export default function AdminDashboard() {
                 <TouchableOpacity
                   key={i}
                   onPress={() => router.push(action.path as any)}
-                  style={{ width: (screenWidth - 48 - 48) / 4, alignItems: "center", gap: 10 }}
+                  style={{ width: (screenWidth - 48 - 64) / 4, alignItems: "center", gap: 10 }}
                   activeOpacity={0.7}
                 >
-                  <View style={{ width: 48, height: 48, borderRadius: 14, backgroundColor: action.bg, alignItems: "center", justifyContent: "center" }}>
-                    <MaterialIcons name={action.icon as any} size={24} color={action.color} />
+                  <View style={{ width: 50, height: 50, borderRadius: 15, backgroundColor: isDark ? "rgba(255,255,255,0.05)" : action.bg, alignItems: "center", justifyContent: "center" }}>
+                    <MaterialIcons name={action.icon as any} size={22} color={action.color} />
                   </View>
-                  <Text style={{ fontSize: 10, fontWeight: "600", color: colors.text, textAlign: "center" }} numberOfLines={1}>{action.label}</Text>
+                  <Text style={{ fontSize: 10, fontWeight: "600", color: colors.textSecondary, textAlign: "center" }} numberOfLines={1}>{action.label}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -628,15 +715,15 @@ export default function AdminDashboard() {
           <TouchableOpacity
             onPress={() => router.push("/admin/pending-debit-sales")}
             style={{
-              backgroundColor: isDark ? "rgba(251, 146, 60, 0.15)" : "rgba(251, 146, 60, 0.08)",
+              backgroundColor: isDark ? "#1E293B" : "#FFFFFF",
               borderRadius: 20,
               padding: 20,
               borderWidth: 1.5,
-              borderColor: isDark ? "rgba(251, 146, 60, 0.4)" : "rgba(251, 146, 60, 0.3)",
+              borderColor: isDark ? "rgba(251, 146, 60, 0.3)" : "rgba(251, 146, 60, 0.15)",
               shadowColor: "#FB923C",
               shadowOffset: { width: 0, height: 6 },
-              shadowOpacity: 0.15,
-              shadowRadius: 20,
+              shadowOpacity: 0.1,
+              shadowRadius: 15,
               elevation: 4,
               flexDirection: "row",
               alignItems: "center",
@@ -649,32 +736,31 @@ export default function AdminDashboard() {
                 style={{
                   width: 48,
                   height: 48,
-                  borderRadius: 12,
-                  backgroundColor: isDark ? "rgba(251, 146, 60, 0.25)" : "rgba(251, 146, 60, 0.15)",
+                  borderRadius: 14,
+                  backgroundColor: "rgba(251, 146, 60, 0.1)",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <MaterialIcons name="receipt-long" size={26} color="#FB923C" />
+                <MaterialIcons name="receipt-long" size={24} color="#FB923C" />
               </View>
               <View style={{ flex: 1 }}>
                 <Text
                   style={{
                     fontSize: 16,
-                    fontWeight: "800",
-                    color: "#FB923C",
-                    marginBottom: 4,
+                    fontWeight: "700",
+                    color: colors.text,
                     fontFamily: "Poppins_700Bold",
                   }}
                 >
                   Pending Approvals
                 </Text>
-                <Text style={{ fontSize: 14, color: isDark ? "rgba(251, 146, 60, 0.9)" : "#C2410C", fontWeight: "600" }}>
-                  {dashboardStats.pendingDebitSales} debit sale{dashboardStats.pendingDebitSales !== 1 ? 's' : ''} waiting for approval
+                <Text style={{ fontSize: 13, color: colors.textSecondary, fontWeight: "500" }}>
+                  {dashboardStats.pendingDebitSales} waiting for review
                 </Text>
               </View>
             </View>
-            <MaterialIcons name="chevron-right" size={26} color="#FB923C" />
+            <MaterialIcons name="chevron-right" size={24} color={colors.textSecondary} />
           </TouchableOpacity>
         </View>
 
@@ -683,15 +769,15 @@ export default function AdminDashboard() {
           <TouchableOpacity
             onPress={() => router.push("/returns")}
             style={{
-              backgroundColor: isDark ? "rgba(59, 130, 246, 0.15)" : "rgba(59, 130, 246, 0.08)",
+              backgroundColor: isDark ? "#1E293B" : "#FFFFFF",
               borderRadius: 20,
               padding: 20,
               borderWidth: 1.5,
-              borderColor: isDark ? "rgba(59, 130, 246, 0.4)" : "rgba(59, 130, 246, 0.3)",
+              borderColor: isDark ? "rgba(59, 130, 246, 0.3)" : "rgba(59, 130, 246, 0.15)",
               shadowColor: "#3B82F6",
               shadowOffset: { width: 0, height: 6 },
-              shadowOpacity: 0.15,
-              shadowRadius: 20,
+              shadowOpacity: 0.1,
+              shadowRadius: 15,
               elevation: 4,
               flexDirection: "row",
               alignItems: "center",
@@ -704,32 +790,31 @@ export default function AdminDashboard() {
                 style={{
                   width: 48,
                   height: 48,
-                  borderRadius: 12,
-                  backgroundColor: isDark ? "rgba(59, 130, 246, 0.25)" : "rgba(59, 130, 246, 0.15)",
+                  borderRadius: 14,
+                  backgroundColor: "rgba(59, 130, 246, 0.1)",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <MaterialIcons name="assignment-return" size={26} color="#3B82F6" />
+                <MaterialIcons name="assignment-return" size={24} color="#3B82F6" />
               </View>
               <View style={{ flex: 1 }}>
                 <Text
                   style={{
                     fontSize: 16,
-                    fontWeight: "800",
-                    color: "#3B82F6",
-                    marginBottom: 4,
+                    fontWeight: "700",
+                    color: colors.text,
                     fontFamily: "Poppins_700Bold",
                   }}
                 >
                   Pending Returns
                 </Text>
-                <Text style={{ fontSize: 14, color: isDark ? "rgba(59, 130, 246, 0.9)" : "#1E40AF", fontWeight: "600" }}>
-                  {dashboardStats.pendingReturns} return request{dashboardStats.pendingReturns !== 1 ? 's' : ''} waiting for review
+                <Text style={{ fontSize: 13, color: colors.textSecondary, fontWeight: "500" }}>
+                  {dashboardStats.pendingReturns} requests waiting
                 </Text>
               </View>
             </View>
-            <MaterialIcons name="chevron-right" size={26} color="#3B82F6" />
+            <MaterialIcons name="chevron-right" size={24} color={colors.textSecondary} />
           </TouchableOpacity>
         </View>
 
@@ -738,7 +823,7 @@ export default function AdminDashboard() {
           <View
             style={{
               backgroundColor: colors.card,
-              borderRadius: 20,
+              borderRadius: 24,
               padding: 24,
               borderWidth: 1,
               borderColor: colors.border,
@@ -762,9 +847,11 @@ export default function AdminDashboard() {
                 >
                   Sales Trends
                 </Text>
-                <Text style={{ fontSize: 12, color: colors.textSecondary }}>Last 7 days performance</Text>
+                <Text style={{ fontSize: 13, color: colors.textSecondary, fontWeight: "500" }}>Weekly performance</Text>
               </View>
-              <MaterialIcons name="trending-up" size={24} color={colors.primary} />
+              <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: "rgba(59, 130, 246, 0.1)", alignItems: "center", justifyContent: "center" }}>
+                <MaterialIcons name="trending-up" size={22} color={colors.primary} />
+              </View>
             </View>
             <View style={{ width: "100%", height: 200, alignItems: "center", justifyContent: "center" }}>
               <Svg width={chartWidth} height={chartHeight} viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
@@ -891,7 +978,7 @@ export default function AdminDashboard() {
                     onPress={() => router.push(`/audits`)}
                     style={{
                       backgroundColor: colors.card,
-                      borderRadius: 16,
+                      borderRadius: 20,
                       padding: 16,
                       flexDirection: "row",
                       alignItems: "center",
@@ -899,9 +986,9 @@ export default function AdminDashboard() {
                       borderColor: colors.border,
                       shadowColor: "#000",
                       shadowOffset: { width: 0, height: 4 },
-                      shadowOpacity: 0.02,
-                      shadowRadius: 8,
-                      elevation: 1,
+                      shadowOpacity: isDark ? 0.3 : 0.02,
+                      shadowRadius: 10,
+                      elevation: 2,
                     }}
                     activeOpacity={0.8}
                   >
@@ -909,28 +996,28 @@ export default function AdminDashboard() {
                       style={{
                         width: 44,
                         height: 44,
-                        borderRadius: 12,
+                        borderRadius: 14,
                         backgroundColor: isDark ? "rgba(139, 92, 246, 0.15)" : "rgba(139, 92, 246, 0.08)",
                         alignItems: "center",
                         justifyContent: "center",
                         marginRight: 16,
                       }}
                     >
-                      <MaterialIcons name="inventory" size={24} color="#8B5CF6" />
+                      <MaterialIcons name="history" size={24} color="#8B5CF6" />
                     </View>
                     <View style={{ flex: 1 }}>
-                      <Text style={{ fontSize: 15, fontWeight: "700", color: colors.text, marginBottom: 2 }}>
+                      <Text style={{ fontSize: 15, fontWeight: "700", color: colors.text, marginBottom: 2, fontFamily: "Poppins_700Bold" }}>
                         Stock Update
                       </Text>
-                      <Text style={{ fontSize: 12, color: colors.textSecondary }}>
-                        Product ID: {audit.part_id.slice(0, 8)}... | {new Date(audit.audit_date).toLocaleDateString()}
+                      <Text style={{ fontSize: 13, color: colors.textSecondary, fontWeight: "500" }}>
+                        Product ID: {audit.part_id.slice(0, 8)} | {new Date(audit.audit_date).toLocaleDateString()}
                       </Text>
                     </View>
                     <View style={{ alignItems: "flex-end" }}>
-                      <Text style={{ fontSize: 14, fontWeight: "800", color: audit.adjustment > 0 ? colors.success : colors.error }}>
+                      <Text style={{ fontSize: 15, fontWeight: "800", color: audit.adjustment > 0 ? colors.success : colors.error, fontFamily: "Poppins_700Bold" }}>
                         {audit.adjustment > 0 ? "+" : ""}{audit.adjustment}
                       </Text>
-                      <MaterialIcons name="chevron-right" size={18} color={colors.border} />
+                      <MaterialIcons name="chevron-right" size={20} color={colors.textSecondary} />
                     </View>
                   </TouchableOpacity>
                 ))}
@@ -953,24 +1040,24 @@ export default function AdminDashboard() {
         })}
         style={{
           position: "absolute",
-          bottom: 100 + insets.bottom, // Higher position - more distance from bottom navigation
-          right: 16,
-          width: 64,
-          height: 64,
-          borderRadius: 9999,
+          bottom: 110 + insets.bottom,
+          right: 20,
+          width: 56,
+          height: 56,
+          borderRadius: 28,
           backgroundColor: colors.primary,
           alignItems: "center",
           justifyContent: "center",
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 4 },
+          shadowColor: colors.primary,
+          shadowOffset: { width: 0, height: 8 },
           shadowOpacity: 0.3,
-          shadowRadius: 8,
-          elevation: 8,
+          shadowRadius: 12,
+          elevation: 6,
           zIndex: 25,
         }}
         activeOpacity={0.8}
       >
-        <MaterialIcons name="qr-code-scanner" size={36} color="#FFFFFF" />
+        <MaterialIcons name="qr-code-scanner" size={28} color="#FFFFFF" />
       </TouchableOpacity>
 
       {/* Barcode Checking Overlay */}

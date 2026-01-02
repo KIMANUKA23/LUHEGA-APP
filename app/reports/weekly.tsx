@@ -17,10 +17,9 @@ import { formatTZS } from "../../src/utils/currency";
 import { KPICard, ChartCard } from "../../src/components/reports";
 import { BarChart } from "react-native-gifted-charts";
 import * as reportService from "../../src/services/reportService";
-import * as Print from 'expo-print';
-import * as Sharing from 'expo-sharing';
 import { Alert } from "react-native";
 import { useSafeBottomPadding } from "../../src/hooks/useSafePadding";
+import { generateReportPDF, ReportData } from "../../src/utils/reportGenerator";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -99,88 +98,34 @@ export default function WeeklySalesReportScreen() {
     }
   };
 
-  const generatePDF = async () => {
+  const handleExport = async () => {
     try {
-      const end = new Date();
-      const start = new Date();
-      start.setDate(end.getDate() - 7);
-      const dateRange = `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+      const reportData: ReportData = {
+        title: 'Weekly Sales Report',
+        subtitle: 'Performance Summary',
+        date: dateRangeLabel(),
+        kpis: [
+          { label: "Total Sales", value: formatTZS(kpis.total) },
+          { label: "Transactions", value: kpis.transactions.toString() },
+          { label: "Daily Avg", value: formatTZS(kpis.avg) },
+          { label: "Best Day", value: kpis.bestDay },
+        ],
+        sections: [
+          {
+            title: 'Top Products',
+            columns: ['Product', 'Units', 'Revenue'],
+            rows: bestSellers.map(product => [
+              product.productName,
+              product.quantitySold.toString(),
+              formatTZS(product.totalRevenue)
+            ])
+          }
+        ]
+      };
 
-      const html = `
-        <html>
-          <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
-            <style>
-              body { font-family: 'Helvetica', 'Arial', sans-serif; padding: 20px; }
-              h1 { color: #1E3A8A; margin-bottom: 5px; }
-              .date-range { color: #6B7280; margin-bottom: 30px; }
-              .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
-              .kpi-card { background: #F3F4F6; padding: 15px; border-radius: 8px; }
-              .kpi-label { color: #6B7280; font-size: 12px; margin-bottom: 5px; }
-              .kpi-value { color: #1F2937; font-size: 24px; font-weight: bold; }
-              .section-title { font-size: 18px; font-weight: bold; margin: 30px 0 15px; }
-              table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-              th { background: #F3F4F6; padding: 10px; text-align: left; font-weight: 600; }
-              td { padding: 10px; border-bottom: 1px solid #E5E7EB; }
-              .footer { margin-top: 40px; text-align: center; color: #9CA3AF; font-size: 12px; }
-            </style>
-          </head>
-          <body>
-            <h1>Weekly Sales Report</h1>
-            <div class="date-range">${dateRange}</div>
-            
-            <div class="kpi-grid">
-              <div class="kpi-card">
-                <div class="kpi-label">Total Sales</div>
-                <div class="kpi-value">${formatTZS(kpis.total)}</div>
-              </div>
-              <div class="kpi-card">
-                <div class="kpi-label">Transactions</div>
-                <div class="kpi-value">${kpis.transactions}</div>
-              </div>
-              <div class="kpi-card">
-                <div class="kpi-label">Daily Average</div>
-                <div class="kpi-value">${formatTZS(kpis.avg)}</div>
-              </div>
-              <div class="kpi-card">
-                <div class="kpi-label">Best Day</div>
-                <div class="kpi-value">${kpis.bestDay}</div>
-              </div>
-            </div>
-
-            <h2 class="section-title">Best Sellers This Week</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>Units Sold</th>
-                  <th>Revenue</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${bestSellers.map(product => `
-                  <tr>
-                    <td>${product.productName}</td>
-                    <td>${product.quantitySold}</td>
-                    <td>${formatTZS(product.totalRevenue)}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-
-            <div class="footer">
-              Generated on ${new Date().toLocaleString()}<br/>
-              LUHEGA Auto Spare Parts
-            </div>
-          </body>
-        </html>
-      `;
-
-      const { uri } = await Print.printToFileAsync({ html });
-      await Sharing.shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
+      await generateReportPDF(reportData);
     } catch (error) {
-      console.log('Error generating PDF:', error);
-      Alert.alert('Error', 'Failed to generate PDF report');
+      Alert.alert('Error', 'Failed to generate report PDF');
     }
   };
 
@@ -249,7 +194,7 @@ export default function WeeklySalesReportScreen() {
         </View>
 
         <TouchableOpacity
-          onPress={generatePDF}
+          onPress={handleExport}
           style={{
             width: 40,
             height: 40,

@@ -134,19 +134,24 @@ export default function InventoryScreen() {
         style={{
           backgroundColor: colors.card,
           paddingHorizontal: 16,
-          paddingTop: Math.max(insets.top, StatusBar.currentHeight || 0) + 8,
-          paddingBottom: 12,
-          justifyContent: "center",
+          paddingTop: Math.max(insets.top, StatusBar.currentHeight || 0) + 32,
+          paddingBottom: 24,
           borderBottomWidth: 1,
           borderBottomColor: colors.border,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: isDark ? 0.3 : 0.05,
+          shadowRadius: 6,
+          elevation: 2,
         }}
       >
         <Text
           style={{
-            fontSize: 20,
+            fontSize: 22,
             fontWeight: "700",
             color: colors.text,
             fontFamily: "Poppins_700Bold",
+            letterSpacing: -0.5,
           }}
         >
           Inventory
@@ -158,8 +163,13 @@ export default function InventoryScreen() {
         style={{
           backgroundColor: colors.card,
           paddingHorizontal: 16,
-          paddingTop: 8,
+          paddingTop: 16, // Increased from 8
           paddingBottom: 16,
+          marginTop: 12, // Added margin from header
+          borderRadius: 20, // Give it a card look
+          marginHorizontal: 16, // Pull it in from edges
+          borderWidth: 1,
+          borderColor: colors.border,
         }}
       >
         <View
@@ -231,7 +241,7 @@ export default function InventoryScreen() {
         style={{ flex: 1 }}
         contentContainerStyle={{
           padding: 16,
-          paddingBottom: 100 + insets.bottom,
+          paddingBottom: 140 + insets.bottom,
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -283,111 +293,113 @@ export default function InventoryScreen() {
         )}
 
         {/* Products List */}
-        {!loading && filteredProducts.map((product) => (
-          <TouchableOpacity
-            key={product.id}
-            onPress={() => router.push(`/inventory/${product.id}`)}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 16,
-              backgroundColor: colors.card,
-              borderRadius: 16,
-              padding: 14,
-              marginBottom: 12,
-              borderWidth: 1,
-              borderColor: product.quantityInStock <= product.reorderLevel
-                ? isDark ? "rgba(239, 68, 68, 0.3)" : "rgba(239, 68, 68, 0.2)"
-                : colors.border,
-              shadowColor: product.quantityInStock <= product.reorderLevel ? "#EF4444" : "#000",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: isDark ? 0.3 : 0.08,
-              shadowRadius: 8,
-              elevation: 3,
-            }}
-            activeOpacity={0.7}
-          >
-            {/* Image Placeholder with gradient */}
-            <View
+        <View style={{ paddingHorizontal: 0, marginBottom: 0, marginTop: 16 }}>
+          {!loading && filteredProducts.map((product) => (
+            <TouchableOpacity
+              key={product.id}
+              onPress={() => router.push(`/inventory/${product.id}`)}
               style={{
-                width: 72,
-                height: 72,
-                borderRadius: 14,
-                backgroundColor: isDark ? "rgba(107, 114, 128, 0.2)" : "#F3F4F6",
+                flexDirection: "row",
                 alignItems: "center",
-                justifyContent: "center",
-                overflow: "hidden",
+                gap: 16,
+                backgroundColor: colors.card,
+                borderRadius: 16,
+                padding: 14,
+                marginBottom: 12,
+                borderWidth: 1,
+                borderColor: product.quantityInStock <= product.reorderLevel
+                  ? isDark ? "rgba(239, 68, 68, 0.3)" : "rgba(239, 68, 68, 0.2)"
+                  : colors.border,
+                shadowColor: product.quantityInStock <= product.reorderLevel ? "#EF4444" : "#000",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: isDark ? 0.3 : 0.08,
+                shadowRadius: 8,
+                elevation: 3,
               }}
+              activeOpacity={0.7}
             >
-              <MaterialIcons name="inventory-2" size={28} color={isDark ? "#9CA3AF" : "#6B7280"} />
-            </View>
+              {/* Image Placeholder with gradient */}
+              <View
+                style={{
+                  width: 72,
+                  height: 72,
+                  borderRadius: 14,
+                  backgroundColor: isDark ? "rgba(107, 114, 128, 0.2)" : "#F3F4F6",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
+                }}
+              >
+                <MaterialIcons name="inventory-2" size={28} color={isDark ? "#9CA3AF" : "#6B7280"} />
+              </View>
 
-            {/* Product Info */}
-            <View style={{ flex: 1, gap: 3 }}>
-              <Text
-                style={{
-                  fontSize: 15,
-                  fontWeight: "700",
-                  color: colors.text,
-                  lineHeight: 20,
-                }}
-                numberOfLines={1}
-              >
-                {product.name}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 13,
-                  color: colors.textSecondary,
-                }}
-              >
-                SKU: {product.sku}
-              </Text>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: 2 }}>
-                <View
+              {/* Product Info */}
+              <View style={{ flex: 1, gap: 3 }}>
+                <Text
                   style={{
-                    paddingHorizontal: 8,
-                    paddingVertical: 3,
-                    borderRadius: 6,
-                    backgroundColor: product.quantityInStock <= product.reorderLevel
-                      ? isDark ? "rgba(239, 68, 68, 0.2)" : "rgba(239, 68, 68, 0.1)"
-                      : isDark ? "rgba(34, 197, 94, 0.2)" : "rgba(34, 197, 94, 0.1)",
+                    fontSize: 15,
+                    fontWeight: "700",
+                    color: colors.text,
+                    lineHeight: 20,
+                  }}
+                  numberOfLines={1}
+                >
+                  {product.name}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 13,
+                    color: colors.textSecondary,
                   }}
                 >
-                  <Text
+                  SKU: {product.sku}
+                </Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: 2 }}>
+                  <View
                     style={{
-                      fontSize: 12,
-                      fontWeight: "600",
-                      color: product.quantityInStock <= product.reorderLevel ? colors.error : colors.success,
+                      paddingHorizontal: 8,
+                      paddingVertical: 3,
+                      borderRadius: 6,
+                      backgroundColor: product.quantityInStock <= product.reorderLevel
+                        ? isDark ? "rgba(239, 68, 68, 0.2)" : "rgba(239, 68, 68, 0.1)"
+                        : isDark ? "rgba(34, 197, 94, 0.2)" : "rgba(34, 197, 94, 0.1)",
                     }}
                   >
-                    {product.quantityInStock} in stock
-                  </Text>
-                </View>
-                {product.quantityInStock <= product.reorderLevel && (
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
-                    <MaterialIcons name="warning" size={12} color={colors.error} />
-                    <Text style={{ fontSize: 11, color: colors.error, fontWeight: "500" }}>Low</Text>
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontWeight: "600",
+                        color: product.quantityInStock <= product.reorderLevel ? colors.error : colors.success,
+                      }}
+                    >
+                      {product.quantityInStock} in stock
+                    </Text>
                   </View>
-                )}
+                  {product.quantityInStock <= product.reorderLevel && (
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
+                      <MaterialIcons name="warning" size={12} color={colors.error} />
+                      <Text style={{ fontSize: 11, color: colors.error, fontWeight: "500" }}>Low</Text>
+                    </View>
+                  )}
+                </View>
               </View>
-            </View>
 
-            {/* Price */}
-            <View style={{ alignItems: "flex-end", gap: 4 }}>
-              <Text
-                style={{
-                  fontSize: 15,
-                  fontWeight: "700",
-                  color: colors.primary,
-                }}
-              >
-                {formatTZS(product.sellingPrice)}
-              </Text>
-              <MaterialIcons name="chevron-right" size={20} color={colors.textSecondary} />
-            </View>
-          </TouchableOpacity>
-        ))}
+              {/* Price */}
+              <View style={{ alignItems: "flex-end", gap: 4 }}>
+                <Text
+                  style={{
+                    fontSize: 15,
+                    fontWeight: "700",
+                    color: colors.primary,
+                  }}
+                >
+                  {formatTZS(product.sellingPrice)}
+                </Text>
+                <MaterialIcons name="chevron-right" size={20} color={colors.textSecondary} />
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
       </ScrollView>
     </View>
   );

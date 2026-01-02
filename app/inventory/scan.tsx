@@ -17,6 +17,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { useTheme } from "../../src/context/ThemeContext";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width, height } = Dimensions.get("window");
 const SCANNER_SIZE = Math.min(width * 0.8, 320); // Square frame, max 320px
@@ -25,12 +26,12 @@ export default function BarcodeScanner() {
   const router = useRouter();
   const params = useLocalSearchParams<{ returnTo?: string }>();
   const { colors, isDark } = useTheme();
+  const insets = useSafeAreaInsets();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const [flashlightOn, setFlashlightOn] = useState(false);
   const [showManualEntry, setShowManualEntry] = useState(false);
   const [manualBarcode, setManualBarcode] = useState("");
-  const statusBarHeight = Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0;
   const scanLineAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -143,7 +144,7 @@ export default function BarcodeScanner() {
       {/* Header */}
       <View
         style={{
-          paddingTop: statusBarHeight + 24,
+          paddingTop: insets.top + 24,
           paddingBottom: 24,
           paddingHorizontal: 24,
           flexDirection: "row",
@@ -455,7 +456,7 @@ export default function BarcodeScanner() {
               borderTopLeftRadius: 24,
               borderTopRightRadius: 24,
               padding: 24,
-              paddingBottom: 48,
+              paddingBottom: insets.bottom + 48,
             }}
           >
             <View

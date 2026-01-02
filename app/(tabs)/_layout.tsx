@@ -8,7 +8,7 @@ import { useTheme } from "../../src/context/ThemeContext";
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const { colors, isDark } = useTheme();
-  
+
   return (
     <Tabs
       screenOptions={{
@@ -20,8 +20,8 @@ export default function TabsLayout() {
           fontWeight: "500",
         },
         tabBarStyle: {
-          height: 60 + insets.bottom, // Base height + safe area bottom (home indicator)
-          paddingBottom: Math.max(insets.bottom, 8), // At least 8px, or safe area if larger
+          height: 85 + insets.bottom, // Increased height to lift icons higher
+          paddingBottom: Math.max(insets.bottom, 20) + 12, // Ensure at least 32px of bottom clearance
           paddingTop: 8,
           backgroundColor: colors.card,
           borderTopWidth: 1,

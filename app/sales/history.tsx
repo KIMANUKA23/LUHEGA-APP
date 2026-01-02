@@ -8,6 +8,7 @@ import {
   Platform,
   StatusBar,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
@@ -30,8 +31,7 @@ export default function SalesHistoryScreen() {
   const { user, isStaff } = useAuth();
   const { getAllSales } = useApp();
   const { colors, isDark } = useTheme();
-  const statusBarHeight =
-    Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0;
+  const insets = useSafeAreaInsets();
 
   // Filter sales: Staff sees only their own, Admin sees all
   const allSales = getAllSales();
@@ -91,7 +91,7 @@ export default function SalesHistoryScreen() {
           alignItems: "center",
           justifyContent: "space-between",
           paddingHorizontal: 16,
-          paddingTop: statusBarHeight + 8,
+          paddingTop: insets.top + 8,
           paddingBottom: 12,
           backgroundColor: colors.card,
           borderBottomWidth: 1,
@@ -143,7 +143,7 @@ export default function SalesHistoryScreen() {
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 32 }}
         showsVerticalScrollIndicator={false}
       >
         <Text

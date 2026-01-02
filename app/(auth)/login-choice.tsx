@@ -4,13 +4,14 @@ import { View, Text, TouchableOpacity, Platform, StatusBar, Alert, ActivityIndic
 import { useRouter } from "expo-router";
 import Svg, { Path } from "react-native-svg";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../../src/context/AuthContext";
 
 export default function LoginChoiceScreen() {
   const router = useRouter();
   const { isAuthenticated, user, loading } = useAuth();
 
-  const statusBarHeight = Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0;
+  const insets = useSafeAreaInsets();
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -37,7 +38,7 @@ export default function LoginChoiceScreen() {
   return (
     <View className="flex-1 bg-background-light dark:bg-background-dark">
       <ExpoStatusBar style="dark" />
-      <View className="flex-1 w-full items-center justify-center p-4" style={{ paddingTop: statusBarHeight }}>
+      <View className="flex-1 w-full items-center justify-center p-4" style={{ paddingTop: insets.top + 20, paddingBottom: insets.bottom + 20 }}>
         <View className="flex h-full w-full max-w-md items-center justify-center">
           {/* Logo Icon - 4 squares grid */}
           <View className="mb-8 items-center justify-center">

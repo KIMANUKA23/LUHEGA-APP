@@ -1,12 +1,14 @@
 // Verify Your Email Screen - OTP with underlined inputs and countdown
 import React, { useState, useRef, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Platform, StatusBar } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Platform, StatusBar, KeyboardAvoidingView } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function VerifyEmailScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [resendTimer, setResendTimer] = useState(59);
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
@@ -76,13 +78,13 @@ export default function VerifyEmailScreen() {
     }
   };
 
-  const statusBarHeight = Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0;
+
 
   return (
     <View style={{ flex: 1, backgroundColor: "#F8F8F8" }}>
       <ExpoStatusBar style="dark" backgroundColor="#F8F8F8" />
       {/* Header with Back Button */}
-      <View style={{ paddingTop: statusBarHeight + 16, paddingHorizontal: 16, paddingBottom: 8 }}>
+      <View style={{ paddingTop: insets.top + 16, paddingHorizontal: 16, paddingBottom: 8 }}>
         <TouchableOpacity
           onPress={() => router.back()}
           style={{
@@ -97,130 +99,139 @@ export default function VerifyEmailScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Main Content */}
-      <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-          paddingHorizontal: 16,
-          paddingTop: 16,
-          paddingBottom: 24,
-        }}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "android" ? 32 : 0}
+        style={{ flex: 1 }}
       >
-        {/* Title */}
-        <Text
-          style={{
-            fontSize: 28,
-            fontWeight: "700",
-            color: "#1C1B1F",
-            lineHeight: 36,
-            marginBottom: 8,
-            textAlign: "left",
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            paddingHorizontal: 24,
+            paddingTop: insets.top,
+            paddingBottom: insets.bottom + 20,
           }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          Verify Your Email
-        </Text>
-
-        {/* Subtitle */}
-        <Text
-          style={{
-            fontSize: 16,
-            fontWeight: "400",
-            color: "#49454F",
-            lineHeight: 24,
-            marginBottom: 32,
-            textAlign: "left",
-          }}
-        >
-          Enter the 6-digit code sent to your email.
-        </Text>
-
-        {/* OTP Input Fields - Underlined style */}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: 12,
-            marginBottom: 24,
-            paddingVertical: 12,
-          }}
-        >
-          {otp.map((digit, index) => (
-            <TextInput
-              key={index}
-              ref={(ref) => (inputRefs.current[index] = ref)}
-              value={digit}
-              onChangeText={(value) => handleOtpChange(value, index)}
-              onKeyPress={(e) => handleKeyPress(e, index)}
-              onFocus={() => setFocusedIndex(index)}
-              onBlur={() => setFocusedIndex(null)}
-              keyboardType="number-pad"
-              maxLength={1}
-              selectTextOnFocus
-              style={{
-                width: 40,
-                height: 48,
-                borderBottomWidth: 2,
-                borderBottomColor: focusedIndex === index ? "#007BFF" : "#D1D5DB",
-                backgroundColor: "transparent",
-                textAlign: "center",
-                fontSize: 24,
-                fontWeight: "500",
-                color: "#1C1B1F",
-              }}
-            />
-          ))}
-        </View>
-
-        {/* Success Message */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 8,
-            marginBottom: 16,
-          }}
-        >
-          <MaterialIcons name="check-circle" size={20} color="#10B981" />
+          {/* Spacer to push content lower while remaining stable */}
+          <View style={{ flex: 1.5 }} />
+          {/* Title */}
           <Text
             style={{
-              fontSize: 14,
-              fontWeight: "500",
-              color: "#10B981",
-              lineHeight: 20,
+              fontSize: 28,
+              fontWeight: "700",
+              color: "#1C1B1F",
+              lineHeight: 36,
+              marginBottom: 8,
+              textAlign: "left",
             }}
           >
-            Code sent to {email}
+            Verify Your Email
           </Text>
-        </View>
 
-        {/* Resend OTP Timer */}
-        <TouchableOpacity
-          onPress={handleResendOTP}
-          disabled={resendTimer > 0}
-          style={{
-            alignItems: "center",
-            marginBottom: 24,
-            opacity: resendTimer > 0 ? 0.5 : 1,
-          }}
-          activeOpacity={0.7}
-        >
+          {/* Subtitle */}
           <Text
             style={{
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: "400",
               color: "#49454F",
-              lineHeight: 20,
+              lineHeight: 24,
+              marginBottom: 32,
+              textAlign: "left",
             }}
           >
-            {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : "Resend OTP"}
+            Enter the 6-digit code sent to your email.
           </Text>
-        </TouchableOpacity>
 
-        {/* Spacer */}
-        <View style={{ flex: 1 }} />
-      </ScrollView>
+          {/* OTP Input Fields - Underlined style */}
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 12,
+              marginBottom: 24,
+              paddingVertical: 12,
+            }}
+          >
+            {otp.map((digit, index) => (
+              <TextInput
+                key={index}
+                ref={(ref) => { inputRefs.current[index] = ref; }}
+                value={digit}
+                onChangeText={(value) => handleOtpChange(value, index)}
+                onKeyPress={(e) => handleKeyPress(e, index)}
+                onFocus={() => setFocusedIndex(index)}
+                onBlur={() => setFocusedIndex(null)}
+                keyboardType="number-pad"
+                maxLength={1}
+                selectTextOnFocus
+                style={{
+                  width: 40,
+                  height: 48,
+                  borderBottomWidth: 2,
+                  borderBottomColor: focusedIndex === index ? "#007BFF" : "#D1D5DB",
+                  backgroundColor: "transparent",
+                  textAlign: "center",
+                  fontSize: 24,
+                  fontWeight: "500",
+                  color: "#1C1B1F",
+                }}
+              />
+            ))}
+          </View>
+
+          {/* Success Message */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+              marginBottom: 16,
+            }}
+          >
+            <MaterialIcons name="check-circle" size={20} color="#10B981" />
+            <Text
+              style={{
+                fontSize: 14,
+                fontWeight: "500",
+                color: "#10B981",
+                lineHeight: 20,
+              }}
+            >
+              Code sent to {email}
+            </Text>
+          </View>
+
+          {/* Resend OTP Timer */}
+          <TouchableOpacity
+            onPress={handleResendOTP}
+            disabled={resendTimer > 0}
+            style={{
+              alignItems: "center",
+              marginBottom: 24,
+              opacity: resendTimer > 0 ? 0.5 : 1,
+            }}
+            activeOpacity={0.7}
+          >
+            <Text
+              style={{
+                fontSize: 14,
+                fontWeight: "400",
+                color: "#49454F",
+                lineHeight: 20,
+              }}
+            >
+              {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : "Resend OTP"}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Spacer to push content towards center while remaining stable */}
+          <View style={{ flex: 1 }} />
+        </ScrollView>
+      </KeyboardAvoidingView>
 
       {/* Verify Button - Fixed at bottom */}
       <View

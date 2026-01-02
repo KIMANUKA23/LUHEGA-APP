@@ -14,6 +14,7 @@ import {
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../../src/context/AuthContext";
 import { useTheme } from "../../src/context/ThemeContext";
 
@@ -26,6 +27,7 @@ export default function LoginPasswordScreen() {
   const [loginLoading, setLoginLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { colors, isDark, setMode } = useTheme();
+  const insets = useSafeAreaInsets();
 
   React.useEffect(() => {
     console.log("🟢 LoginPasswordScreen mounted");
@@ -113,7 +115,7 @@ export default function LoginPasswordScreen() {
     }
   };
 
-  const statusBarHeight = Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0;
+
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -122,7 +124,7 @@ export default function LoginPasswordScreen() {
       {/* Back Button */}
       <View style={{
         position: 'absolute',
-        top: statusBarHeight + 12,
+        top: insets.top + 12,
         left: 16,
         zIndex: 50
       }}>
@@ -152,17 +154,21 @@ export default function LoginPasswordScreen() {
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "android" ? 32 : 0}
         style={{ flex: 1 }}
       >
         <ScrollView
           contentContainerStyle={{
             padding: 24,
-            paddingTop: statusBarHeight + 80,
+            paddingTop: insets.top,
+            paddingBottom: insets.bottom + 20,
             flexGrow: 1,
-            justifyContent: "center" // Center content when keyboard is dismissed
           }}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
+          {/* Spacer to push content lower while remaining stable */}
+          <View style={{ flex: 1.5 }} />
           <View style={{ marginBottom: 32, alignItems: "center" }}>
             <Text
               style={{
@@ -340,6 +346,7 @@ export default function LoginPasswordScreen() {
 
 
           </View>
+          <View style={{ flex: 1 }} />
         </ScrollView>
       </KeyboardAvoidingView>
     </View >

@@ -8,6 +8,7 @@ import { useAuth } from "../../src/context/AuthContext";
 import { useTheme } from "../../src/context/ThemeContext";
 import { useLanguage } from "../../src/context/LanguageContext";
 import { useApp } from "../../src/context/AppContext";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function LoginOTPScreen() {
   const router = useRouter();
@@ -15,6 +16,7 @@ export default function LoginOTPScreen() {
   const [email, setEmail] = useState(params.email || "");
   const { signInWithOTP } = useAuth();
   const { colors, isDark, setMode } = useTheme();
+  const insets = useSafeAreaInsets();
   const [sending, setSending] = useState(false);
 
   React.useEffect(() => {
@@ -46,7 +48,7 @@ export default function LoginOTPScreen() {
     }
   };
 
-  const statusBarHeight = Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0;
+
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -55,7 +57,7 @@ export default function LoginOTPScreen() {
       {/* Back Button */}
       <View style={{
         position: 'absolute',
-        top: statusBarHeight + 12,
+        top: insets.top + 12,
         left: 16,
         zIndex: 50
       }}>
@@ -80,18 +82,22 @@ export default function LoginOTPScreen() {
 
 
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "android" ? 32 : 0}
         style={{ flex: 1 }}
       >
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
-            justifyContent: "center",
             paddingHorizontal: 24,
-            paddingVertical: 40,
+            paddingTop: insets.top,
+            paddingBottom: insets.bottom + 20,
           }}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
+          {/* Spacer to push content lower while remaining stable */}
+          <View style={{ flex: 1.5 }} />
           <View style={{ width: "100%", maxWidth: 400, alignSelf: 'center' }}>
             {/* Icon */}
             <View
@@ -231,6 +237,7 @@ export default function LoginOTPScreen() {
               </TouchableOpacity>
             </View>
           </View>
+          <View style={{ flex: 1 }} />
         </ScrollView>
       </KeyboardAvoidingView>
     </View>

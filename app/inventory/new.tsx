@@ -14,6 +14,7 @@ import {
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRoleGuard } from "../../src/hooks/useRoleGuard";
 import { useApp } from "../../src/context/AppContext";
 import * as inventoryService from "@/services/inventoryService";
@@ -26,9 +27,9 @@ export default function AddProductScreen() {
   const { isAdmin } = useRoleGuard("admin");
   const { refreshProducts } = useApp();
   const { colors, isDark } = useTheme();
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const params = useLocalSearchParams<{ scannedBarcode?: string }>();
-  const statusBarHeight = Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0;
 
   const [name, setName] = useState("");
   const [sku, setSku] = useState("");
@@ -151,6 +152,7 @@ export default function AddProductScreen() {
         quantity_in_stock: qty,
         reorder_level: reorder,
         image_url: null,
+        status: 'active',
       });
 
       // Refresh products in AppContext
@@ -181,7 +183,7 @@ export default function AddProductScreen() {
           alignItems: "center",
           justifyContent: "space-between",
           paddingHorizontal: 16,
-          paddingTop: statusBarHeight + 8,
+          paddingTop: insets.top + 8,
           paddingBottom: 12,
           backgroundColor: colors.card,
           borderBottomWidth: 1,
@@ -239,7 +241,7 @@ export default function AddProductScreen() {
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ padding: 16, paddingBottom: 40, gap: 20 }}
+        contentContainerStyle={{ padding: 16, paddingTop: 16, paddingBottom: insets.bottom + 40, gap: 20 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -680,6 +682,7 @@ export default function AddProductScreen() {
       <View
         style={{
           padding: 16,
+          paddingBottom: insets.bottom + 16,
           backgroundColor: colors.card,
           borderTopWidth: 1,
           borderTopColor: colors.border,

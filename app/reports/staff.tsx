@@ -9,6 +9,7 @@ import {
   StatusBar,
   Dimensions,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -19,6 +20,7 @@ import { BarChart } from "react-native-gifted-charts";
 import { useTheme } from "../../src/context/ThemeContext";
 import * as reportService from "../../src/services/reportService";
 import { useSafeBottomPadding } from "../../src/hooks/useSafePadding";
+import { generateReportPDF, ReportData } from "../../src/utils/reportGenerator";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -65,6 +67,37 @@ export default function StaffPerformanceScreen() {
       console.log("Error loading staff performance:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExport = async () => {
+    try {
+      const reportData: ReportData = {
+        title: 'Staff Performance Report',
+        subtitle: `Period: ${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)}`,
+        date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+        kpis: [
+          { label: "Total Revenue", value: formatTZS(totals.revenue) },
+          { label: "Avg Per Staff", value: formatTZS(totals.avgPerStaff) },
+          { label: "Total Transactions", value: totals.transactions.toString() },
+          { label: "Staff Count", value: staffRankings.length.toString() },
+        ],
+        sections: [
+          {
+            title: 'Staff Rankings',
+            columns: ['Staff Name', 'Sales Count', 'Revenue'],
+            rows: staffRankings.map(s => [
+              s.name,
+              s.transactions.toString(),
+              formatTZS(s.revenue)
+            ])
+          }
+        ]
+      };
+
+      await generateReportPDF(reportData);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to generate report PDF');
     }
   };
 
@@ -130,7 +163,7 @@ export default function StaffPerformanceScreen() {
         </Text>
 
         <TouchableOpacity
-          onPress={() => { }}
+          onPress={handleExport}
           style={{
             width: 40,
             height: 40,

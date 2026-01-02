@@ -12,6 +12,7 @@ import {
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { formatTZS } from "../../src/utils/currency";
 import { useAuth } from "../../src/context/AuthContext";
 import { useTheme } from "../../src/context/ThemeContext";
@@ -31,7 +32,7 @@ export default function SalesPaymentScreen() {
   const { createSale } = useApp();
   const { colors, isDark } = useTheme();
   const { total, items } = useLocalSearchParams<{ total?: string; items?: string }>();
-  const statusBarHeight = Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0;
+  const insets = useSafeAreaInsets();
 
   const [selectedMethod, setSelectedMethod] = useState<string | null>("cash");
   const [amountReceived, setAmountReceived] = useState(total || "");
@@ -152,7 +153,7 @@ export default function SalesPaymentScreen() {
           alignItems: "center",
           justifyContent: "space-between",
           paddingHorizontal: 16,
-          paddingTop: statusBarHeight + 8,
+          paddingTop: insets.top + 8,
           paddingBottom: 12,
           backgroundColor: colors.card,
           borderBottomWidth: 1,
@@ -191,7 +192,7 @@ export default function SalesPaymentScreen() {
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ padding: 16, paddingBottom: 140, gap: 16 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 100, gap: 16 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Total Amount Card */}
@@ -509,6 +510,7 @@ export default function SalesPaymentScreen() {
           left: 0,
           right: 0,
           padding: 16,
+          paddingBottom: insets.bottom + 16,
           backgroundColor: colors.card,
           borderTopWidth: 1,
           borderTopColor: colors.border,

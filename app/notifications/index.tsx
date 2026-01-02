@@ -61,7 +61,6 @@ export default function NotificationsScreen() {
   const { user, isAdmin } = useAuth();
   const { colors, isDark } = useTheme();
   const insets = useSafeAreaInsets();
-  const statusBarHeight = Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0;
   const [activeFilter, setActiveFilter] = useState("all");
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
@@ -186,7 +185,7 @@ export default function NotificationsScreen() {
           alignItems: "center",
           justifyContent: "space-between",
           paddingHorizontal: 16,
-          paddingTop: statusBarHeight + 8,
+          paddingTop: insets.top + 8,
           paddingBottom: 12,
           backgroundColor: colors.background,
           borderBottomWidth: 1,

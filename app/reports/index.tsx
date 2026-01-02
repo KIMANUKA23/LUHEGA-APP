@@ -9,6 +9,7 @@ import {
   StatusBar,
   Dimensions,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -21,6 +22,7 @@ import { useAuth } from "../../src/context/AuthContext";
 import { useApp } from "../../src/context/AppContext";
 import { useTheme } from "../../src/context/ThemeContext";
 import { useSafeBottomPadding } from "../../src/hooks/useSafePadding";
+import { generateReportPDF, ReportData } from "../../src/utils/reportGenerator";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -99,6 +101,47 @@ export default function ReportsHomeScreen() {
     }
   };
 
+  const handleExport = async () => {
+    try {
+      const reportData: ReportData = {
+        title: 'Master Business Summary',
+        subtitle: `Performance Overview (${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)})`,
+        date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+        kpis: [
+          { label: "Total Revenue", value: formatTZS(kpiData.revenue.value) },
+          { label: "Total Transactions", value: kpiData.sales.value.toString() },
+          { label: "Active Debts", value: formatTZS(kpiData.debts.value) },
+          { label: "Low Stock Items", value: kpiData.lowStock.value.toString() },
+        ],
+        sections: [
+          {
+            title: 'Top Products Performance',
+            columns: ['Product Name', 'Quantity Sold', 'Total Revenue'],
+            rows: topProducts.map(p => [
+              p.productName,
+              p.quantitySold.toString(),
+              formatTZS(p.totalRevenue)
+            ])
+          },
+          {
+            title: 'Reporting Areas Covered',
+            columns: ['Report Type', 'Description'],
+            rows: [
+              ['Daily/Weekly/Monthly Sales', 'Full revenue and profit tracking per period'],
+              ['Inventory Analytics', 'Stock levels, valuation, and reorder alerts'],
+              ['Debt Analytics', 'Outstanding balances and collection tracking'],
+              ['Staff Performance', 'Individual sales contributions and rankings']
+            ]
+          }
+        ]
+      };
+
+      await generateReportPDF(reportData);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to generate summary report PDF');
+    }
+  };
+
   if (loading) {
     return (
       <View style={{ flex: 1, backgroundColor: colors.background, justifyContent: "center", alignItems: "center" }}>
@@ -169,7 +212,7 @@ export default function ReportsHomeScreen() {
         </Text>
 
         <TouchableOpacity
-          onPress={() => { }}
+          onPress={handleExport}
           style={{
             width: 40,
             height: 40,

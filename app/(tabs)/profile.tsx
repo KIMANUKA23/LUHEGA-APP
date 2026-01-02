@@ -135,16 +135,23 @@ export default function ProfileScreen() {
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 100 + insets.bottom }}
+        contentContainerStyle={{ paddingBottom: 140 + insets.bottom }}
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
         <View
           style={{
             paddingHorizontal: 16,
-            paddingTop: Math.max(insets.top, StatusBar.currentHeight || 0) + 16,
+            paddingTop: Math.max(insets.top, StatusBar.currentHeight || 0) + 32,
             paddingBottom: 24,
-            backgroundColor: colors.background,
+            backgroundColor: colors.card, // Standardized to card background
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: isDark ? 0.3 : 0.05,
+            shadowRadius: 6,
+            elevation: 2,
           }}
         >
           <Text
@@ -160,7 +167,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* Profile Card */}
-        <View style={{ paddingHorizontal: 16, marginBottom: 24 }}>
+        <View style={{ paddingHorizontal: 16, marginBottom: 24, marginTop: 16 }}>
           <View
             style={{
               backgroundColor: colors.card,

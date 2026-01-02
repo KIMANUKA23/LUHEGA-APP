@@ -8,6 +8,7 @@ import {
   StatusBar,
   Dimensions,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -19,6 +20,7 @@ import * as reportService from "../../src/services/reportService";
 
 import { useTheme } from "../../src/context/ThemeContext";
 import { useSafeBottomPadding } from "../../src/hooks/useSafePadding";
+import { generateReportPDF, ReportData } from "../../src/utils/reportGenerator";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -106,6 +108,37 @@ export default function MonthlySalesReportScreen() {
     }
   };
 
+  const handleExport = async () => {
+    try {
+      const selectedOption = monthOptions.find(o => o.id === selectedMonth);
+      const reportData: ReportData = {
+        title: 'Monthly Sales Report',
+        subtitle: selectedOption ? selectedOption.label : 'Performance Summary',
+        date: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+        kpis: [
+          { label: "Total Revenue", value: formatTZS(kpis.total) },
+          { label: "Transactions", value: kpis.transactions.toString() },
+          { label: "Weekly Avg", value: formatTZS(kpis.avgWeekly) },
+          { label: "Best Week", value: kpis.bestWeek },
+        ],
+        sections: [
+          {
+            title: 'Weekly Performance',
+            columns: ['Week', 'Revenue'],
+            rows: monthlyData.map(d => [
+              d.label.replace('W', 'Week '),
+              formatTZS(d.value)
+            ])
+          }
+        ]
+      };
+
+      await generateReportPDF(reportData);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to generate report PDF');
+    }
+  };
+
   if (loading) {
     return (
       <View style={{ flex: 1, backgroundColor: colors.background, justifyContent: "center", alignItems: "center" }}>
@@ -166,7 +199,7 @@ export default function MonthlySalesReportScreen() {
         </View>
 
         <TouchableOpacity
-          onPress={() => { }}
+          onPress={handleExport}
           style={{
             width: 40,
             height: 40,

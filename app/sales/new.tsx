@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
@@ -42,8 +43,7 @@ export default function NewSaleScreen() {
   const params = useLocalSearchParams<{ scannedBarcode?: string }>();
   const { products, refreshProducts } = useApp();
   const { colors, isDark } = useTheme();
-  const statusBarHeight =
-    Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0;
+  const insets = useSafeAreaInsets();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -191,7 +191,7 @@ export default function NewSaleScreen() {
       {/* Top App Bar */}
       <View
         style={{
-          paddingTop: statusBarHeight + 8,
+          paddingTop: insets.top + 8,
           paddingBottom: 8,
           paddingHorizontal: 16,
           flexDirection: "row",
@@ -244,7 +244,7 @@ export default function NewSaleScreen() {
       </View>
 
       {/* Main Content */}
-      <View style={{ flex: 1, paddingBottom: 96 }}>
+      <View style={{ flex: 1, paddingBottom: 140 + insets.bottom }}>
         {/* Search Bar */}
         <View style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
           <View
@@ -460,7 +460,7 @@ export default function NewSaleScreen() {
         <View
           style={{
             position: "absolute",
-            bottom: 80, // above tab bar (height 80)
+            bottom: 95 + insets.bottom, // elevated above the new taller V2 tab bar
             left: 0,
             right: 0,
             paddingHorizontal: 16,

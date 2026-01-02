@@ -15,7 +15,7 @@ import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { formatTZS } from "../../src/utils/currency";
+import { formatTZS, formatTZSShort } from "../../src/utils/currency";
 import { useApp, Sale, ReturnRequest } from "../../src/context/AppContext";
 import { useAuth } from "../../src/context/AuthContext";
 import { useTheme } from "../../src/context/ThemeContext";
@@ -46,186 +46,6 @@ export default function StaffDashboard() {
   const [checkingBarcode, setCheckingBarcode] = React.useState(false);
   const [isOffline, setIsOffline] = React.useState(false);
 
-  // Redirect if not authenticated
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      router.replace("/(auth)/login-choice");
-    }
-  }, [isAuthenticated, authLoading, router]);
-
-  // Redirect admin users to admin dashboard
-  useEffect(() => {
-    if (!authLoading && isAuthenticated && user?.role === 'admin') {
-      router.replace("/admin/dashboard");
-    }
-  }, [user?.role, isAuthenticated, authLoading, router]);
-
-  // Handle scanned barcode from scanner when screen comes into focus
-  useFocusEffect(
-    React.useCallback(() => {
-      if (params.scannedBarcode) {
-        console.log('Staff dashboard detected barcode:', params.scannedBarcode);
-        handleBarcodeScan(params.scannedBarcode);
-
-        // Clear params to prevent re-triggering alert
-        router.setParams({ scannedBarcode: undefined, _t: undefined });
-      }
-    }, [params.scannedBarcode])
-  );
-
-  const handleBarcodeScan = async (barcode: string) => {
-    console.log('handleBarcodeScan (local) called with barcode:', barcode);
-    setCheckingBarcode(true);
-
-    // Check in local products array for instant response
-    const product = allProducts.find(p => p.sku === barcode);
-    console.log('Local product match:', product ? product.name : 'Not found');
-
-    if (product) {
-      // Product found - show success message
-      Alert.alert(
-        "Product Found",
-        `${product.name}\nBarcode: ${barcode}\nStock: ${product.quantityInStock}\nPrice: ${formatTZS(product.sellingPrice)}\n\nGo to sales to add this product to cart.`,
-        [
-          { text: "OK", style: "default" },
-          {
-            text: "Go to Sales",
-            onPress: () => router.push({
-              pathname: "/sales/new",
-              params: { scannedBarcode: barcode }
-            })
-          }
-        ]
-      );
-    } else {
-      // Product not found locally
-      Alert.alert(
-        "Product Not Found",
-        `No product found with barcode: ${barcode}`,
-        [{ text: "OK", style: "default" }]
-      );
-    }
-
-    setCheckingBarcode(false);
-  };
-
-  // Refresh data when screen is focused (optimized) - MUST be before early returns
-  useFocusEffect(
-    React.useCallback(() => {
-      // Don't load data if not authenticated
-      if (!isAuthenticated || authLoading) return;
-
-      let isMounted = true;
-
-      const loadData = async () => {
-        if (!isMounted) return;
-        setLoading(true);
-        try {
-          // Refresh data to ensure accuracy
-          console.log('🔄 [Dashboard] Refreshing Returns...');
-          await refreshReturns();
-          console.log('✅ [Dashboard] Returns refreshed.');
-          console.log('🔄 [Dashboard] Refreshing Sales...');
-          await refreshSales();
-          console.log('✅ [Dashboard] Sales refreshed.');
-          console.log('🔄 [Dashboard] Refreshing Products...');
-          await refreshProducts();
-          console.log('✅ [Dashboard] Products refreshed.');
-          console.log('✅ [Dashboard] All data refreshed');
-
-          if (!isMounted) return;
-
-          // Get pending returns count after refresh
-          console.log('🔄 [Dashboard] Calculating pending returns...');
-          const allReturns = getAllReturns();
-          console.log(`🔄 [Dashboard] Found ${allReturns.length} total returns`);
-          const pending = allReturns.filter(r => r.status === 'pending').length;
-          setPendingReturnsCount(pending);
-          console.log(`✅ [Dashboard] Pending returns: ${pending}`);
-
-          // Get unread notifications count
-          console.log('🔄 [Dashboard] Fetching unread notifications count...');
-          const count = await notificationService.getUnreadCount(user?.id || null, false);
-          if (isMounted) setUnreadNotificationsCount(count);
-          console.log(`✅ [Dashboard] Unread notifications: ${count}`);
-        } catch (error) {
-          console.log('Error loading dashboard data:', error);
-        } finally {
-          const online = await isOnline();
-          console.log(`📊 [Dashboard] State: ${online ? 'ONLINE' : 'OFFLINE'}`);
-          console.log(`📊 [Dashboard] Data: ${allSales.length} sales, ${allProducts.length} products`);
-
-          if (isMounted) {
-            setIsOffline(!online);
-            setLoading(false);
-          }
-        }
-      };
-
-      loadData();
-
-      return () => {
-        isMounted = false;
-      };
-    }, [isAuthenticated, authLoading, refreshReturns, refreshSales, refreshProducts, user?.id])
-  );
-
-  // Calculate today's stats - MUST be before early returns
-  const todayStats = useMemo(() => {
-    if (!isAuthenticated) return { todaySales: 0, allSales: 0, todayCustomers: 0, lowStockCount: 0 };
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayTimestamp = today.getTime();
-
-    // Filter by current user if staff
-    const userSales = user?.id
-      ? allSales.filter(sale => sale.staffId === user.id)
-      : allSales;
-
-    // Get today's sales
-    const todaySales = userSales.filter(sale => {
-      const saleDate = new Date(sale.saleDate);
-      saleDate.setHours(0, 0, 0, 0);
-      return saleDate.getTime() === todayTimestamp;
-    });
-
-    const todayTotal = todaySales.reduce((sum, sale) => sum + sale.totalAmount, 0);
-    const allTotal = userSales.reduce((sum, sale) => sum + sale.totalAmount, 0);
-
-    // Count unique customers: Use phone, name, or sale ID for guests
-    const uniqueCustomers = new Set(
-      todaySales.map(s => s.customerPhone || s.customerName || `guest_${s.id}`)
-    ).size;
-
-    const lowStockItems = allProducts.filter(p => p.quantityInStock <= p.reorderLevel).length;
-
-    return {
-      todaySales: todayTotal,
-      allSales: allTotal,
-      todayCustomers: uniqueCustomers,
-      lowStockCount: lowStockItems,
-    };
-  }, [isAuthenticated, allSales, allProducts, user?.id]);
-
-  // Early returns AFTER all hooks
-  if (authLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.background }}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.background }}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={{ marginTop: 16, color: colors.textSecondary }}>Redirecting...</Text>
-      </View>
-    );
-  }
-
   // Helper function to format time ago
   const formatTimeAgo = (dateString: string): string => {
     const date = new Date(dateString);
@@ -248,14 +68,53 @@ export default function StaffDashboard() {
     }
   };
 
-  // Generate recent activities from real data
+  // 1. All hooks must be at the top level
+  const todayStats = useMemo(() => {
+    // Return default stats if not authenticated or user is missing
+    if (!isAuthenticated || !user?.id) {
+      return { todaySales: 0, allSales: 0, todayCustomers: 0, lowStockCount: 0 };
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayTimestamp = today.getTime();
+
+    // Filter by current user
+    const userSales = allSales.filter(sale => sale.staffId === user.id);
+
+    // Get today's sales
+    const todaySales = userSales.filter(sale => {
+      const saleDate = new Date(sale.saleDate);
+      saleDate.setHours(0, 0, 0, 0);
+      return saleDate.getTime() === todayTimestamp;
+    });
+
+    const todayTotal = todaySales.reduce((sum, sale) => sum + sale.totalAmount, 0);
+    const allTotal = userSales.reduce((sum, sale) => sum + sale.totalAmount, 0);
+
+    // Count unique customers
+    const uniqueCustomers = new Set(
+      todaySales.map(s => s.customerPhone || s.customerName || `guest_${s.id}`)
+    ).size;
+
+    const lowStockItems = allProducts.filter(p => p.quantityInStock <= p.reorderLevel).length;
+
+    return {
+      todaySales: todayTotal,
+      allSales: allTotal,
+      todayCustomers: uniqueCustomers,
+      lowStockCount: lowStockItems,
+    };
+  }, [isAuthenticated, allSales, allProducts, user?.id]);
+
   const recentActivities = useMemo(() => {
+    // Return empty array if not authenticated or user is missing
+    if (!isAuthenticated || !user?.id) return [];
+
     const activities: Array<{ icon: any; title: string; time: string; route: string }> = [];
 
-    // Get recent sales (last 5, filtered by user if staff)
-    const userSales = user?.id
-      ? allSales.filter((sale) => sale.staffId === user.id)
-      : allSales;
+    // Filter by user
+    const userSales = allSales.filter((sale) => sale.staffId === user.id);
 
     const recentSales = [...userSales]
       .sort((a, b) => new Date(b.saleDate).getTime() - new Date(a.saleDate).getTime())
@@ -283,9 +142,100 @@ export default function StaffDashboard() {
 
     activities.push(...recentReturns);
 
-    // Sort all activities by time (most recent first) and take most recent 4
-    return activities.slice(0, 4);
-  }, [allSales, getAllReturns, user?.id]);
+    return activities.sort((a, b) => 0).slice(0, 4);
+  }, [isAuthenticated, allSales, getAllReturns, user?.id]);
+
+  // 2. Navigation redirects in Effects
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.replace("/(auth)/login-choice");
+    }
+  }, [isAuthenticated, authLoading]);
+
+  useEffect(() => {
+    if (!authLoading && isAuthenticated && user?.role === 'admin') {
+      router.replace("/admin/dashboard");
+    }
+  }, [user?.role, isAuthenticated, authLoading]);
+
+  // 3. Barcode scan handler
+  useFocusEffect(
+    React.useCallback(() => {
+      if (params.scannedBarcode) {
+        handleBarcodeScan(params.scannedBarcode);
+        router.setParams({ scannedBarcode: undefined, _t: undefined });
+      }
+    }, [params.scannedBarcode])
+  );
+
+  const handleBarcodeScan = async (barcode: string) => {
+    setCheckingBarcode(true);
+    const product = allProducts.find(p => p.sku === barcode);
+    if (product) {
+      Alert.alert(
+        "Product Found",
+        `${product.name}\nBarcode: ${barcode}\nStock: ${product.quantityInStock}\nPrice: ${formatTZS(product.sellingPrice)}\n\nGo to sales to add this product to cart.`,
+        [
+          { text: "OK", style: "default" },
+          {
+            text: "Go to Sales",
+            onPress: () => router.push({
+              pathname: "/sales/new",
+              params: { scannedBarcode: barcode }
+            })
+          }
+        ]
+      );
+    } else {
+      Alert.alert("Product Not Found", `No product found with barcode: ${barcode}`);
+    }
+    setCheckingBarcode(false);
+  };
+
+  // 4. Data loading
+  useFocusEffect(
+    React.useCallback(() => {
+      if (!isAuthenticated || authLoading) return;
+      let isMounted = true;
+      const loadData = async () => {
+        setLoading(true);
+        try {
+          await Promise.all([refreshReturns(), refreshSales(), refreshProducts()]);
+          if (!isMounted) return;
+          const allReturns = getAllReturns();
+          setPendingReturnsCount(allReturns.filter(r => r.status === 'pending').length);
+          const count = await notificationService.getUnreadCount(user?.id || null, false);
+          if (isMounted) setUnreadNotificationsCount(count);
+          const online = await isOnline();
+          if (isMounted) setIsOffline(!online);
+        } catch (error) {
+          console.log('Error loading dashboard data:', error);
+        } finally {
+          if (isMounted) setLoading(false);
+        }
+      };
+      loadData();
+      return () => { isMounted = false; };
+    }, [isAuthenticated, authLoading, refreshReturns, refreshSales, refreshProducts, user?.id])
+  );
+
+  // Early returns AFTER all hooks - this is critical for React rendering stability
+  if (authLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.background }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.background }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={{ marginTop: 16, color: colors.textSecondary }}>Redirecting...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -314,7 +264,7 @@ export default function StaffDashboard() {
       <View
         style={{
           backgroundColor: colors.card,
-          paddingTop: !isOffline ? Math.max(insets.top, StatusBar.currentHeight || 0) + 16 : 16,
+          paddingTop: !isOffline ? Math.max(insets.top, StatusBar.currentHeight || 0) + 32 : 32,
           paddingBottom: 20,
           paddingHorizontal: 16,
           borderBottomWidth: 1,
@@ -445,7 +395,7 @@ export default function StaffDashboard() {
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
-          paddingBottom: 100 + insets.bottom, // Account for tab bar + safe area
+          paddingBottom: 140 + insets.bottom, // Account for taller V2 tab bar + safe area padding
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -508,7 +458,7 @@ export default function StaffDashboard() {
                   fontFamily: "Poppins_700Bold",
                 }}
               >
-                {formatTZS(todayStats.todaySales)}
+                {formatTZSShort(todayStats.todaySales)}
               </Text>
             </TouchableOpacity>
 
@@ -676,11 +626,7 @@ export default function StaffDashboard() {
                   fontFamily: "Poppins_700Bold",
                 }}
               >
-                {loading ? (
-                  <ActivityIndicator size="small" color={colors.text} />
-                ) : (
-                  pendingReturnsCount
-                )}
+                {pendingReturnsCount}
               </Text>
             </TouchableOpacity>
           </View>

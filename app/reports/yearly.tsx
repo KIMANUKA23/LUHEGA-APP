@@ -9,6 +9,7 @@ import {
   StatusBar,
   Dimensions,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -18,6 +19,7 @@ import { KPICard, ChartCard } from "../../src/components/reports";
 import { BarChart } from "react-native-gifted-charts";
 import * as reportService from "../../src/services/reportService";
 import { useSafeBottomPadding } from "../../src/hooks/useSafePadding";
+import { generateReportPDF, ReportData } from "../../src/utils/reportGenerator";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -87,6 +89,44 @@ export default function YearlySalesReportScreen() {
     }
   };
 
+  const handleExport = async () => {
+    try {
+      const reportData: ReportData = {
+        title: 'Yearly Sales Report',
+        subtitle: `Performance Review - ${new Date().getFullYear()}`,
+        date: new Date().toLocaleDateString('en-US', { year: 'numeric' }),
+        kpis: [
+          { label: "Total Revenue", value: formatTZS(kpis.total) },
+          { label: "Transactions", value: kpis.transactions.toString() },
+          { label: "Monthly Avg", value: formatTZS(kpis.avg) },
+        ],
+        sections: [
+          {
+            title: 'Top Products of the Year',
+            columns: ['Product', 'Units Sold', 'Revenue'],
+            rows: topProducts.map(p => [
+              p.productName,
+              p.quantitySold.toString(),
+              formatTZS(p.totalRevenue)
+            ])
+          },
+          {
+            title: 'Performance by Month',
+            columns: ['Month', 'Revenue (k)'],
+            rows: yearlyData.map(d => [
+              d.label,
+              d.value.toFixed(0) + 'k'
+            ])
+          }
+        ]
+      };
+
+      await generateReportPDF(reportData);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to generate report PDF');
+    }
+  };
+
   if (loading) {
     return (
       <View style={{ flex: 1, backgroundColor: colors.background, justifyContent: "center", alignItems: "center" }}>
@@ -145,7 +185,7 @@ export default function YearlySalesReportScreen() {
         </View>
 
         <TouchableOpacity
-          onPress={() => { }}
+          onPress={handleExport}
           style={{
             width: 40,
             height: 40,

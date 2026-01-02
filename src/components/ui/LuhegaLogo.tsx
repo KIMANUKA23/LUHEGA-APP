@@ -50,14 +50,21 @@ export const LuhegaLogo: React.FC<LuhegaLogoProps> = ({ size = 100, color, showO
                         }]}>
                             <MaterialIcons
                                 name="build"
-                                size={size * 0.32}
-                                color={themeColor}
-                                style={{ position: 'absolute', transform: [{ translateX: size * 0.08 }, { translateY: -size * 0.08 }] }}
+                                size={size * 0.30}
+                                color="#F97316" // orange-500
+                                style={{
+                                    position: 'absolute',
+                                    transform: [
+                                        { translateX: size * 0.12 },
+                                        { translateY: -size * 0.12 },
+                                        { rotate: '15deg' }
+                                    ]
+                                }}
                             />
                             <MaterialIcons
                                 name="directions-car"
-                                size={size * 0.35}
-                                color={themeColor}
+                                size={size * 0.38}
+                                color="#2563EB" // blue-600
                             />
                         </View>
                     </View>

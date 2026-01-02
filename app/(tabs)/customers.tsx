@@ -158,15 +158,22 @@ export default function CustomersScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <ExpoStatusBar style={isDark ? "light" : "dark"} backgroundColor={colors.background} />
+      <ExpoStatusBar style={isDark ? "light" : "dark"} backgroundColor={colors.card} translucent={true} />
 
       {/* Header */}
       <View
         style={{
           paddingHorizontal: 16,
-          paddingTop: Math.max(insets.top, StatusBar.currentHeight || 0) + 16,
-          paddingBottom: 12,
+          paddingTop: Math.max(insets.top, StatusBar.currentHeight || 0) + 32,
+          paddingBottom: 24,
           backgroundColor: colors.background,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: isDark ? 0.3 : 0.05,
+          shadowRadius: 6,
+          elevation: 2,
         }}
       >
         <Text
@@ -191,7 +198,7 @@ export default function CustomersScreen() {
       </View>
 
       {/* Search Bar */}
-      <View style={{ paddingHorizontal: 16, paddingBottom: 12 }}>
+      <View style={{ paddingHorizontal: 16, paddingBottom: 12, marginTop: 16 }}>
         <View style={{ position: "relative" }}>
           <MaterialIcons
             name="search"
@@ -274,7 +281,7 @@ export default function CustomersScreen() {
       {/* Customers List */}
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ padding: 16, paddingBottom: 100 + insets.bottom, gap: 12 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: 140 + insets.bottom, gap: 12 }}
         showsVerticalScrollIndicator={false}
       >
         {filteredCustomers.length === 0 ? (

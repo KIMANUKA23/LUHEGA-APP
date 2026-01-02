@@ -10,10 +10,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
  * const { bottomPadding } = useSafeBottomPadding();
  * <ScrollView contentContainerStyle={{ paddingBottom: bottomPadding }}>
  */
-export function useSafeBottomPadding(minPadding: number = 20) {
+export function useSafeBottomPadding(minPadding: number = 140) {
     const insets = useSafeAreaInsets();
     return {
-        bottomPadding: Math.max(insets.bottom + minPadding, 40),
+        bottomPadding: insets.bottom + minPadding,
         bottomInset: insets.bottom,
     };
 }
@@ -26,7 +26,7 @@ export function useSafePadding() {
     return {
         ...insets,
         paddingTop: insets.top,
-        paddingBottom: Math.max(insets.bottom + 20, 40),
+        paddingBottom: insets.bottom + 140,
         paddingHorizontal: 16,
     };
 }

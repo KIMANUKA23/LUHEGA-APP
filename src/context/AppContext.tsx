@@ -107,7 +107,7 @@ type AppContextType = {
   getProduct: (id: string) => Product | undefined;
   updateProductStock: (productId: string, quantity: number) => void;
   getLowStockProducts: () => Product[];
-  refreshProducts: () => Promise<void>;
+  refreshProducts: () => Promise<Product[]>;
 
   // Sales actions
   createSale: (sale: Omit<Sale, "id">) => Promise<Sale>;
@@ -272,7 +272,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Product actions
   const refreshProducts = useCallback(async () => {
-    if (refreshStatus.current.products) return;
+    if (refreshStatus.current.products) return products;
     refreshStatus.current.products = true;
 
     console.log("DEBUG: refreshProducts started");
@@ -297,8 +297,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const legacyProducts = serviceProducts.map(sp => serviceProductToLegacy(sp, catMap, supMap));
       console.log(`DEBUG: legacyProducts mapping complete: ${legacyProducts.length}`);
       setProducts(legacyProducts);
+      return legacyProducts;
     } catch (error) {
       console.log("Error refreshing products:", error);
+      return [];
     } finally {
       refreshStatus.current.products = false;
     }

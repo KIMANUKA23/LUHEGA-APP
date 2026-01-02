@@ -9,14 +9,19 @@ interface LoadingScreenProps {
 }
 
 export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onFinish, isReady = false }) => {
-    // Stage: 'loading' = pulsing, 'bursting' = burst animation, 'finished' = done
-    const [stage, setStage] = useState<'loading' | 'bursting' | 'finished'>('loading');
+    // Stage: 'loading' = pulsing, 'bursting' = burst animation, 'branding' = final branding, 'finished' = done
+    const [stage, setStage] = useState<'loading' | 'bursting' | 'branding' | 'finished'>('loading');
     const [minTimeElapsed, setMinTimeElapsed] = useState(false);
 
     // Animated Values
     const scale = useRef(new Animated.Value(1)).current;
     const opacity = useRef(new Animated.Value(1)).current;
     const textOpacity = useRef(new Animated.Value(1)).current;
+
+    // New Branding Values
+    const brandingOpacity = useRef(new Animated.Value(0)).current;
+    const brandingScale = useRef(new Animated.Value(0.8)).current;
+    const brandingTextY = useRef(new Animated.Value(20)).current;
 
     // Guard against multiple transitions
     const burstStarted = useRef(false);
@@ -88,9 +93,37 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onFinish, isReady 
                 useNativeDriver: true,
             }),
         ]).start(() => {
+            setStage('branding');
+            startBrandingAnimation();
+        });
+    };
+
+    const startBrandingAnimation = () => {
+        Animated.parallel([
+            Animated.timing(brandingOpacity, {
+                toValue: 1,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+            Animated.spring(brandingScale, {
+                toValue: 1,
+                friction: 8,
+                tension: 40,
+                useNativeDriver: true,
+            }),
+            Animated.timing(brandingTextY, {
+                toValue: 0,
+                duration: 800,
+                easing: Easing.out(Easing.ease),
+                useNativeDriver: true,
+            })
+        ]).start();
+
+        // Hold the branding for a bit then finish
+        setTimeout(() => {
             setStage('finished');
             onFinish();
-        });
+        }, 2500);
     };
 
     if (stage === 'finished') return null;
@@ -100,28 +133,60 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({ onFinish, isReady 
             <StatusBar style="dark" />
 
             {/* Logo with Pulse/Burst Animation */}
-            <Animated.View
-                style={[
-                    styles.logoContainer,
-                    {
-                        opacity: opacity,
-                        transform: [{ scale: scale }],
-                    }
-                ]}
-            >
-                <LuhegaLogo size={100} showOverlay={false} />
-            </Animated.View>
+            {stage !== 'branding' && (
+                <Animated.View
+                    style={[
+                        styles.logoContainer,
+                        {
+                            opacity: opacity,
+                            transform: [{ scale: scale }],
+                        }
+                    ]}
+                >
+                    <LuhegaLogo size={100} showOverlay={false} />
+                </Animated.View>
+            )}
 
             {/* Text Content - Fades out during burst */}
-            <Animated.View
-                style={[
-                    styles.contentContainer,
-                    { opacity: textOpacity }
-                ]}
-            >
-                <Text style={styles.title}>Luhega App</Text>
-                <Text style={styles.tagline}>SMART BUSINESS SOLUTIONS</Text>
-            </Animated.View>
+            {stage !== 'branding' && (
+                <Animated.View
+                    style={[
+                        styles.contentContainer,
+                        { opacity: textOpacity }
+                    ]}
+                >
+                    <Text style={styles.title}>Luhega App</Text>
+                    <Text style={styles.tagline}>SMART BUSINESS SOLUTIONS</Text>
+                </Animated.View>
+            )}
+
+            {/* Stage 3: Professional Branding Display */}
+            {stage === 'branding' && (
+                <View style={styles.brandingContainer}>
+                    <Animated.View
+                        style={[
+                            styles.brandingLogoWrapper,
+                            {
+                                opacity: brandingOpacity,
+                                transform: [{ scale: brandingScale }]
+                            }
+                        ]}
+                    >
+                        <LuhegaLogo size={140} showOverlay={true} />
+                    </Animated.View>
+
+                    <Animated.View
+                        style={{
+                            opacity: brandingOpacity,
+                            transform: [{ translateY: brandingTextY }],
+                            alignItems: 'center'
+                        }}
+                    >
+                        <Text style={styles.brandingTitle}>Spare Auto Sale</Text>
+                        <Text style={styles.brandingSubtitle}>Luhega App</Text>
+                    </Animated.View>
+                </View>
+            )}
         </View>
     );
 };
@@ -158,6 +223,27 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
         letterSpacing: 2,
         color: '#64748B', // slate-500
+    },
+    brandingContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    brandingLogoWrapper: {
+        marginBottom: 32,
+    },
+    brandingTitle: {
+        fontSize: 32,
+        fontWeight: '700',
+        color: '#0F172A', // slate-900
+        fontFamily: 'Poppins_700Bold',
+        marginBottom: 4,
+    },
+    brandingSubtitle: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#64748B', // slate-500
+        letterSpacing: 1.5,
+        textTransform: 'uppercase',
     },
 });
 

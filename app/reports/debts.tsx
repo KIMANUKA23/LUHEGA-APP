@@ -10,6 +10,7 @@ import {
   StatusBar,
   Dimensions,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -19,6 +20,7 @@ import { KPICard, ChartCard, FilterBar } from "../../src/components/reports";
 import { PieChart, BarChart } from "react-native-gifted-charts";
 import * as reportService from "../../src/services/reportService";
 import { useSafeBottomPadding } from "../../src/hooks/useSafePadding";
+import { generateReportPDF, ReportData } from "../../src/utils/reportGenerator";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -44,6 +46,48 @@ export default function DebtAnalyticsScreen() {
       console.log("Error loading debt analytics:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExport = async () => {
+    if (!data) return;
+    try {
+      const reportData: ReportData = {
+        title: 'Debt Analytics Report',
+        subtitle: `Period: ${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)}`,
+        date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+        kpis: [
+          { label: "Overdue Amount", value: formatTZS(data.overdueAmount) },
+          { label: "Collected (This Week)", value: formatTZS(data.collectedThisWeek) },
+          { label: "Total Outstanding", value: formatTZS(data.totalOutstanding) },
+          { label: "Collection Rate", value: `${data.collectionRate}%` },
+        ],
+        sections: [
+          {
+            title: 'Overdue Summary',
+            columns: ['Customer', 'Amount', 'Days Overdue'],
+            rows: data.overdueDebts.map(d => [
+              d.customer,
+              formatTZS(d.amount),
+              d.daysOverdue.toString()
+            ])
+          },
+          {
+            title: 'Recent Collections',
+            columns: ['Customer', 'Amount', 'Date', 'Method'],
+            rows: data.recentCollections.map(c => [
+              c.customer,
+              formatTZS(c.amount),
+              c.date,
+              c.method
+            ])
+          }
+        ]
+      };
+
+      await generateReportPDF(reportData);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to generate report PDF');
     }
   };
 
@@ -113,7 +157,7 @@ export default function DebtAnalyticsScreen() {
         </Text>
 
         <TouchableOpacity
-          onPress={() => { }}
+          onPress={handleExport}
           style={{
             width: 40,
             height: 40,

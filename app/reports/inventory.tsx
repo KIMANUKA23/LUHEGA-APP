@@ -10,6 +10,7 @@ import {
   Dimensions,
   Image,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -20,6 +21,7 @@ import { PieChart, BarChart } from "react-native-gifted-charts";
 import { useTheme } from "../../src/context/ThemeContext";
 import * as reportService from "../../src/services/reportService";
 import { useSafeBottomPadding } from "../../src/hooks/useSafePadding";
+import { generateReportPDF, ReportData } from "../../src/utils/reportGenerator";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -44,6 +46,46 @@ export default function InventoryAnalyticsScreen() {
       console.log("Error loading inventory analytics:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExport = async () => {
+    if (!data) return;
+    try {
+      const reportData: ReportData = {
+        title: 'Inventory Analytics Report',
+        subtitle: 'Inventory Status & Stock Summary',
+        date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+        kpis: [
+          { label: "Total Items", value: data.totalItems.toLocaleString() },
+          { label: "Stock Value", value: formatTZS(data.totalValue) },
+          { label: "Low Stock", value: data.lowStockCount.toString() },
+          { label: "Out of Stock", value: data.outOfStockCount.toString() },
+        ],
+        sections: [
+          {
+            title: 'Low Stock Alert Items',
+            columns: ['Product Name', 'Current', 'Reorder'],
+            rows: data.lowStockItems.map(item => [
+              item.name,
+              item.current.toString(),
+              item.reorder.toString()
+            ])
+          },
+          {
+            title: 'Stock Distribution',
+            columns: ['Category', 'Percentage'],
+            rows: data.stockDistribution.map(d => [
+              d.label,
+              `${d.value}%`
+            ])
+          }
+        ]
+      };
+
+      await generateReportPDF(reportData);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to generate report PDF');
     }
   };
 
@@ -113,7 +155,7 @@ export default function InventoryAnalyticsScreen() {
         </Text>
 
         <TouchableOpacity
-          onPress={() => { }}
+          onPress={handleExport}
           style={{
             width: 40,
             height: 40,

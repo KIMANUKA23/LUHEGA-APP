@@ -8,6 +8,7 @@ import {
   StatusBar,
   Dimensions,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -21,6 +22,7 @@ import { supabase } from "../../src/lib/supabase";
 import { isOnline } from "../../src/services/syncService";
 import { getOfflineDB } from "../../src/lib/database";
 import { useSafeBottomPadding } from "../../src/hooks/useSafePadding";
+import { generateReportPDF, ReportData } from "../../src/utils/reportGenerator";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -123,6 +125,37 @@ export default function DailySalesReportScreen() {
     }
   };
 
+  const handleExport = async () => {
+    try {
+      const reportData: ReportData = {
+        title: 'Daily Sales Report',
+        subtitle: 'Performance Summary',
+        date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+        kpis: [
+          { label: "Revenue", value: formatTZS(kpis.revenue) },
+          { label: "Sales Count", value: kpis.salesCount.toString() },
+          { label: "Avg Sale", value: formatTZS(kpis.avgSale) },
+          { label: "Peak Hour", value: kpis.peakHour },
+        ],
+        sections: [
+          {
+            title: 'Recent Sales',
+            columns: ['Customer', 'Amount', 'Time'],
+            rows: recentSales.map(sale => [
+              sale.customer_name || 'Walk-in Customer',
+              formatTZS(sale.total_amount),
+              new Date(sale.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            ])
+          }
+        ]
+      };
+
+      await generateReportPDF(reportData);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to generate report PDF');
+    }
+  };
+
   const [topProductsToday, setTopProductsToday] = useState<reportService.ProductReport[]>([]);
 
   if (loading) {
@@ -183,7 +216,7 @@ export default function DailySalesReportScreen() {
         </View>
 
         <TouchableOpacity
-          onPress={() => { }}
+          onPress={handleExport}
           style={{
             width: 40,
             height: 40,
