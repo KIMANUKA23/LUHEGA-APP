@@ -48,6 +48,8 @@
   "private": true,
   "devDependencies": {
     "@react-native-community/cli": "^20.0.2",
+    "@types/bunyan": "^1.8.11",
+    "@types/cli-progress": "^3.11.6",
     "@types/react-native": "^0.73.0",
     "@types/uuid": "^10.0.0",
     "babel-preset-expo": "^54.0.7",
