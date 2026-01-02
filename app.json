@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "LUHEGA-APP",
-    "slug": "LUHEGA-APP",
+    "slug": "luhega-app-v1",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

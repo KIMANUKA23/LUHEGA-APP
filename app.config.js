@@ -5,7 +5,7 @@ require('dotenv').config();
 module.exports = {
   expo: {
     name: "luhega-app",
-    slug: "luhega-app",
+    slug: "luhega-app-v1",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/icon.png",
