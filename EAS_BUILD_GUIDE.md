@@ -18,19 +18,19 @@ git commit -m "Optimize mobile ergonomics and fix stock data"
 ## 3. Generate Android APK
 To get a downloadable `.apk` file (for sideloading):
 ```bash
-npx eas-build --platform android --profile preview
+npx eas build --platform android --profile preview
 ```
 
 ## 4. Generate iOS Build
 To create a build for iOS (requires an Apple Developer Account):
 ```bash
-npx eas-build --platform ios --profile production
+npx eas build --platform ios --profile production
 ```
 
 ## 5. Generate Android App Bundle (Play Store)
 To create a `.aab` file for Google Play:
 ```bash
-npx eas-build --platform android --profile production
+npx eas build --platform android --profile production
 ```
 
 > [!IMPORTANT]
