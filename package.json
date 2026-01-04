@@ -19,6 +19,7 @@
     "@supabase/supabase-js": "^2.86.0",
     "@types/react": "19.1.17",
     "base64-arraybuffer": "^1.0.2",
+    "docx": "^9.5.1",
     "expo": "~54.0.30",
     "expo-camera": "~17.0.10",
     "expo-constants": "~18.0.6",

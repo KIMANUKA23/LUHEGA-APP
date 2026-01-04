@@ -14,12 +14,15 @@
                 "buildType": "apk"
             },
             "ios": {
-                "simulator": true
+                "simulator": false
             }
         },
         "production": {
             "android": {
                 "buildType": "app-bundle"
+            },
+            "ios": {
+                "distribution": "store"
             }
         }
     },

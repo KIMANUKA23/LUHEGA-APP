@@ -21,16 +21,18 @@ To get a downloadable `.apk` file (for sideloading):
 npx eas-cli build --platform android --profile preview
 ```
 
-## 4. Generate iOS Build
-To create a build for iOS (requires an Apple Developer Account):
+## 4. Generate iOS Build (for iPhone)
+To create a build for real iPhones:
+```bash
+npx eas-cli build --platform ios --profile preview
+```
+> [!NOTE]
+> This requires an **Apple Developer Account** ($99/year). If you don't have one, you can only test on iPhone using the **Expo Go** app.
+
+## 5. Submit to App Store
+To create a build for the Apple App Store:
 ```bash
 npx eas-cli build --platform ios --profile production
-```
-
-## 5. Generate Android App Bundle (Play Store)
-To create a `.aab` file for Google Play:
-```bash
-npx eas-cli build --platform android --profile production
 ```
 
 > [!IMPORTANT]
