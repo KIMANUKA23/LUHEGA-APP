@@ -57,10 +57,12 @@ export default function InventoryAnalyticsScreen() {
         subtitle: 'Inventory Status & Stock Summary',
         date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
         kpis: [
-          { label: "Total Items", value: data.totalItems.toLocaleString() },
-          { label: "Stock Value", value: formatTZS(data.totalValue) },
+          { label: "Total Units", value: data.totalItems.toLocaleString() },
+          { label: "Product Variants", value: data.totalProductCount.toLocaleString() },
+          { label: "Cost Value", value: formatTZS(data.totalCostValue) },
+          { label: "Selling Value", value: formatTZS(data.totalSellingValue) },
+          { label: "Potential Profit", value: formatTZS(data.potentialProfit) },
           { label: "Low Stock", value: data.lowStockCount.toString() },
-          { label: "Out of Stock", value: data.outOfStockCount.toString() },
         ],
         sections: [
           {
@@ -98,16 +100,11 @@ export default function InventoryAnalyticsScreen() {
     );
   }
 
-  // Fallback for movement trend if empty
-  const movementData = data.movementTrend.length > 0 ? data.movementTrend : [
-    { value: 0, label: "Mon", frontColor: colors.primary },
-    { value: 0, label: "Tue", frontColor: colors.primary },
-    { value: 0, label: "Wed", frontColor: colors.primary },
-    { value: 0, label: "Thu", frontColor: colors.primary },
-    { value: 0, label: "Fri", frontColor: colors.primary },
-    { value: 0, label: "Sat", frontColor: colors.primary },
-    { value: 0, label: "Sun", frontColor: colors.warning },
-  ];
+  // No fallback needed anymore
+  const movementData = data.movementTrend.map(item => ({
+    ...item,
+    frontColor: item.value > 0 ? colors.primary : colors.border
+  }));
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -174,43 +171,63 @@ export default function InventoryAnalyticsScreen() {
         contentContainerStyle={{ padding: 16, paddingBottom: bottomPadding, gap: 16 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* KPI Cards */}
+        {/* KPI Cards - Row 1 */}
         <View style={{ flexDirection: "row", gap: 12 }}>
           <KPICard
-            title="Total Items"
+            title="Total Units"
             value={data.totalItems.toLocaleString()}
-            subtitle="In inventory"
+            subtitle="Stock in hand"
             icon="inventory"
             iconColor={isDark ? "#60A5FA" : "#007BFF"}
             iconBgColor={isDark ? "rgba(96, 165, 250, 0.1)" : "rgba(0, 123, 255, 0.1)"}
           />
           <KPICard
-            title="Stock Value"
-            value={formatTZS(data.totalValue)}
-            subtitle="Total worth"
-            icon="attach-money"
+            title="Variants"
+            value={data.totalProductCount.toLocaleString()}
+            subtitle="Unique Parts"
+            icon="category"
+            iconColor={isDark ? "#A78BFA" : "#8B5CF6"}
+            iconBgColor={isDark ? "rgba(167, 139, 250, 0.1)" : "rgba(139, 92, 246, 0.1)"}
+          />
+        </View>
+
+        {/* KPI Cards - Row 2 */}
+        <View style={{ flexDirection: "row", gap: 12 }}>
+          <KPICard
+            title="Total Cost"
+            value={formatTZS(data.totalCostValue)}
+            subtitle="Inv. Investment"
+            icon="payments"
+            iconColor={colors.error}
+            iconBgColor={isDark ? "rgba(239, 68, 68, 0.1)" : "rgba(239, 68, 68, 0.05)"}
+          />
+          <KPICard
+            title="Selling Value"
+            value={formatTZS(data.totalSellingValue)}
+            subtitle="Expected revenue"
+            icon="monetization-on"
             iconColor={colors.success}
             iconBgColor={isDark ? "rgba(34, 197, 94, 0.1)" : "rgba(16, 185, 129, 0.1)"}
           />
         </View>
 
+        {/* KPI Cards - Row 3 */}
         <View style={{ flexDirection: "row", gap: 12 }}>
+          <KPICard
+            title="Potential Profit"
+            value={formatTZS(data.potentialProfit)}
+            subtitle="Net after sales"
+            icon="trending-up"
+            iconColor={isDark ? "#FB923C" : "#F97316"}
+            iconBgColor={isDark ? "rgba(251, 146, 60, 0.1)" : "rgba(249, 115, 22, 0.1)"}
+          />
           <KPICard
             title="Low Stock"
             value={data.lowStockCount.toString()}
-            subtitle="Items below reorder"
+            subtitle="Items to reorder"
             icon="warning"
             iconColor={colors.warning}
             iconBgColor={isDark ? "rgba(245, 158, 11, 0.15)" : "rgba(245, 158, 11, 0.1)"}
-            onPress={() => { }}
-          />
-          <KPICard
-            title="Out of Stock"
-            value={data.outOfStockCount.toString()}
-            subtitle="Need immediate order"
-            icon="remove-circle"
-            iconColor={colors.error}
-            iconBgColor={isDark ? "rgba(239, 68, 68, 0.2)" : "rgba(239, 68, 68, 0.1)"}
             onPress={() => { }}
           />
         </View>
@@ -273,7 +290,8 @@ export default function InventoryAnalyticsScreen() {
               </View>
             ))}
           </View>
-        )}
+        )
+        }
 
         {/* Stock Distribution Donut */}
         <ChartCard title="Stock by Category" subtitle="Distribution of inventory">

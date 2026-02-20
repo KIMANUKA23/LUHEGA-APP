@@ -42,7 +42,7 @@ export async function createCustomer(customerData: {
     lastVisit: now,
   };
 
-  if (online && db) {
+  if (online) {
     try {
       // Create in Supabase customers table
       const { data, error } = await supabase
@@ -71,19 +71,20 @@ export async function createCustomer(customerData: {
         throw error;
       }
 
-      // Save to local DB for offline access
-      await performTransaction(async () => {
-        if (!db) return;
-        await db.runAsync(`
-          INSERT INTO customers (
-            id, name, phone, email, total_purchases, total_orders,
-            outstanding_debt, last_visit, synced, created_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
-        `, [
-          customerId, customerData.name, customerData.phone || null, customerData.email || null,
-          0, 0, 0, now, now
-        ]);
-      });
+      // Save to local DB for offline access (skip if no database on web)
+      if (db) {
+        await performTransaction(async () => {
+          await db.runAsync(`
+            INSERT INTO customers (
+              id, name, phone, email, total_purchases, total_orders,
+              outstanding_debt, last_visit, synced, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+          `, [
+            customerId, customerData.name, customerData.phone || null, customerData.email || null,
+            0, 0, 0, now, now
+          ]);
+        });
+      }
 
       return customer;
     } catch (error) {
@@ -128,7 +129,7 @@ export async function getAllCustomers(): Promise<Customer[]> {
   const online = await isOnline();
   const db = getOfflineDB();
 
-  if (online && db) {
+  if (online) {
     try {
       // Load customers table (base) + sales + debts and merge into one list.
       const customerMap = new Map<string, Customer>();
@@ -140,8 +141,7 @@ export async function getAllCustomers(): Promise<Customer[]> {
         .order('created_at', { ascending: false });
 
       if (customersError) {
-        // If the customers table doesn't exist yet, skip it (we can still build customers from sales/debts).
-        if ((customersError as any)?.code !== 'PGRST205' && !String((customersError as any)?.message || '').includes("Could not find the table 'public.customers'")) {
+        if ((customersError as any)?.code !== 'PGRST116' && (customersError as any)?.code !== 'PGRST205' && !String((customersError as any)?.message || '').includes("Could not find the table 'public.customers'")) {
           console.log('Error fetching customers table:', customersError);
         }
       } else {
@@ -176,20 +176,19 @@ export async function getAllCustomers(): Promise<Customer[]> {
         }
       }
 
-      // 2) Sales (adds totals/orders/lastVisit) - include customers with or without phone
+      // 2) Sales (adds totals/orders/lastVisit)
       const { data: sales, error: salesError } = await supabase
         .from('sales')
-        .select('sale_id, customer_name, customer_phone, total_amount, sale_date')
+        .select('sale_id, customer_name, customer_phone, total_amount, amount_remaining, sale_date')
         .not('customer_name', 'is', null)
         .order('sale_date', { ascending: false });
 
       if (salesError) throw salesError;
 
-      // Get all debts
+      // 3) Debts (only manual ones, linked ones already counted via sales)
       const { data: debts, error: debtsError } = await supabase
         .from('customerdebts')
-        .select('customer_name, customer_phone, balance_remaining')
-        .not('customer_phone', 'is', null);
+        .select('customer_name, customer_phone, balance_remaining, sale_id');
 
       if (debtsError) throw debtsError;
 
@@ -197,8 +196,6 @@ export async function getAllCustomers(): Promise<Customer[]> {
       for (const sale of sales || []) {
         const phone = sale.customer_phone?.trim() || '';
         const name = sale.customer_name?.trim() || '';
-
-        // Use phone as key if available, otherwise use name
         const customerKey = phone || name;
         if (!customerKey) continue;
 
@@ -219,22 +216,28 @@ export async function getAllCustomers(): Promise<Customer[]> {
         customer.totalPurchases += sale.total_amount || 0;
         customer.totalOrders += 1;
 
-        // Update last visit if this sale is more recent
+        // SOURCE OF TRUTH: Unpaid balance from sale record directly
+        customer.outstandingDebt += (sale.amount_remaining || 0);
+
         if (sale.sale_date && sale.sale_date > customer.lastVisit) {
           customer.lastVisit = sale.sale_date;
         }
       }
 
-      // Process debts
+      // Process manual debts
       for (const debt of debts || []) {
-        const phone = debt.customer_phone || '';
-        if (!phone) continue;
+        if (debt.sale_id) continue; // Linked debts were counted in sales loop
 
-        if (!customerMap.has(phone)) {
-          customerMap.set(phone, {
-            id: phone,
-            name: debt.customer_name || 'Unknown',
-            phone: debt.customer_phone,
+        const phone = debt.customer_phone?.trim() || '';
+        const name = debt.customer_name?.trim() || '';
+        const key = phone || name;
+        if (!key) continue;
+
+        if (!customerMap.has(key)) {
+          customerMap.set(key, {
+            id: key,
+            name: name || 'Unknown',
+            phone: phone || null,
             email: null,
             totalPurchases: 0,
             totalOrders: 0,
@@ -242,7 +245,7 @@ export async function getAllCustomers(): Promise<Customer[]> {
             lastVisit: new Date().toISOString(),
           });
         } else {
-          const customer = customerMap.get(phone)!;
+          const customer = customerMap.get(key)!;
           customer.outstandingDebt += debt.balance_remaining || 0;
         }
       }
@@ -259,11 +262,11 @@ export async function getAllCustomers(): Promise<Customer[]> {
       const { sales, debts } = await performTransaction(async () => {
         if (!db) return { sales: [], debts: [] };
         const sales = await db.getAllAsync<any>(
-          'SELECT customer_name, customer_phone, total_amount, sale_date FROM sales WHERE customer_name IS NOT NULL ORDER BY sale_date DESC'
+          'SELECT customer_name, customer_phone, total_amount, amount_remaining, sale_id, sale_date FROM sales WHERE customer_name IS NOT NULL ORDER BY sale_date DESC'
         );
 
         const debts = await db.getAllAsync<any>(
-          'SELECT customer_name, customer_phone, balance_remaining FROM customerdebts WHERE customer_phone IS NOT NULL'
+          'SELECT customer_name, customer_phone, balance_remaining, sale_id FROM customerdebts'
         );
         return { sales, debts };
       });
@@ -274,8 +277,6 @@ export async function getAllCustomers(): Promise<Customer[]> {
       for (const sale of sales || []) {
         const phone = sale.customer_phone?.trim() || '';
         const name = sale.customer_name?.trim() || '';
-
-        // Use phone as key if available, otherwise use name
         const customerKey = phone || name;
         if (!customerKey) continue;
 
@@ -296,22 +297,28 @@ export async function getAllCustomers(): Promise<Customer[]> {
         customer.totalPurchases += sale.total_amount || 0;
         customer.totalOrders += 1;
 
-        // Update last visit if this sale is more recent
+        // SOURCE OF TRUTH (offline)
+        customer.outstandingDebt += (sale.amount_remaining || 0);
+
         if (sale.sale_date && sale.sale_date > customer.lastVisit) {
           customer.lastVisit = sale.sale_date;
         }
       }
 
-      // Process debts (offline)
+      // Process manual debts (offline)
       for (const debt of debts || []) {
-        const phone = debt.customer_phone || '';
-        if (!phone) continue;
+        if (debt.sale_id) continue;
 
-        if (!customerMap.has(phone)) {
-          customerMap.set(phone, {
-            id: phone,
-            name: debt.customer_name || 'Unknown',
-            phone: debt.customer_phone,
+        const phone = debt.customer_phone?.trim() || '';
+        const name = debt.customer_name?.trim() || '';
+        const key = phone || name;
+        if (!key) continue;
+
+        if (!customerMap.has(key)) {
+          customerMap.set(key, {
+            id: key,
+            name: name || 'Unknown',
+            phone: phone || null,
             email: null,
             totalPurchases: 0,
             totalOrders: 0,
@@ -319,7 +326,7 @@ export async function getAllCustomers(): Promise<Customer[]> {
             lastVisit: new Date().toISOString(),
           });
         } else {
-          const customer = customerMap.get(phone)!;
+          const customer = customerMap.get(key)!;
           customer.outstandingDebt += debt.balance_remaining || 0;
         }
       }

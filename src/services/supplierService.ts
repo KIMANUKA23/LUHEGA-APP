@@ -21,7 +21,7 @@ export async function getSuppliers(): Promise<Supplier[]> {
 
   console.log('📦 Getting suppliers | Online:', online, '| DB:', !!db);
 
-  if (online && db) {
+  if (online) {
     try {
       // Check if authenticated
       const { data: { session } } = await supabase.auth.getSession();
@@ -36,23 +36,23 @@ export async function getSuppliers(): Promise<Supplier[]> {
 
       if (error) throw error;
 
-      // Cache in local
-      await performTransaction(async () => {
-        if (!db) return;
-
-        for (const supplier of data || []) {
-          await db.runAsync(`
-            INSERT OR REPLACE INTO suppliers (
-              supplier_id, name, contact_name, phone, email, address,
-              payment_terms, created_at, synced
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
-          `, [
-            supplier.supplier_id, supplier.name, supplier.contact_name,
-            supplier.phone, supplier.email, supplier.address,
-            supplier.payment_terms, supplier.created_at,
-          ]);
-        }
-      });
+      // Cache in local (skip if no database on web)
+      if (db) {
+        await performTransaction(async () => {
+          for (const supplier of data || []) {
+            await db.runAsync(`
+              INSERT OR REPLACE INTO suppliers (
+                supplier_id, name, contact_name, phone, email, address,
+                payment_terms, created_at, synced
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
+            `, [
+              supplier.supplier_id, supplier.name, supplier.contact_name,
+              supplier.phone, supplier.email, supplier.address,
+              supplier.payment_terms, supplier.created_at,
+            ]);
+          }
+        });
+      }
 
       return data || [];
     } catch (error) {
@@ -163,7 +163,7 @@ export async function createSupplier(supplierData: {
 
   console.log('📦 Creating supplier:', supplierData.name, '| Online:', online, '| DB:', !!db);
 
-  if (online && db) {
+  if (online) {
     try {
       console.log('🌐 Attempting to save supplier to Supabase...');
       const { data, error } = await supabase
@@ -186,20 +186,21 @@ export async function createSupplier(supplierData: {
       }
       console.log('✅ Supplier saved to Supabase:', data.supplier_id);
 
-      // Save to local
-      await performTransaction(async () => {
-        if (!db) return;
-        await db.runAsync(`
-          INSERT INTO suppliers (
-            supplier_id, name, contact_name, phone, email, address,
-            payment_terms, created_at, synced
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
-        `, [
-          data.supplier_id, data.name, data.contact_name,
-          data.phone, data.email, data.address,
-          data.payment_terms, data.created_at,
-        ]);
-      });
+      // Save to local (skip if no database on web)
+      if (db) {
+        await performTransaction(async () => {
+          await db.runAsync(`
+            INSERT INTO suppliers (
+              supplier_id, name, contact_name, phone, email, address,
+              payment_terms, created_at, synced
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
+          `, [
+            data.supplier_id, data.name, data.contact_name,
+            data.phone, data.email, data.address,
+            data.payment_terms, data.created_at,
+          ]);
+        });
+      }
 
       return data;
     } catch (error) {
@@ -252,7 +253,7 @@ export async function updateSupplier(
   const online = await isOnline();
   const db = await ensureDatabaseInitialized();
 
-  if (online && db) {
+  if (online) {
     try {
       const { data, error } = await supabase
         .from('suppliers')
@@ -263,43 +264,44 @@ export async function updateSupplier(
 
       if (error) throw error;
 
-      // Update local
-      const updateFields: string[] = [];
-      const updateValues: any[] = [];
+      // Update local (skip if no database on web)
+      if (db) {
+        const updateFields: string[] = [];
+        const updateValues: any[] = [];
 
-      if (supplierData.name !== undefined) {
-        updateFields.push('name = ?');
-        updateValues.push(supplierData.name);
-      }
-      if (supplierData.contact_name !== undefined) {
-        updateFields.push('contact_name = ?');
-        updateValues.push(supplierData.contact_name);
-      }
-      if (supplierData.phone !== undefined) {
-        updateFields.push('phone = ?');
-        updateValues.push(supplierData.phone);
-      }
-      if (supplierData.email !== undefined) {
-        updateFields.push('email = ?');
-        updateValues.push(supplierData.email);
-      }
-      if (supplierData.address !== undefined) {
-        updateFields.push('address = ?');
-        updateValues.push(supplierData.address);
-      }
-      if (supplierData.payment_terms !== undefined) {
-        updateFields.push('payment_terms = ?');
-        updateValues.push(supplierData.payment_terms);
-      }
-      updateFields.push('synced = 1');
-      updateValues.push(id);
+        if (supplierData.name !== undefined) {
+          updateFields.push('name = ?');
+          updateValues.push(supplierData.name);
+        }
+        if (supplierData.contact_name !== undefined) {
+          updateFields.push('contact_name = ?');
+          updateValues.push(supplierData.contact_name);
+        }
+        if (supplierData.phone !== undefined) {
+          updateFields.push('phone = ?');
+          updateValues.push(supplierData.phone);
+        }
+        if (supplierData.email !== undefined) {
+          updateFields.push('email = ?');
+          updateValues.push(supplierData.email);
+        }
+        if (supplierData.address !== undefined) {
+          updateFields.push('address = ?');
+          updateValues.push(supplierData.address);
+        }
+        if (supplierData.payment_terms !== undefined) {
+          updateFields.push('payment_terms = ?');
+          updateValues.push(supplierData.payment_terms);
+        }
+        updateFields.push('synced = 1');
+        updateValues.push(id);
 
-      await performTransaction(async () => {
-        if (!db) return;
-        await db.runAsync(`
-          UPDATE suppliers SET ${updateFields.join(', ')} WHERE supplier_id = ?
-        `, updateValues);
-      });
+        await performTransaction(async () => {
+          await db.runAsync(`
+            UPDATE suppliers SET ${updateFields.join(', ')} WHERE supplier_id = ?
+          `, updateValues);
+        });
+      }
 
       return data;
     } catch (error) {
@@ -355,7 +357,7 @@ export async function deleteSupplier(id: string): Promise<boolean> {
   const online = await isOnline();
   const db = await ensureDatabaseInitialized();
 
-  if (online && db) {
+  if (online) {
     try {
       const { error } = await supabase
         .from('suppliers')
@@ -364,11 +366,12 @@ export async function deleteSupplier(id: string): Promise<boolean> {
 
       if (error) throw error;
 
-      // Delete from local
-      await performTransaction(async () => {
-        if (!db) return;
-        await db.runAsync('DELETE FROM suppliers WHERE supplier_id = ?', [id]);
-      });
+      // Delete from local (skip if no database on web)
+      if (db) {
+        await performTransaction(async () => {
+          await db.runAsync('DELETE FROM suppliers WHERE supplier_id = ?', [id]);
+        });
+      }
       return true;
     } catch (error) {
       console.log('Error deleting supplier online:', error);

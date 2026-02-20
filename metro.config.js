@@ -3,7 +3,7 @@ const path = require("path");
 
 const config = getDefaultConfig(__dirname);
 
-// Only add path alias for "@" - no custom resolvers
+// Configure resolver for path aliases
 config.resolver = {
   ...config.resolver,
   alias: {

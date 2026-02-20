@@ -65,7 +65,7 @@ export default function RecordDebtPaymentScreen() {
     setLoading(true);
     try {
       await updateDebtPayment(id, paymentAmount);
-      router.back();
+      router.replace("/debts");
     } catch (error) {
       console.log("Error recording payment:", error);
       alert("Failed to record payment. Please try again.");

@@ -255,6 +255,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // We also manually update state here to ensure immediate responsiveness
       // The onAuthStateChange listener will eventually fire, but this is faster for the UI return
       setUser(profile);
+
+      // After a successful login, run a background sync so that
+      // this device pulls the latest data from Supabase (and pushes any local data).
+      // This is especially important when the same admin logs into a new device.
+      syncAll().catch(err => {
+        console.log("Non-blocking sync after password login failed:", err);
+      });
+
       return profile;
     }
 

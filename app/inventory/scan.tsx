@@ -109,8 +109,9 @@ export default function BarcodeScanner() {
 
       console.log('Navigating to targetPath:', targetPath);
 
-      // Use push to ensure we land on the screen and trigger effects
-      router.push({
+      // Use replace to prevent building up the stack (List -> New -> Scan -> New)
+      // This will make the stack: List -> New (with data)
+      router.replace({
         pathname: targetPath as any,
         params: { scannedBarcode: barcode, _t: Date.now() },
       });

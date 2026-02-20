@@ -1,5 +1,5 @@
 // New Sale (POS) Screen - match Stitch design
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -27,6 +27,7 @@ const CARD_WIDTH = (width - 16 * 2 - 12) / 2; // 2 columns, 16px padding, 12px g
 type PopularItem = {
   id: string;
   name: string;
+  sku?: string;
   price: number;
   stock: number;
 };
@@ -92,22 +93,33 @@ export default function NewSaleScreen() {
     }, [])
   );
 
-  // Convert products to popular items format
-  const popularItems: PopularItem[] = products
-    .filter(p => p.quantityInStock > 0)
-    .slice(0, 20) // Limit to top 20
-    .map(p => ({
+  // Filter products based on search query or default to popular (top 20)
+  const filteredItems = useMemo(() => {
+    let results = [];
+
+    if (!searchQuery.trim()) {
+      // Default: Top 20 items with stock
+      results = products
+        .filter(p => p.quantityInStock > 0)
+        .slice(0, 20);
+    } else {
+      // Search: Filter all products by Name or SKU
+      const query = searchQuery.toLowerCase().trim();
+      results = products.filter(p =>
+        (p.name.toLowerCase().includes(query) ||
+          (p.sku && p.sku.toLowerCase().includes(query))) &&
+        p.quantityInStock > 0
+      ).slice(0, 50); // increased limit for search
+    }
+
+    return results.map(p => ({
       id: p.id,
       name: p.name,
+      sku: p.sku,
       price: p.sellingPrice,
       stock: p.quantityInStock,
     }));
-
-  const filteredItems = searchQuery
-    ? popularItems.filter(item =>
-      item.name.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    : popularItems;
+  }, [products, searchQuery]);
 
   // Handle scanned barcode from scanner
   useEffect(() => {
@@ -130,6 +142,7 @@ export default function NewSaleScreen() {
         const cartItem: PopularItem = {
           id: product.part_id,
           name: product.name,
+          sku: product.sku,
           price: product.selling_price,
           stock: product.quantity_in_stock,
         };
@@ -352,7 +365,7 @@ export default function NewSaleScreen() {
           </Text>
         </TouchableOpacity>
 
-        {/* Popular Items */}
+        {/* Product Grid (Popular Items) */}
         <ScrollView
           style={{ flex: 1 }}
           contentContainerStyle={{
@@ -371,87 +384,101 @@ export default function NewSaleScreen() {
               paddingTop: 8,
             }}
           >
-            Popular Items
+            {searchQuery.trim() ? "Search Results" : "Popular Items"}
           </Text>
 
-          <View
-            style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              gap: 12,
-              marginTop: 4,
-            }}
-          >
-            {popularItems.map((item) => (
-              <TouchableOpacity
-                key={item.id}
-                onPress={() => addToCart(item)}
-                style={{
-                  width: CARD_WIDTH,
-                  borderRadius: 12,
-                  backgroundColor: colors.card,
-                  padding: 12,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: isDark ? 0.3 : 0.05,
-                  shadowRadius: 8,
-                  elevation: 3,
-                }}
-                activeOpacity={0.8}
-              >
-                {/* Image placeholder (square) */}
-                <View
+          {filteredItems.length === 0 ? (
+            <View style={{ padding: 20, alignItems: "center" }}>
+              <Text style={{ color: colors.textSecondary }}>No products found</Text>
+            </View>
+          ) : (
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                gap: 12,
+                marginTop: 4,
+              }}
+            >
+              {filteredItems.map((item) => (
+                <TouchableOpacity
+                  key={item.id}
+                  onPress={() => addToCart(item)}
                   style={{
-                    width: "100%",
-                    aspectRatio: 1,
-                    borderRadius: 8,
-                    backgroundColor: colors.surface,
-                    marginBottom: 8,
-                    alignItems: "center",
-                    justifyContent: "center",
+                    width: CARD_WIDTH,
+                    borderRadius: 12,
+                    backgroundColor: colors.card,
+                    padding: 12,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: isDark ? 0.3 : 0.05,
+                    shadowRadius: 8,
+                    elevation: 3,
                   }}
+                  activeOpacity={0.8}
                 >
-                  <MaterialIcons
-                    name="image"
-                    size={32}
-                    color={colors.textSecondary}
-                  />
-                </View>
+                  {/* Image placeholder (square) */}
+                  <View
+                    style={{
+                      width: "100%",
+                      aspectRatio: 1,
+                      borderRadius: 8,
+                      backgroundColor: colors.surface,
+                      marginBottom: 8,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <MaterialIcons
+                      name="image"
+                      size={32}
+                      color={colors.textSecondary}
+                    />
+                  </View>
 
-                <View style={{ gap: 2 }}>
-                  <Text
-                    style={{
-                      fontSize: 13,
-                      fontWeight: "600",
-                      color: colors.text,
-                    }}
-                    numberOfLines={2}
-                  >
-                    {item.name}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: "700",
-                      color: colors.text,
-                    }}
-                  >
-                    {formatTZS(item.price)}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 11,
-                      color: colors.textSecondary,
-                    }}
-                  >
-                    Stock: {item.stock}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
+                  <View style={{ gap: 2 }}>
+                    <Text
+                      style={{
+                        fontSize: 13,
+                        fontWeight: "600",
+                        color: colors.text,
+                      }}
+                      numberOfLines={2}
+                    >
+                      {item.name}
+                    </Text>
+
+                    {/* Access SKU safely if it exists */}
+                    {item.sku && (
+                      <Text style={{ fontSize: 10, color: colors.textSecondary, marginBottom: 2 }}>
+                        {item.sku}
+                      </Text>
+                    )}
+
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        fontWeight: "700",
+                        color: colors.text,
+                      }}
+                    >
+                      {formatTZS(item.price)}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 11,
+                        color: colors.textSecondary,
+                      }}
+                    >
+                      Stock: {item.stock}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
         </ScrollView>
       </View>
 
@@ -499,5 +526,3 @@ export default function NewSaleScreen() {
     </View>
   );
 }
-
-

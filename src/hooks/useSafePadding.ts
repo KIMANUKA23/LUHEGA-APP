@@ -30,3 +30,12 @@ export function useSafePadding() {
         paddingHorizontal: 16,
     };
 }
+
+/**
+ * Returns a safe top padding for headers that clears the status bar
+ */
+export function useSafeHeaderPadding() {
+    const insets = useSafeAreaInsets();
+    return insets.top + (8);
+}
+

@@ -47,8 +47,14 @@ export default function CreateSupplierScreen() {
         payment_terms: paymentTerms.trim() || null,
       });
 
+      // Better UX for Web: Navigate immediately without blocking Alert
+      if (Platform.OS === 'web') {
+        router.replace("/suppliers");
+        return;
+      }
+
       Alert.alert("Success", "Supplier created successfully!", [
-        { text: "OK", onPress: () => router.back() },
+        { text: "OK", onPress: () => router.replace("/suppliers") },
       ]);
     } catch (error: any) {
       console.log('Error creating supplier:', error);

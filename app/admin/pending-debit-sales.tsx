@@ -204,10 +204,25 @@ export default function PendingDebitSalesScreen() {
             fontFamily: "Poppins_700Bold",
           }}
         >
-          Pending Debit Sales
+          Outstanding Debts
         </Text>
 
         <View style={{ width: 40, height: 40 }} />
+      </View>
+
+      {/* Info Banner */}
+      <View style={{ backgroundColor: isDark ? "#1E293B" : "#EFF6FF", padding: 16, borderBottomWidth: 1, borderBottomColor: colors.border }}>
+        <View style={{ flexDirection: "row", gap: 12, alignItems: "center" }}>
+          <MaterialIcons name="info" size={20} color="#3B82F6" />
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 13, color: colors.text, fontWeight: "600" }}>
+              Auto-Approval Active
+            </Text>
+            <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 2 }}>
+              New sales are now automatically approved. This screen only shows historical sales waiting for review.
+            </Text>
+          </View>
+        </View>
       </View>
 
       <ScrollView
@@ -277,7 +292,7 @@ export default function PendingDebitSalesScreen() {
         >
           <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
             <View>
-              <Text style={{ fontSize: 13, color: colors.textSecondary, marginBottom: 4 }}>Pending Approvals</Text>
+              <Text style={{ fontSize: 13, color: colors.textSecondary, marginBottom: 4 }}>Total Outstanding</Text>
               <Text style={{ fontSize: 24, fontWeight: "700", color: colors.text }}>
                 {filteredSales.length}
               </Text>
@@ -285,7 +300,7 @@ export default function PendingDebitSalesScreen() {
             <View style={{ alignItems: "flex-end" }}>
               <Text style={{ fontSize: 13, color: colors.textSecondary, marginBottom: 4 }}>Total Amount</Text>
               <Text style={{ fontSize: 20, fontWeight: "700", color: colors.primary }}>
-                {formatTZS(filteredSales.reduce((sum, sale) => sum + sale.totalAmount, 0))}
+                {formatTZS(filteredSales.reduce((sum, sale) => sum + (sale.balanceRemaining || 0), 0))}
               </Text>
             </View>
           </View>

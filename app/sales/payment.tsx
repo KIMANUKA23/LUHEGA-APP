@@ -65,11 +65,11 @@ export default function SalesPaymentScreen() {
           phone: customerPhone.trim(),
         });
 
-        // Create pending debit sale (will be approved by admin)
+        // Create debit sale immediately (auto-approved)
         const newSale = await createSale({
           customerName: customerName.trim(),
           customerPhone: customerPhone.trim(),
-          saleType: "pending_debit",
+          saleType: "debit", // Direct debit, no longer pending
           totalAmount: saleTotal,
           amountPaid: 0,
           amountRemaining: saleTotal,
@@ -85,8 +85,12 @@ export default function SalesPaymentScreen() {
           })),
           staffId: user?.id,
         });
-        // Navigate to pending approval message
-        router.push("/admin/pending-debit-sales");
+
+        // Navigate to receipt immediately (all sales are now auto-approved)
+        router.replace({
+          pathname: "/sales/receipt",
+          params: { saleId: newSale.id },
+        });
       } catch (error) {
         console.log("Error creating debit sale:", error);
         alert("Failed to create sale. Please try again.");
@@ -128,6 +132,15 @@ export default function SalesPaymentScreen() {
           })),
           staffId: user?.id,
         });
+        // Pass sale ID to receipt screen - immediate for web
+        if (Platform.OS === 'web') {
+          router.replace({
+            pathname: "/sales/receipt",
+            params: { saleId: newSale.id },
+          });
+          return;
+        }
+
         // Pass sale ID to receipt screen
         router.push({
           pathname: "/sales/receipt",

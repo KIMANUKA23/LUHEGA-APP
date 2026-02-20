@@ -47,7 +47,26 @@ export async function getProducts(): Promise<Product[]> {
 
       if (error) throw error;
 
-      // Update local DB cache in background
+      // If no database (web platform), return Supabase data directly
+      if (!db) {
+        return (data || []).map(p => ({
+          part_id: p.part_id,
+          sku: p.sku,
+          name: p.name,
+          category_id: p.category_id,
+          supplier_id: p.supplier_id,
+          description: p.description,
+          cost_price: p.cost_price,
+          selling_price: p.selling_price,
+          quantity_in_stock: p.quantity_in_stock,
+          reorder_level: p.reorder_level,
+          image_url: p.image_url,
+          created_at: p.created_at,
+          updated_at: p.updated_at,
+          status: p.status || 'active',
+        }));
+      }
+
       // Update local DB cache in background with transaction
       if (data) {
         await performTransaction(async () => {
@@ -80,9 +99,13 @@ export async function getProducts(): Promise<Product[]> {
       }
     } catch (error) {
       console.log('Error fetching products online:', error);
-      // Fall through to local query
+      // Fall through to local query only if database exists
+      if (!db) return [];
     }
   }
+
+  // If no database (web), return empty array
+  if (!db) return [];
 
   // Always return from local DB to ensure that:
   // 1. Unsynced local products are included.
@@ -124,26 +147,28 @@ export async function getProductBySku(sku: string): Promise<Product | null> {
         .maybeSingle();
 
       if (!error && data) {
-        // Cache in local DB
-        try {
-          await performTransaction(async () => {
-            await db.runAsync(`
+        // Cache in local DB (skip if no database on web)
+        if (db) {
+          try {
+            await performTransaction(async () => {
+              await db.runAsync(`
               INSERT OR REPLACE INTO spareparts (
                 part_id, sku, name, category_id, supplier_id, description,
                 cost_price, selling_price, quantity_in_stock, reorder_level,
                 image_url, status, created_at, updated_at, synced
               ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
             `, [
-              data.part_id, data.sku, data.name, data.category_id, data.supplier_id,
-              data.description, data.cost_price, data.selling_price,
-              data.quantity_in_stock, data.reorder_level, data.image_url,
-              data.status || 'active',
-              data.created_at, data.updated_at,
-            ]);
-          });
-        } catch (dbError) {
-          console.log('Error caching product locally:', dbError);
-          // Continue even if caching fails
+                data.part_id, data.sku, data.name, data.category_id, data.supplier_id,
+                data.description, data.cost_price, data.selling_price,
+                data.quantity_in_stock, data.reorder_level, data.image_url,
+                data.status || 'active',
+                data.created_at, data.updated_at,
+              ]);
+            });
+          } catch (dbError) {
+            console.log('Error caching product locally:', dbError);
+            // Continue even if caching fails
+          }
         }
         return data;
       } else if (error) {
@@ -155,6 +180,8 @@ export async function getProductBySku(sku: string): Promise<Product | null> {
   }
 
   // Fallback to offline/local DB
+  if (!db) return null;
+
   try {
     const result = await db.getFirstAsync(`
       SELECT * FROM spareparts WHERE sku = ?
@@ -226,6 +253,8 @@ export async function getProduct(id: string): Promise<Product | null> {
   }
 
   // Offline: Read from local
+  if (!db) return null;
+
   const result = await db.getFirstAsync<any>(
     `SELECT * FROM spareparts WHERE part_id = ?`,
     [id]
@@ -307,31 +336,37 @@ export async function createProduct(product: Omit<Product, 'part_id' | 'created_
         throw error;
       }
 
-      // Save to local
-      await performTransaction(async () => {
-        await db.runAsync(`
+      // Save to local (skip if no database on web)
+      if (db) {
+        await performTransaction(async () => {
+          await db.runAsync(`
           INSERT INTO spareparts (
             part_id, sku, name, category_id, supplier_id, description,
             cost_price, selling_price, quantity_in_stock, reorder_level,
             image_url, status, created_at, updated_at, synced
           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
         `, [
-          data.part_id, data.sku, data.name, data.category_id, data.supplier_id,
-          data.description, data.cost_price, data.selling_price,
-          data.quantity_in_stock, data.reorder_level, data.image_url,
-          data.status || 'active',
-          data.created_at, data.updated_at,
-        ]);
-      });
+            data.part_id, data.sku, data.name, data.category_id, data.supplier_id,
+            data.description, data.cost_price, data.selling_price,
+            data.quantity_in_stock, data.reorder_level, data.image_url,
+            data.status || 'active',
+            data.created_at, data.updated_at,
+          ]);
+        });
+      }
 
-      return data;
+      return newProduct;
     } catch (error) {
       console.log('Error creating product online:', error);
       // Fall through to offline save
     }
   }
 
-  // Offline: Save locally
+  // Offline: Save locally (skip if no database on web)
+  if (!db) {
+    throw new Error('Cannot create product offline on web platform');
+  }
+
   await performTransaction(async () => {
     await db.runAsync(`
         INSERT INTO spareparts (
@@ -377,8 +412,8 @@ export async function updateProduct(id: string, updates: Partial<Product>): Prom
 
       if (error) throw error;
 
-      // Update local
-      if (data) {
+      // Update local (skip if no database on web)
+      if (data && db) {
         await performTransaction(async () => {
           await db.runAsync(`
             UPDATE spareparts SET
@@ -402,7 +437,11 @@ export async function updateProduct(id: string, updates: Partial<Product>): Prom
     }
   }
 
-  // Offline: Update local
+  // Offline: Update local (skip if no database on web)
+  if (!db) {
+    throw new Error('Cannot update product offline on web platform');
+  }
+
   const current = await getProduct(id);
   if (current) {
     const updated = { ...current, ...updates, updated_at: now };
@@ -456,6 +495,38 @@ export async function updateStock(productId: string, quantityChange: number): Pr
   return !!updated;
 }
 
+// Update stock quantity LOCALLY only (useful when server has triggers)
+export async function updateStockLocal(productId: string, quantityChange: number): Promise<boolean> {
+  const db = await ensureDatabaseInitialized();
+  if (!db) return false;
+
+  const product = await getProduct(productId);
+  if (!product) return false;
+
+  const newQuantity = Math.max(0, product.quantity_in_stock + quantityChange);
+  const now = new Date().toISOString();
+
+  await performTransaction(async () => {
+    await db.runAsync(`
+      UPDATE spareparts SET 
+        quantity_in_stock = ?, 
+        updated_at = ?, 
+        synced = 0 
+      WHERE part_id = ?
+    `, [newQuantity, now, productId]);
+  });
+
+  // Check if stock is low
+  if (newQuantity <= product.reorder_level && product.quantity_in_stock > product.reorder_level) {
+    await notificationService.createNotification({
+      type: 'low_stock',
+      message: `Low stock alert: ${product.name} (${newQuantity} units remaining)`,
+    });
+  }
+
+  return true;
+}
+
 // Delete product (Admin only)
 export async function deleteProduct(productId: string): Promise<boolean> {
   const online = await isOnline();
@@ -482,10 +553,12 @@ export async function deleteProduct(productId: string): Promise<boolean> {
 
       logProductAction('DELETE_PRODUCT_SUPABASE_SUCCESS', { productId });
 
-      // Delete from local DB
-      await performTransaction(async () => {
-        await db.runAsync('DELETE FROM spareparts WHERE part_id = ?', [productId]);
-      });
+      // Delete from local DB (skip if no database on web)
+      if (db) {
+        await performTransaction(async () => {
+          await db.runAsync('DELETE FROM spareparts WHERE part_id = ?', [productId]);
+        });
+      }
 
       logProductAction('DELETE_PRODUCT_LOCAL_SUCCESS', { productId });
       return true;
@@ -495,7 +568,11 @@ export async function deleteProduct(productId: string): Promise<boolean> {
     }
   }
 
-  // Offline: Mark for deletion in sync queue
+  // Offline: Mark for deletion in sync queue (skip if no database on web)
+  if (!db) {
+    throw new Error('Cannot delete product offline on web platform');
+  }
+
   const now = new Date().toISOString();
 
   // Delete from local DB
@@ -537,7 +614,11 @@ export async function updateProductStatus(productId: string, status: string): Pr
     }
   }
 
-  // Local update
+  // Local update (skip if no database on web)
+  if (!db) {
+    throw new Error('Cannot update product status offline on web platform');
+  }
+
   await performTransaction(async () => {
     await db.runAsync(
       'UPDATE spareparts SET status = ?, updated_at = ?, synced = 0 WHERE part_id = ?',

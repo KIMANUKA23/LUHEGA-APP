@@ -19,7 +19,7 @@ export async function getNotifications(userId: string | null, isAdmin: boolean =
   const online = await isOnline();
   const db = getOfflineDB();
 
-  if (online && db) {
+  if (online) {
     try {
       let query = supabase
         .from('notifications')
@@ -40,29 +40,42 @@ export async function getNotifications(userId: string | null, isAdmin: boolean =
       const { data, error } = await query;
       if (error) throw error;
 
-      // Cache in local DB (Intelligent sync)
-      await performTransaction(async () => {
-        if (!db) return;
-
-        for (const notif of data || []) {
-          await db.runAsync(`
-            INSERT OR IGNORE INTO notifications (
-              notification_id, user_id, type, message, status, created_at, read_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)
-          `, [
-            notif.notification_id, notif.user_id, notif.type, notif.message,
-            notif.status, notif.created_at, notif.read_at,
-          ]);
-
-          // Don't overwrite local 'read' status with server 'unread'
-          if (notif.status === 'read') {
+      // Cache in local DB (Intelligent sync) - skip if no database on web
+      if (db) {
+        await performTransaction(async () => {
+          for (const notif of data || []) {
             await db.runAsync(`
-              UPDATE notifications SET status = 'read', read_at = ? 
-              WHERE notification_id = ? AND status = 'unread'
-            `, [notif.read_at, notif.notification_id]);
+              INSERT OR IGNORE INTO notifications (
+                notification_id, user_id, type, message, status, created_at, read_at
+              ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            `, [
+              notif.notification_id, notif.user_id, notif.type, notif.message,
+              notif.status, notif.created_at, notif.read_at,
+            ]);
+
+            // Don't overwrite local 'read' status with server 'unread'
+            if (notif.status === 'read') {
+              await db.runAsync(`
+                UPDATE notifications SET status = 'read', read_at = ? 
+                WHERE notification_id = ? AND status = 'unread'
+              `, [notif.read_at, notif.notification_id]);
+            }
           }
-        }
-      });
+        });
+      }
+
+      // On web (no db), return the online data directly
+      if (!db) {
+        return (data || []).map((n: any) => ({
+          notification_id: n.notification_id,
+          user_id: n.user_id,
+          type: n.type,
+          message: n.message,
+          status: n.status,
+          created_at: n.created_at,
+          read_at: n.read_at,
+        }));
+      }
     } catch (error) {
       console.log('Error fetching notifications online:', error);
     }

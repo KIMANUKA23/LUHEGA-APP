@@ -73,7 +73,7 @@ export async function createPurchaseOrder(poData: {
     created_at: now,
   }));
 
-  if (online && db) {
+  if (online) {
     try {
       const { data: poRecord, error: poError } = await supabase
         .from('purchaseorders')
@@ -99,28 +99,30 @@ export async function createPurchaseOrder(poData: {
 
       if (itemsError) throw itemsError;
 
-      // Save to local
-      await performTransaction(async () => {
-        await db.runAsync(`
-          INSERT INTO purchaseorders (
-            po_id, supplier_id, created_by, status, total_cost, date_created, expected_date, synced
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, 1)
-        `, [
-          poRecord.po_id, poRecord.supplier_id, poRecord.created_by, poRecord.status,
-          poRecord.total_cost, poRecord.date_created, poRecord.expected_date,
-        ]);
-
-        for (const item of poItems) {
+      // Save to local (skip if no database on web)
+      if (db) {
+        await performTransaction(async () => {
           await db.runAsync(`
-            INSERT INTO purchaseitems (
-              po_item_id, po_id, part_id, quantity, unit_cost, subtotal, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO purchaseorders (
+              po_id, supplier_id, created_by, status, total_cost, date_created, expected_date, synced
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, 1)
           `, [
-            item.po_item_id, item.po_id, item.part_id, item.quantity,
-            item.unit_cost, item.subtotal, item.created_at,
+            poRecord.po_id, poRecord.supplier_id, poRecord.created_by, poRecord.status,
+            poRecord.total_cost, poRecord.date_created, poRecord.expected_date,
           ]);
-        }
-      });
+
+          for (const item of poItems) {
+            await db.runAsync(`
+              INSERT INTO purchaseitems (
+                po_item_id, po_id, part_id, quantity, unit_cost, subtotal, created_at
+              ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            `, [
+              item.po_item_id, item.po_id, item.part_id, item.quantity,
+              item.unit_cost, item.subtotal, item.created_at,
+            ]);
+          }
+        });
+      }
 
       return { ...poRecord, items: poItems, synced: true };
     } catch (error) {
@@ -164,7 +166,7 @@ export async function deliverPurchaseOrder(poId: string): Promise<boolean> {
   const po = await getPurchaseOrder(poId);
   if (!po || (po.status !== 'pending' && po.status !== 'approved')) return false;
 
-  if (online && db) {
+  if (online) {
     try {
       // Update PO status
       const { error: updateError } = await supabase
@@ -179,17 +181,19 @@ export async function deliverPurchaseOrder(poId: string): Promise<boolean> {
         await updateStock(item.part_id, item.quantity);
       }
 
-      // Update local
-      await performTransaction(async () => {
-        await db.runAsync(`
-          UPDATE purchaseorders SET status = 'delivered', synced = 1 WHERE po_id = ?
-        `, [poId]);
+      // Update local (skip if no database on web)
+      if (db) {
+        await performTransaction(async () => {
+          await db.runAsync(`
+            UPDATE purchaseorders SET status = 'delivered', synced = 1 WHERE po_id = ?
+          `, [poId]);
 
-        // Update stock locally
-        for (const item of po.items) {
-          await updateStock(item.part_id, item.quantity);
-        }
-      });
+          // Update stock locally
+          for (const item of po.items) {
+            await updateStock(item.part_id, item.quantity);
+          }
+        });
+      }
 
       return true;
     } catch (error) {
@@ -223,7 +227,7 @@ export async function approvePurchaseOrder(poId: string): Promise<boolean> {
   const po = await getPurchaseOrder(poId);
   if (!po || po.status !== 'pending') return false;
 
-  if (online && db) {
+  if (online) {
     try {
       const { error } = await supabase
         .from('purchaseorders')
@@ -232,11 +236,13 @@ export async function approvePurchaseOrder(poId: string): Promise<boolean> {
 
       if (error) throw error;
 
-      await performTransaction(async () => {
-        await db.runAsync(`
-          UPDATE purchaseorders SET status = 'approved', synced = 1 WHERE po_id = ?
-        `, [poId]);
-      });
+      if (db) {
+        await performTransaction(async () => {
+          await db.runAsync(`
+            UPDATE purchaseorders SET status = 'approved', synced = 1 WHERE po_id = ?
+          `, [poId]);
+        });
+      }
 
       return true;
     } catch (error) {
@@ -262,7 +268,7 @@ export async function getAllPurchaseOrders(): Promise<POWithItems[]> {
   const online = await isOnline();
   const db = getOfflineDB();
 
-  if (online && db) {
+  if (online) {
     try {
       const { data: pos, error } = await supabase
         .from('purchaseorders')

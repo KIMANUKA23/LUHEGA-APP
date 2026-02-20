@@ -10,6 +10,7 @@ import {
   StatusBar,
   Alert,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -19,6 +20,7 @@ import * as inventoryService from "../../../src/services/inventoryService";
 import * as categoryService from "../../../src/services/categoryService";
 import * as supplierService from "../../../src/services/supplierService";
 import { useTheme } from "../../../src/context/ThemeContext";
+import { pickImage, uploadImage } from "../../../src/services/storageService";
 
 export default function InventoryEdit() {
   // Guard: Admin only
@@ -38,7 +40,9 @@ export default function InventoryEdit() {
     sellingPrice: "",
     stock: "",
     reorderLevel: "",
+    imageUrl: "",
   });
+  const [imageUri, setImageUri] = useState<string | null>(null);
   const [categories, setCategories] = useState<Array<{ category_id: string; name: string }>>([]);
   const [suppliers, setSuppliers] = useState<Array<{ supplier_id: string; name: string }>>([]);
   const [loading, setLoading] = useState(true);
@@ -87,6 +91,7 @@ export default function InventoryEdit() {
         sellingPrice: product.selling_price?.toString() || "0",
         stock: product.quantity_in_stock?.toString() || "0",
         reorderLevel: product.reorder_level?.toString() || "0",
+        imageUrl: product.image_url || "",
       });
     } catch (error) {
       console.log("Error loading product:", error);
@@ -125,6 +130,11 @@ export default function InventoryEdit() {
       const productId = Array.isArray(id) ? id[0] : id;
       if (!productId) throw new Error("Product ID is missing");
 
+      let finalImageUrl = formData.imageUrl;
+      if (imageUri) {
+        finalImageUrl = await uploadImage(imageUri, 'spareparts', 'products') || formData.imageUrl;
+      }
+
       await inventoryService.updateProduct(productId, {
         sku: formData.sku.trim(),
         name: formData.name.trim(),
@@ -135,6 +145,7 @@ export default function InventoryEdit() {
         selling_price: sellingPrice,
         quantity_in_stock: stock,
         reorder_level: reorderLevel,
+        image_url: finalImageUrl,
       });
 
       Alert.alert("Success", "Product updated successfully!", [
@@ -282,6 +293,62 @@ export default function InventoryEdit() {
         contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
       >
+        {/* Image Picker */}
+        <View style={{ alignItems: 'center', marginBottom: 20 }}>
+          <TouchableOpacity
+            onPress={async () => {
+              const uri = await pickImage();
+              if (uri) setImageUri(uri);
+            }}
+            style={{
+              width: 120,
+              height: 120,
+              borderRadius: 16,
+              backgroundColor: colors.surface,
+              borderWidth: 2,
+              borderStyle: 'dashed',
+              borderColor: colors.border,
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden',
+            }}
+          >
+            {imageUri ? (
+              <Image
+                source={{ uri: imageUri }}
+                style={{ width: '100%', height: '100%' }}
+                resizeMode="cover"
+              />
+            ) : formData.imageUrl ? (
+              <Image
+                source={{ uri: formData.imageUrl }}
+                style={{ width: '100%', height: '100%' }}
+                resizeMode="cover"
+              />
+            ) : (
+              <View style={{ alignItems: 'center' }}>
+                <MaterialIcons name="add-a-photo" size={32} color={colors.textSecondary} />
+                <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 4 }}>
+                  Add Image
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+          {(imageUri || formData.imageUrl) && (
+            <TouchableOpacity
+              onPress={() => {
+                setImageUri(null);
+                setFormData({ ...formData, imageUrl: "" });
+              }}
+              style={{ marginTop: 8 }}
+            >
+              <Text style={{ color: colors.error, fontSize: 12, fontWeight: '600' }}>
+                Remove Image
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
         {/* Basic Information */}
         <View
           style={styles.card}

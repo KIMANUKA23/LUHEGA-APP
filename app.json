@@ -3,10 +3,16 @@
     "name": "LUHEGA-APP",
     "slug": "luhega-app-v1",
     "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "scheme": "luhega-app",
+    "updates": {
+      "url": "https://u.expo.dev/79f5f0f3-9477-4467-9759-45053228809e"
+    },
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -30,6 +36,11 @@
     "plugins": [
       "expo-router"
     ],
+    "extra": {
+      "eas": {
+        "projectId": "79f5f0f3-9477-4467-9759-45053228809e"
+      }
+    },
     "experiments": {
       "typedRoutes": false
     }

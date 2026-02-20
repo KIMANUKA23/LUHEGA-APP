@@ -1,15 +1,22 @@
 // Offline SQLite Database Layer
 // This handles local data storage when offline
 import * as SQLite from 'expo-sqlite';
+import { Platform } from 'react-native';
 
 // Initialize SQLite database
 let db: SQLite.SQLiteDatabase | null = null;
-let initPromise: Promise<SQLite.SQLiteDatabase> | null = null;
+let initPromise: Promise<SQLite.SQLiteDatabase | null> | null = null;
 
-export async function initOfflineDB(): Promise<SQLite.SQLiteDatabase> {
+export async function initOfflineDB(): Promise<SQLite.SQLiteDatabase | null> {
   if (initPromise) return initPromise;
 
   initPromise = (async () => {
+    // SQLite is not supported on web - return null and app will run online-only
+    if (Platform.OS === 'web') {
+      console.log('[Database] Web platform detected - running in online-only mode');
+      return null;
+    }
+
     try {
       db = await SQLite.openDatabaseAsync('luhega_offline.db');
 
@@ -33,7 +40,18 @@ export async function initOfflineDB(): Promise<SQLite.SQLiteDatabase> {
         'ALTER TABLE users ADD COLUMN emergency_contact TEXT;',
         "ALTER TABLE inventoryaudit ADD COLUMN status TEXT DEFAULT 'in_progress';",
         'ALTER TABLE users ADD COLUMN synced INTEGER DEFAULT 1;',
-        "ALTER TABLE spareparts ADD COLUMN status TEXT DEFAULT 'active';"
+        "ALTER TABLE spareparts ADD COLUMN status TEXT DEFAULT 'active';",
+        `CREATE TABLE IF NOT EXISTS expenses (
+          id TEXT PRIMARY KEY,
+          category TEXT NOT NULL,
+          amount REAL NOT NULL,
+          description TEXT,
+          staff_id TEXT NOT NULL,
+          staff_name TEXT NOT NULL,
+          date TEXT NOT NULL,
+          synced INTEGER DEFAULT 0
+        );`,
+        'ALTER TABLE saleitems ADD COLUMN cost_price REAL DEFAULT 0;'
       ];
 
       for (const sql of migrations) {
@@ -126,6 +144,7 @@ async function createTables() {
       quantity INTEGER NOT NULL,
       unit_price REAL NOT NULL,
       subtotal REAL NOT NULL,
+      cost_price REAL DEFAULT 0,
       return_status TEXT DEFAULT 'none',
       created_at TEXT,
       FOREIGN KEY (sale_id) REFERENCES sales(sale_id) ON DELETE CASCADE
@@ -343,6 +362,12 @@ export async function performTransaction<T>(
 ): Promise<T> {
   return await runQueued(async () => {
     const database = await getInternalDB();
+
+    // On web (no database), just execute the callback without transaction
+    if (!database) {
+      return await callback();
+    }
+
     let res: T | undefined;
 
     // Track transaction state for re-entrancy
@@ -396,15 +421,16 @@ async function createProxiedDB(database: SQLite.SQLiteDatabase): Promise<SQLite.
   return proxiedDb;
 }
 
-async function getInternalDB(): Promise<SQLite.SQLiteDatabase> {
+async function getInternalDB(): Promise<SQLite.SQLiteDatabase | null> {
   if (!db) {
     await initOfflineDB();
   }
-  return db!;
+  return db;
 }
 
-export async function ensureDatabaseInitialized(): Promise<SQLite.SQLiteDatabase> {
+export async function ensureDatabaseInitialized(): Promise<SQLite.SQLiteDatabase | null> {
   const database = await getInternalDB();
+  if (!database) return null; // Web platform - no database
   return await createProxiedDB(database);
 }
 
@@ -417,6 +443,7 @@ export function getOfflineDB(): SQLite.SQLiteDatabase | null {
 
 export async function clearOfflineDB() {
   const database = await ensureDatabaseInitialized();
+  if (!database) return; // No database on web
 
   await database.execAsync(`
     DELETE FROM sales WHERE synced = 1;

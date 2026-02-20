@@ -188,12 +188,28 @@ export default function StartReturnScreen() {
       }
 
       if (successCount > 0) {
+        const message = errors.length > 0
+          ? `Return submitted for ${successCount} item(s). \n\nFailed: ${errors.join(", ")}`
+          : `Return request submitted for ${successCount} item(s). Admin will review it.`;
+
+        // Better UX for Web: Navigate immediately without blocking Alert
+        if (Platform.OS === 'web') {
+          router.dismissAll();
+          router.replace("/(tabs)/returns");
+          return;
+        }
+
         Alert.alert(
           "Success",
-          errors.length > 0
-            ? `Return submitted for ${successCount} item(s). \n\nFailed: ${errors.join(", ")}`
-            : `Return request submitted for ${successCount} item(s). Admin will review it.`,
-          [{ text: "View Returns", onPress: () => router.replace("/returns/list") }]
+          message,
+          [{
+            text: "View Returns", onPress: () => {
+              if (router.canDismiss()) {
+                router.dismissAll();
+              }
+              router.replace("/(tabs)/returns");
+            }
+          }]
         );
       } else {
         Alert.alert("Error", `Failed to submit returns:\n${errors.join("\n")}`);

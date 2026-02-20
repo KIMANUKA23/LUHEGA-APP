@@ -2,8 +2,9 @@
 import { supabase } from '../lib/supabase';
 import { ensureDatabaseInitialized, performTransaction } from '../lib/database';
 import { isOnline } from './syncService';
-import { updateStock } from './inventoryService';
+import * as inventoryService from './inventoryService';
 import * as notificationService from './notificationService';
+import * as debtService from './debtService';
 import uuid from 'react-native-uuid';
 
 export type ReturnRequest = {
@@ -61,19 +62,21 @@ export async function createReturn(returnData: {
 
       if (error) throw error;
 
-      // Cache in local
-      await performTransaction(async () => {
-        await db.runAsync(`
-          INSERT INTO returns (
-            return_id, sale_item_id, sale_id, user_id, product_id, product_name,
-            quantity, reason, condition, status, date_returned, notes, synced
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
-        `, [
-          data.return_id, data.sale_item_id, data.sale_id, data.user_id,
-          data.product_id, data.product_name, data.quantity, data.reason,
-          data.condition, data.status, data.date_returned, data.notes,
-        ]);
-      });
+      // Cache in local (skip if no database on web)
+      if (db) {
+        await performTransaction(async () => {
+          await db.runAsync(`
+            INSERT INTO returns (
+              return_id, sale_item_id, sale_id, user_id, product_id, product_name,
+              quantity, reason, condition, status, date_returned, notes, synced
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+          `, [
+            data.return_id, data.sale_item_id, data.sale_id, data.user_id,
+            data.product_id, data.product_name, data.quantity, data.reason,
+            data.condition, data.status, data.date_returned, data.notes,
+          ]);
+        });
+      }
 
       // Create notification for admins about new return request
       await notificationService.createNotification({
@@ -97,11 +100,13 @@ export async function createReturn(returnData: {
             console.log('DEBUG: Supabase update successful');
           }
 
-          await performTransaction(async () => {
-            await db.runAsync(`
-              UPDATE saleitems SET return_status = 'full' WHERE sale_item_id = ?
-            `, [returnData.sale_item_id]);
-          });
+          if (db) {
+            await performTransaction(async () => {
+              await db.runAsync(`
+                UPDATE saleitems SET return_status = 'full' WHERE sale_item_id = ?
+              `, [returnData.sale_item_id]);
+            });
+          }
 
           console.log('DEBUG: Local DB update completed');
         } catch (updateErr) {
@@ -134,7 +139,15 @@ export async function createReturn(returnData: {
     synced: false,
   };
 
-  // Offline: Save locally
+  // Offline: Save locally (skip if no database on web)
+  if (!db) {
+    // If online save already finished, it's fine. 
+    // But createReturn on web should probably return the online result early.
+    // Wait, the online block already returns data and synced: true.
+    // This part only runs if online failed or skip.
+    throw new Error('Cannot create return offline on web platform');
+  }
+
   await performTransaction(async () => {
     await db.runAsync(`
       INSERT INTO returns (
@@ -180,7 +193,7 @@ export async function approveReturn(returnId: string): Promise<boolean> {
   const returnReq = await getReturn(returnId);
   if (!returnReq || returnReq.status !== 'pending') return false;
 
-  if (online && db) {
+  if (online) {
     try {
       // Update return status
       const { error: updateError } = await supabase
@@ -190,43 +203,90 @@ export async function approveReturn(returnId: string): Promise<boolean> {
 
       if (updateError) throw updateError;
 
-      // If condition is 'good', increase stock
+      // If condition is 'good', increase stock LOCALLY (server handles remote via trigger)
       if (returnReq.condition === 'good') {
-        await updateStock(returnReq.product_id, returnReq.quantity);
+        await inventoryService.updateStockLocal(returnReq.product_id, returnReq.quantity);
       }
 
-      // Update local
-      await performTransaction(async () => {
-        await db.runAsync(`
-          UPDATE returns SET status = 'approved', synced = 1 WHERE return_id = ?
-        `, [returnId]);
-      });
+      // NEW: Reduce debt balance if sale is linked
+      if (returnReq.sale_id) {
+        try {
+          // Calculate reduction amount (quantity * price from sale item if possible, or just default to 0)
+          // For now, we'll need to fetch the sale item to get the price
+          const { data: saleItem } = await supabase
+            .from('saleitems')
+            .select('unit_price')
+            .eq('sale_item_id', returnReq.sale_item_id)
+            .single();
 
-      // Update stock locally
-      if (returnReq.condition === 'good') {
-        await updateStock(returnReq.product_id, returnReq.quantity);
+          if (saleItem) {
+            const reductionAmount = returnReq.quantity * saleItem.unit_price;
+            await debtService.reduceDebtBalance(returnReq.sale_id, reductionAmount);
+          }
+        } catch (err) {
+          console.log('Error reducing debt on return approval:', err);
+        }
+      }
+
+      // Update local status if database exists (web handles online only)
+      if (db) {
+        await performTransaction(async () => {
+          await db.runAsync(`
+            UPDATE returns SET status = 'approved', synced = 1 WHERE return_id = ?
+          `, [returnId]);
+        });
+      }
+
+      // Notify staff member about approval
+      if (returnReq.user_id) {
+        await notificationService.createNotification({
+          type: 'return_approved',
+          message: `✅ Return Approved\n${returnReq.product_name} (${returnReq.quantity}x)\n${returnReq.condition === 'good' ? 'Stock has been updated' : 'Marked as ' + returnReq.condition}`,
+          user_id: returnReq.user_id,
+        });
       }
 
       return true;
     } catch (error) {
       console.log('Error approving return online:', error);
-      return false;
+      // Fall through to offline if DB exists, otherwise fail
+      if (!db) throw error;
     }
   }
 
-  // Offline: Update local
+  // Offline: Update local (skip if no database on web)
+  if (!db) {
+    throw new Error('Cannot approve return offline on web platform. Please check your internet connection.');
+  }
+
   await performTransaction(async () => {
     await db.runAsync(`
       UPDATE returns SET status = 'approved', synced = 0 WHERE return_id = ?
     `, [returnId]);
+
+    // Update stock locally
+    if (returnReq.condition === 'good') {
+      await inventoryService.updateStockLocal(returnReq.product_id, returnReq.quantity);
+    }
+
+    // NEW: Reduce debt balance locally if sale is linked
+    if (returnReq.sale_id && db) {
+      try {
+        const saleItem = await db.getFirstAsync<any>(
+          'SELECT unit_price FROM saleitems WHERE sale_item_id = ?',
+          [returnReq.sale_item_id]
+        );
+        if (saleItem) {
+          const reductionAmount = returnReq.quantity * saleItem.unit_price;
+          await debtService.reduceDebtBalance(returnReq.sale_id, reductionAmount);
+        }
+      } catch (err) {
+        console.log('Error reducing debt locally on return approval:', err);
+      }
+    }
   });
 
-  // Update stock locally (will sync later)
-  if (returnReq.condition === 'good') {
-    await updateStock(returnReq.product_id, returnReq.quantity);
-  }
-
-  // Notify staff member about approval (Moved outside online block to ensure it works offline too)
+  // Notify staff member about approval
   if (returnReq.user_id) {
     await notificationService.createNotification({
       type: 'return_approved',
@@ -252,26 +312,44 @@ export async function rejectReturn(returnId: string): Promise<boolean> {
 
       if (error) throw error;
 
-      await performTransaction(async () => {
-        if (!db) return;
-        await db.runAsync(`
-          UPDATE returns SET status = 'rejected', synced = 1 WHERE return_id = ?
-        `, [returnId]);
-      });
+      if (db) {
+        await performTransaction(async () => {
+          await db.runAsync(`
+            UPDATE returns SET status = 'rejected', synced = 1 WHERE return_id = ?
+          `, [returnId]);
+        });
+      }
+
+      // Notify staff member about rejection
+      const returnReq = await getReturn(returnId);
+      if (returnReq?.user_id) {
+        await notificationService.createNotification({
+          type: 'return_rejected',
+          message: `❌ Return Rejected\n${returnReq.product_name} (${returnReq.quantity}x)\nPlease contact admin for details`,
+          user_id: returnReq.user_id,
+        });
+      }
+
+      return true;
     } catch (error) {
       console.log('Error rejecting return online:', error);
-      // Continue to local update anyway
+      // Fall through to offline if DB exists
+      if (!db) throw error;
     }
   }
 
-  // Offline/Local: Always update local DB
+  // Offline/Local: Skip if no database on web
+  if (!db) {
+    throw new Error('Cannot reject return offline on web platform. Please check your internet connection.');
+  }
+
   await performTransaction(async () => {
     await db.runAsync(`
-      UPDATE returns SET status = 'rejected', synced = ? WHERE return_id = ?
-    `, [online ? 1 : 0, returnId]);
+      UPDATE returns SET status = 'rejected', synced = 0 WHERE return_id = ?
+    `, [returnId]);
   });
 
-  // Notify staff member about rejection (Always happens locally now, will sync if needed)
+  // Notify staff member about rejection
   const returnReq = await getReturn(returnId);
   if (returnReq?.user_id) {
     await notificationService.createNotification({
@@ -302,31 +380,51 @@ export async function getAllReturns(userId?: string | null, isAdmin: boolean = f
       }
 
       console.log('📦 [Returns] Fetching from Supabase...');
-      console.log('📦 [Returns] Fetching from Supabase...');
       const { data, error } = await query;
       console.log(`📦 [Returns] Supabase returned ${data?.length || 0} items`);
 
       if (error) throw error;
 
-      // Cache in local
-      for (const returnReq of data || []) {
-        await performTransaction(async () => {
-          if (!db) return;
-          await db.runAsync(`
-            INSERT OR REPLACE INTO returns (
-              return_id, sale_item_id, sale_id, user_id, product_id, product_name,
-              quantity, reason, condition, status, date_returned, notes, synced
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
-          `, [
-            returnReq.return_id, returnReq.sale_item_id, returnReq.sale_id, returnReq.user_id,
-            returnReq.product_id, returnReq.product_name, returnReq.quantity, returnReq.reason,
-            returnReq.condition, returnReq.status, returnReq.date_returned, returnReq.notes,
-          ]);
-        });
+      // Cache in local (skip if no database on web)
+      if (db) {
+        for (const returnReq of data || []) {
+          await performTransaction(async () => {
+            await db.runAsync(`
+              INSERT OR REPLACE INTO returns (
+                return_id, sale_item_id, sale_id, user_id, product_id, product_name,
+                quantity, reason, condition, status, date_returned, notes, synced
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+            `, [
+              returnReq.return_id, returnReq.sale_item_id, returnReq.sale_id, returnReq.user_id,
+              returnReq.product_id, returnReq.product_name, returnReq.quantity, returnReq.reason,
+              returnReq.condition, returnReq.status, returnReq.date_returned, returnReq.notes,
+            ]);
+          });
+        }
+      }
+
+      // On web (no db), return the online data directly
+      if (!db) {
+        return (data || []).map(r => ({
+          return_id: r.return_id,
+          sale_item_id: r.sale_item_id,
+          sale_id: r.sale_id,
+          user_id: r.user_id,
+          product_id: r.product_id,
+          product_name: r.product_name,
+          quantity: r.quantity,
+          reason: r.reason,
+          condition: r.condition,
+          status: r.status,
+          date_returned: r.date_returned,
+          notes: r.notes,
+          synced: true,
+        }));
       }
     } catch (error) {
       console.log('Error fetching returns online:', error);
-      // Fall through to local query
+      // Fall through to local query if DB exists
+      if (!db) return [];
     }
   }
 
@@ -377,23 +475,27 @@ export async function getReturn(returnId: string): Promise<ReturnRequest | null>
         .single();
 
       if (!error && data) {
-        // Cache locally
-        await performTransaction(async () => {
-          await db.runAsync(`
-            INSERT OR REPLACE INTO returns (
-              return_id, sale_item_id, sale_id, user_id, product_id, product_name,
-              quantity, reason, condition, status, date_returned, notes, synced
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
-          `, [
-            data.return_id, data.sale_item_id, data.sale_id, data.user_id,
-            data.product_id, data.product_name, data.quantity, data.reason,
-            data.condition, data.status, data.date_returned, data.notes,
-          ]);
-        });
-        return data;
+        // Cache locally (skip if no database on web)
+        if (db) {
+          await performTransaction(async () => {
+            await db.runAsync(`
+              INSERT OR REPLACE INTO returns (
+                return_id, sale_item_id, sale_id, user_id, product_id, product_name,
+                quantity, reason, condition, status, date_returned, notes, synced
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+            `, [
+              data.return_id, data.sale_item_id, data.sale_id, data.user_id,
+              data.product_id, data.product_name, data.quantity, data.reason,
+              data.condition, data.status, data.date_returned, data.notes,
+            ]);
+          });
+        }
+        return { ...data, synced: true };
       }
     } catch (error) {
       console.log('Error fetching return online:', error);
+      // Fall through to local query if DB exists
+      if (!db) return null;
     }
   }
 

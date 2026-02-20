@@ -1,7 +1,9 @@
 // App Context - Updated to use Supabase with offline fallback
 import React, { createContext, useContext, useState, useCallback, useEffect, useMemo, ReactNode } from "react";
+import { supabase } from "../lib/supabase";
+import { Platform } from "react-native";
 import { useAuth } from "./AuthContext";
-import { syncAll, startPeriodicSync } from "../services/syncService";
+import { syncAll, syncAllDebounced, startPeriodicSync, setSyncConfig } from "../services/syncService";
 import * as inventoryService from "../services/inventoryService";
 import * as salesService from "../services/salesService";
 import * as debtService from "../services/debtService";
@@ -14,6 +16,8 @@ import { SaleWithItems as ServiceSale } from "../services/salesService";
 import { Debt as ServiceDebt } from "../services/debtService";
 import { ReturnRequest as ServiceReturn } from "../services/returnsService";
 import { POWithItems as ServicePO } from "../services/poService";
+import * as expenseService from "../services/expenseService";
+import { Expense as ServiceExpense } from "../services/expenseService";
 
 // Legacy types for backward compatibility
 export type Product = {
@@ -93,6 +97,18 @@ export type PurchaseOrder = {
   expectedDate?: string | null;
 };
 
+export type Expense = {
+  id: string;
+  category: string;
+  amount: number;
+  description: string | null;
+  staffId: string;
+  staffName: string;
+  date: string;
+  synced: boolean;
+};
+
+
 type AppContextType = {
   // State
   products: Product[];
@@ -100,8 +116,10 @@ type AppContextType = {
   debts: Debt[];
   returns: ReturnRequest[];
   purchaseOrders: PurchaseOrder[];
+  expenses: Expense[];
   loading: boolean;
   syncing: boolean;
+
 
   // Product/Inventory actions
   getProduct: (id: string) => Product | undefined;
@@ -138,8 +156,17 @@ type AppContextType = {
   getAllPurchaseOrders: () => PurchaseOrder[];
   refreshPurchaseOrders: () => Promise<void>;
 
+  // Expense actions
+  createExpense: (expense: Omit<Expense, "id" | "date" | "synced">) => Promise<Expense>;
+  updateExpense: (id: string, expense: Partial<Expense>) => Promise<boolean>;
+  deleteExpense: (id: string) => Promise<boolean>;
+  getExpense: (id: string) => Expense | undefined;
+  getAllExpenses: () => Expense[];
+  refreshExpenses: () => Promise<Expense[]>;
+
   // Sync
   manualSync: () => Promise<void>;
+
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -163,7 +190,8 @@ function serviceProductToLegacy(sp: ServiceProduct, categories: Map<string, stri
 }
 
 // Helper: Convert service sale to legacy format
-function serviceSaleToLegacy(ss: ServiceSale): Sale {
+// Helper: Convert service sale to legacy format
+function serviceSaleToLegacy(ss: ServiceSale, productsMap?: Map<string, string>): Sale {
   return {
     id: ss.sale_id,
     customerName: ss.customer_name || undefined,
@@ -179,7 +207,7 @@ function serviceSaleToLegacy(ss: ServiceSale): Sale {
     items: ss.items.map(item => ({
       id: item.sale_item_id,
       productId: item.part_id,
-      productName: "", // Will be fetched separately if needed
+      productName: productsMap?.get(item.part_id) || "Unknown Product",
       quantity: item.quantity,
       unitPrice: item.unit_price,
       subtotal: item.subtotal,
@@ -221,6 +249,21 @@ function serviceReturnToLegacy(sr: ServiceReturn): ReturnRequest {
   };
 }
 
+// Helper: Convert service expense to legacy format
+function serviceExpenseToLegacy(se: ServiceExpense): Expense {
+  return {
+    id: se.id,
+    category: se.category,
+    amount: se.amount,
+    description: se.description,
+    staffId: se.staff_id,
+    staffName: se.staff_name,
+    date: se.date,
+    synced: se.synced,
+  };
+}
+
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const { user, isAdmin } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
@@ -228,8 +271,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [debts, setDebts] = useState<Debt[]>([]);
   const [returns, setReturns] = useState<ReturnRequest[]>([]);
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
+
 
   // Category and Supplier maps for conversion
   const [categoriesMap, setCategoriesMap] = useState<Map<string, string>>(new Map());
@@ -241,12 +286,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     sales: false,
     debts: false,
     returns: false,
-    pos: false
+    pos: false,
+    expenses: false
   });
+
 
   // Initialize data on mount and when user changes
   useEffect(() => {
     if (user) {
+      setSyncConfig(user.id, isAdmin);
       loadInitialData();
       // Start periodic sync (reduced frequency for better performance)
       const cleanup = startPeriodicSync(60000); // Every 60 seconds (was 30)
@@ -262,7 +310,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       await Promise.all([
         refreshProducts(),
         refreshSales(),
+        refreshExpenses(),
       ]);
+
     } catch (error) {
       console.log("Error loading initial data:", error);
     } finally {
@@ -277,6 +327,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     console.log("DEBUG: refreshProducts started");
     try {
+      // Supabase Keep-Alive Ping: prevents project pausing on free tier
+      if (Platform.OS !== 'web') {
+        const { error: pingError } = await supabase.from('spareparts').select('part_id').limit(1);
+        if (pingError) console.warn('Supabase Keep-Alive Ping failed:', pingError.message);
+      }
+
       const serviceProducts = await inventoryService.getProducts();
       console.log(`DEBUG: serviceProducts count: ${serviceProducts.length}`);
 
@@ -333,9 +389,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     try {
       const serviceSales = await salesService.getSales(user?.id || null, isAdmin);
       console.log(`DEBUG: serviceSales count: ${serviceSales.length}`);
-      const legacySales = serviceSales.map(serviceSaleToLegacy);
-      setSales(legacySales);
-      return legacySales;
+      const productsMap = new Map(products.map(p => [p.id, p.name]));
+      const formattedSales = serviceSales
+        .map(s => serviceSaleToLegacy(s, productsMap))
+        .sort((a, b) => new Date(b.saleDate).getTime() - new Date(a.saleDate).getTime());
+      setSales(formattedSales);
+      return formattedSales;
     } catch (error) {
       console.log("Error refreshing sales:", error);
       return [];
@@ -389,10 +448,39 @@ export function AppProvider({ children }: { children: ReactNode }) {
         notes: saleData.notes || null,
       });
 
-      // Refresh sales and products
-      await Promise.all([refreshSales(), refreshProducts(), refreshDebts()]);
+      console.log(`DEBUG: createSale service result:`, {
+        id: serviceSale.sale_id,
+        itemsCount: serviceSale.items?.length,
+        synced: serviceSale.synced
+      });
 
-      return serviceSaleToLegacy(serviceSale);
+      // Map service properties to legacy UI properties
+      const legacySale = serviceSaleToLegacy(serviceSale);
+
+      console.log(`DEBUG: createSale converted to legacy:`, {
+        id: legacySale.id,
+        hasItems: !!legacySale.items
+      });
+
+      // Gently request a sync in the background so data is pushed to Supabase
+      // and pulled down to other devices, without blocking UI/navigation.
+      syncAllDebounced();
+
+      // Refresh sales and products
+      // For WEB: No need to wait for all if it's already fast, but let's ensure it doesn't block the return
+      if (Platform.OS === 'web') {
+        refreshSales();
+        refreshProducts();
+        refreshDebts();
+      } else {
+        // On native (APK), avoid blocking the UI on long network/DB work.
+        // Fire-and-forget; any errors are logged inside the refresh functions.
+        Promise.all([refreshSales(), refreshProducts(), refreshDebts()]).catch((err) => {
+          console.log("Background refresh after sale failed:", err);
+        });
+      }
+
+      return legacySale;
     } catch (error) {
       console.log("Error creating sale:", error);
       throw error;
@@ -418,6 +506,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       });
 
       await refreshDebts();
+      syncAllDebounced();
       return serviceDebtToLegacy(serviceDebt);
     } catch (error) {
       console.log("Error creating debt:", error);
@@ -429,6 +518,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     try {
       await debtService.updateDebtPayment(debtId, amount);
       await refreshDebts();
+      syncAllDebounced();
     } catch (error) {
       console.log("Error updating debt payment:", error);
       throw error;
@@ -475,7 +565,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
         notes: returnData.notes || null,
       });
 
-      await Promise.all([refreshReturns(), refreshSales()]);
+      if (Platform.OS === 'web') {
+        refreshReturns();
+        refreshSales();
+      } else {
+        await Promise.all([refreshReturns(), refreshSales()]);
+        syncAllDebounced();
+      }
       return serviceReturnToLegacy(serviceReturn);
     } catch (error) {
       console.log("Error creating return:", error);
@@ -487,6 +583,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     try {
       await returnsService.approveReturn(returnId);
       await Promise.all([refreshReturns(), refreshProducts()]);
+      syncAllDebounced();
     } catch (error) {
       console.log("Error approving return:", error);
       throw error;
@@ -564,6 +661,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     try {
       await poService.deliverPurchaseOrder(poId);
       await Promise.all([refreshPurchaseOrders(), refreshProducts()]);
+      syncAllDebounced();
     } catch (error) {
       console.log("Error delivering PO:", error);
       throw error;
@@ -577,6 +675,84 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const getAllPurchaseOrders = useCallback(() => {
     return purchaseOrders;
   }, [purchaseOrders]);
+
+  // Expense actions
+  const refreshExpenses = useCallback(async () => {
+    if (refreshStatus.current.expenses) return expenses;
+    refreshStatus.current.expenses = true;
+
+    try {
+      const serviceExpenses = await expenseService.getAllExpenses();
+      const legacyExpenses = serviceExpenses.map(serviceExpenseToLegacy);
+      setExpenses(legacyExpenses);
+      return legacyExpenses;
+    } catch (error) {
+      console.log("Error refreshing expenses:", error);
+      return [];
+    } finally {
+      refreshStatus.current.expenses = false;
+    }
+  }, [expenses]);
+
+  const createExpense = useCallback(async (expenseData: Omit<Expense, "id" | "date" | "synced">): Promise<Expense> => {
+    try {
+      const serviceExpense = await expenseService.createExpense({
+        category: expenseData.category,
+        amount: expenseData.amount,
+        description: expenseData.description || undefined,
+        staff_id: expenseData.staffId,
+        staff_name: expenseData.staffName,
+      });
+
+      await refreshExpenses();
+
+      // Ensure newly created expenses are synced to Supabase soon after save,
+      // without blocking the caller or the UI.
+      syncAllDebounced();
+
+      return serviceExpenseToLegacy(serviceExpense);
+    } catch (error) {
+      console.log("Error creating expense:", error);
+      throw error;
+    }
+  }, [refreshExpenses]);
+
+  const updateExpense = useCallback(async (id: string, expenseData: Partial<Expense>) => {
+    try {
+      const success = await expenseService.updateExpense(id, {
+        category: expenseData.category,
+        amount: expenseData.amount,
+        description: expenseData.description,
+      });
+      if (success) {
+        await refreshExpenses();
+        syncAllDebounced();
+      }
+      return success;
+    } catch (error) {
+      console.log("Error updating expense:", error);
+      return false;
+    }
+  }, [refreshExpenses]);
+
+  const deleteExpense = useCallback(async (id: string) => {
+    try {
+      const success = await expenseService.deleteExpense(id);
+      if (success) await refreshExpenses();
+      return success;
+    } catch (error) {
+      console.log("Error deleting expense:", error);
+      return false;
+    }
+  }, [refreshExpenses]);
+
+  const getExpense = useCallback((id: string) => {
+    return expenses.find((e) => e.id === id);
+  }, [expenses]);
+
+  const getAllExpenses = useCallback(() => {
+    return expenses;
+  }, [expenses]);
 
   // Manual sync
   const manualSync = useCallback(async () => {
@@ -599,8 +775,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     debts,
     returns,
     purchaseOrders,
+    expenses,
     loading,
     syncing,
+
     getProduct,
     updateProductStock,
     getLowStockProducts,
@@ -626,7 +804,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     getPurchaseOrder,
     getAllPurchaseOrders,
     refreshPurchaseOrders,
+    createExpense,
+    updateExpense,
+    deleteExpense,
+    getExpense,
+    getAllExpenses,
+    refreshExpenses,
     manualSync,
+
   }), [
     products, sales, debts, returns, purchaseOrders, loading, syncing,
     getProduct, updateProductStock, getLowStockProducts, refreshProducts,

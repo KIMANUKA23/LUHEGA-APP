@@ -58,6 +58,10 @@ export default function LoginPasswordScreen() {
           role: loggedInUser.role
         });
 
+        if (router.canDismiss()) {
+          router.dismissAll();
+        }
+
         if (loggedInUser.role === 'admin') {
           router.replace("/admin/dashboard");
         } else {
@@ -66,6 +70,11 @@ export default function LoginPasswordScreen() {
       } else {
         // Fallback: wait and check context
         await new Promise(resolve => setTimeout(resolve, 300));
+
+        if (router.canDismiss()) {
+          router.dismissAll();
+        }
+
         if (user?.role === 'admin') {
           router.replace("/admin/dashboard");
         } else {

@@ -29,7 +29,7 @@ export async function getUsers(role?: 'admin' | 'staff'): Promise<UserProfile[]>
   const online = await isOnline();
   const db = getOfflineDB();
 
-  if (online && db) {
+  if (online) {
     try {
       let data: any[] | null = null;
 
@@ -59,21 +59,21 @@ export async function getUsers(role?: 'admin' | 'staff'): Promise<UserProfile[]>
         data = res.data || [];
       }
 
-      // Sync local cache with Supabase data
-      // Then insert current users from Supabase
-      // Only insert if local version is already synced (to avoid overwriting unsynced local edits)
-      for (const user of data || []) {
-        const localUser = await db.getFirstAsync<any>('SELECT synced FROM users WHERE id = ?', [user.id]);
+      // Sync local cache with Supabase data (skip if no database on web)
+      if (db) {
+        for (const user of data || []) {
+          const localUser = await db.getFirstAsync<any>('SELECT synced FROM users WHERE id = ?', [user.id]);
 
-        if (!localUser || localUser.synced === 1) {
-          await db.runAsync(`
-            INSERT OR REPLACE INTO users (
-              id, name, email, username, phone, photo_url, role, status, created_at, address, emergency_contact, synced
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
-          `, [
-            user.id, user.name, user.email, user.username, user.phone, user.photo_url ?? null,
-            user.role, user.status, user.created_at, user.address ?? null, user.emergency_contact ?? null,
-          ]);
+          if (!localUser || localUser.synced === 1) {
+            await db.runAsync(`
+              INSERT OR REPLACE INTO users (
+                id, name, email, username, phone, photo_url, role, status, created_at, address, emergency_contact, synced
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+            `, [
+              user.id, user.name, user.email, user.username, user.phone, user.photo_url ?? null,
+              user.role, user.status, user.created_at, user.address ?? null, user.emergency_contact ?? null,
+            ]);
+          }
         }
       }
 
@@ -218,7 +218,7 @@ export async function updateUser(
   const online = await isOnline();
   const db = getOfflineDB();
 
-  if (online && db) {
+  if (online) {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
@@ -238,23 +238,6 @@ export async function updateUser(
       console.log('Updating user online:', { id, updateData });
 
       let data: any = null;
-
-      // Use upsert to handle both create and update in one request
-      // We need to ensure we have all required fields for a new user if it's an insert
-      // But upsert with only some fields will update IF the record exists, or insert if not.
-      // However, if it inserts, it needs non-nullable columns. 
-      // Assuming 'name' is required in DB or has default.
-
-      const upsertData = {
-        id: id,
-        ...updateData
-      };
-
-      // If we are potentially creating a new user, we might want defaults, 
-      // but upsert merge behavior depends on if row exists.
-      // Easiest is to just send what we have. If it's a new user, we hope we have enough data.
-      // Actually, for profile edit, the user usually exists because of the sync on login.
-      // But to be safe and fast:
 
       const res = await supabase
         .from('users')
@@ -291,50 +274,53 @@ export async function updateUser(
           // If update fails due to permissions or other issues, fall back to local DB only
           if (res.error.code === 'PGRST116' || res.error.message?.includes('permission denied') || res.error.message?.includes('policy') || res.error.code === 'PGRST204') {
             console.log('Update failed due to permissions/policy/schema, updating local DB only');
-            // Check local DB fallback below...
-            // Update local DB as fallback
-            const updateFields: string[] = [];
-            const updateValues: any[] = [];
 
-            if (updates.name !== undefined) {
-              updateFields.push('name = ?');
-              updateValues.push(updates.name);
-            }
-            if (updates.phone !== undefined) {
-              updateFields.push('phone = ?');
-              updateValues.push(updates.phone);
-            }
-            if (updates.photo_url !== undefined) {
-              updateFields.push('photo_url = ?');
-              updateValues.push(updates.photo_url);
-            }
-            if (updates.role !== undefined) {
-              updateFields.push('role = ?');
-              updateValues.push(updates.role);
-            }
-            if (updates.status !== undefined) {
-              updateFields.push('status = ?');
-              updateValues.push(updates.status);
-            }
-            if (updates.address !== undefined) {
-              updateFields.push('address = ?');
-              updateValues.push(updates.address);
-            }
-            if (updates.emergency_contact !== undefined) {
-              updateFields.push('emergency_contact = ?');
-              updateValues.push(updates.emergency_contact);
-            }
-            updateValues.push(id);
+            // Only update local if db exists
+            if (db) {
+              const updateFields: string[] = [];
+              const updateValues: any[] = [];
 
-            if (updateFields.length > 0) {
-              console.log('Updating local DB as fallback:', { updateFields, updateValues });
-              await db.runAsync(`
-                UPDATE users SET ${updateFields.join(', ')}, synced = 0 WHERE id = ?
-              `, updateValues);
+              if (updates.name !== undefined) {
+                updateFields.push('name = ?');
+                updateValues.push(updates.name);
+              }
+              if (updates.phone !== undefined) {
+                updateFields.push('phone = ?');
+                updateValues.push(updates.phone);
+              }
+              if (updates.photo_url !== undefined) {
+                updateFields.push('photo_url = ?');
+                updateValues.push(updates.photo_url);
+              }
+              if (updates.role !== undefined) {
+                updateFields.push('role = ?');
+                updateValues.push(updates.role);
+              }
+              if (updates.status !== undefined) {
+                updateFields.push('status = ?');
+                updateValues.push(updates.status);
+              }
+              if (updates.address !== undefined) {
+                updateFields.push('address = ?');
+                updateValues.push(updates.address);
+              }
+              if (updates.emergency_contact !== undefined) {
+                updateFields.push('emergency_contact = ?');
+                updateValues.push(updates.emergency_contact);
+              }
+              updateValues.push(id);
+
+              if (updateFields.length > 0) {
+                console.log('Updating local DB as fallback:', { updateFields, updateValues });
+                await db.runAsync(`
+                  UPDATE users SET ${updateFields.join(', ')}, synced = 0 WHERE id = ?
+                `, updateValues);
+              }
+              // Return the updated user from local DB
+              return await getUser(id);
             }
 
-            // Return the updated user from local DB
-            return await getUser(id);
+            throw res.error;
           } else {
             throw res.error;
           }
@@ -345,45 +331,47 @@ export async function updateUser(
 
       if (data) console.log('User updated successfully in Supabase:', data);
 
-      // Update local DB with the result
-      const updateFields: string[] = [];
-      const updateValues: any[] = [];
+      // Update local DB with the result (skip if no database on web)
+      if (db) {
+        const updateFields: string[] = [];
+        const updateValues: any[] = [];
 
-      if (updates.name !== undefined) {
-        updateFields.push('name = ?');
-        updateValues.push(updates.name);
-      }
-      if (updates.phone !== undefined) {
-        updateFields.push('phone = ?');
-        updateValues.push(updates.phone);
-      }
-      if (updates.photo_url !== undefined) {
-        updateFields.push('photo_url = ?');
-        updateValues.push(updates.photo_url);
-      }
-      if (updates.role !== undefined) {
-        updateFields.push('role = ?');
-        updateValues.push(updates.role);
-      }
-      if (updates.status !== undefined) {
-        updateFields.push('status = ?');
-        updateValues.push(updates.status);
-      }
-      if (updates.address !== undefined) {
-        updateFields.push('address = ?');
-        updateValues.push(updates.address);
-      }
-      if (updates.emergency_contact !== undefined) {
-        updateFields.push('emergency_contact = ?');
-        updateValues.push(updates.emergency_contact);
-      }
-      updateValues.push(id);
+        if (updates.name !== undefined) {
+          updateFields.push('name = ?');
+          updateValues.push(updates.name);
+        }
+        if (updates.phone !== undefined) {
+          updateFields.push('phone = ?');
+          updateValues.push(updates.phone);
+        }
+        if (updates.photo_url !== undefined) {
+          updateFields.push('photo_url = ?');
+          updateValues.push(updates.photo_url);
+        }
+        if (updates.role !== undefined) {
+          updateFields.push('role = ?');
+          updateValues.push(updates.role);
+        }
+        if (updates.status !== undefined) {
+          updateFields.push('status = ?');
+          updateValues.push(updates.status);
+        }
+        if (updates.address !== undefined) {
+          updateFields.push('address = ?');
+          updateValues.push(updates.address);
+        }
+        if (updates.emergency_contact !== undefined) {
+          updateFields.push('emergency_contact = ?');
+          updateValues.push(updates.emergency_contact);
+        }
+        updateValues.push(id);
 
-      if (updateFields.length > 0) {
-        console.log('Updating local DB with online result:', { updateFields, updateValues });
-        await db.runAsync(`
-          UPDATE users SET ${updateFields.join(', ')}, synced = 1 WHERE id = ?
-        `, updateValues);
+        if (updateFields.length > 0) {
+          console.log('Updating local DB with online result:', { updateFields, updateValues });
+          await db.runAsync(`
+            UPDATE users SET ${updateFields.join(', ')}, synced = 1 WHERE id = ?
+          `, updateValues);
+        }
       }
 
       return data;
@@ -445,7 +433,7 @@ export async function deleteUser(id: string): Promise<boolean> {
 
   console.log('Deleting user:', { id, online, hasDb: !!db });
 
-  if (online && db) {
+  if (online) {
     try {
       // Try to delete from Supabase
       const { error } = await supabase
@@ -464,10 +452,12 @@ export async function deleteUser(id: string): Promise<boolean> {
         console.log('User not in Supabase, deleting from local DB only');
       }
 
-      // Always delete from local DB
-      console.log('Deleting from local DB...');
-      await db.runAsync('DELETE FROM users WHERE id = ?', [id]);
-      console.log('Local DB delete completed');
+      // Always delete from local DB (skip if no database on web)
+      if (db) {
+        console.log('Deleting from local DB...');
+        await db.runAsync('DELETE FROM users WHERE id = ?', [id]);
+        console.log('Local DB delete completed');
+      }
 
       return true;
     } catch (error: any) {

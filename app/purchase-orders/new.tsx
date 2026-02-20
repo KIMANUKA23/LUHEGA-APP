@@ -160,10 +160,16 @@ export default function CreatePurchaseOrderScreen() {
       // Refresh PO list to show the new PO immediately
       await refreshPurchaseOrders();
 
+      // Better UX for Web: Navigate immediately without blocking Alert
+      if (Platform.OS === 'web') {
+        router.replace("/purchase-orders");
+        return;
+      }
+
       Alert.alert(
         "Success",
         "Purchase order created successfully!",
-        [{ text: "OK", onPress: () => router.back() }]
+        [{ text: "OK", onPress: () => router.replace("/purchase-orders") }]
       );
     } catch (error: any) {
       console.log("Error creating purchase order:", error);

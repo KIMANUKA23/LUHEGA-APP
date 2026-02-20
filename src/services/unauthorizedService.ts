@@ -21,7 +21,7 @@ export async function getUnauthorizedSpares(): Promise<UnauthorizedSpare[]> {
   const online = await isOnline();
   const db = getOfflineDB();
 
-  if (online && db) {
+  if (online) {
     try {
       const { data, error } = await supabase
         .from('unauthorizedspares')
@@ -30,18 +30,20 @@ export async function getUnauthorizedSpares(): Promise<UnauthorizedSpare[]> {
 
       if (error) throw error;
 
-      // Cache in local DB
-      for (const incident of data || []) {
-        await db.runAsync(`
-          INSERT OR REPLACE INTO unauthorizedspares (
-            incident_id, part_id, reported_by, description, photo_url,
-            action_taken, status, date_reported, synced
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, [
-          incident.incident_id, incident.part_id, incident.reported_by,
-          incident.description, incident.photo_url, incident.action_taken,
-          incident.status, incident.date_reported, incident.synced ? 1 : 0,
-        ]);
+      // Cache in local DB (skip if no database on web)
+      if (db) {
+        for (const incident of data || []) {
+          await db.runAsync(`
+            INSERT OR REPLACE INTO unauthorizedspares (
+              incident_id, part_id, reported_by, description, photo_url,
+              action_taken, status, date_reported, synced
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+          `, [
+            incident.incident_id, incident.part_id, incident.reported_by,
+            incident.description, incident.photo_url, incident.action_taken,
+            incident.status, incident.date_reported, incident.synced ? 1 : 0,
+          ]);
+        }
       }
 
       return data || [];
@@ -155,7 +157,7 @@ export async function createUnauthorizedSpare(incidentData: {
     synced: false,
   };
 
-  if (online && db) {
+  if (online) {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
@@ -173,17 +175,19 @@ export async function createUnauthorizedSpare(incidentData: {
 
       if (error) throw error;
 
-      // Save to local
-      await db.runAsync(`
-        INSERT INTO unauthorizedspares (
-          incident_id, part_id, reported_by, description, photo_url,
-          action_taken, status, date_reported, synced
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
-      `, [
-        data.incident_id, data.part_id, data.reported_by,
-        data.description, data.photo_url, data.action_taken,
-        data.status, data.date_reported,
-      ]);
+      // Save to local (skip if no database on web)
+      if (db) {
+        await db.runAsync(`
+          INSERT INTO unauthorizedspares (
+            incident_id, part_id, reported_by, description, photo_url,
+            action_taken, status, date_reported, synced
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
+        `, [
+          data.incident_id, data.part_id, data.reported_by,
+          data.description, data.photo_url, data.action_taken,
+          data.status, data.date_reported,
+        ]);
+      }
 
       return data;
     } catch (error) {
@@ -219,7 +223,7 @@ export async function updateUnauthorizedSpareStatus(
   const db = getOfflineDB();
   const now = new Date().toISOString();
 
-  if (online && db) {
+  if (online) {
     try {
       const { data, error } = await supabase
         .from('unauthorizedspares')
@@ -234,12 +238,14 @@ export async function updateUnauthorizedSpareStatus(
 
       if (error) throw error;
 
-      // Update local cache
-      await db.runAsync(`
-        UPDATE unauthorizedspares
-        SET status = ?, action_taken = ?, synced = 1
-        WHERE incident_id = ?
-      `, [status, actionTaken || null, incidentId]);
+      // Update local cache (skip if no database on web)
+      if (db) {
+        await db.runAsync(`
+          UPDATE unauthorizedspares
+          SET status = ?, action_taken = ?, synced = 1
+          WHERE incident_id = ?
+        `, [status, actionTaken || null, incidentId]);
+      }
 
       return data;
     } catch (error) {

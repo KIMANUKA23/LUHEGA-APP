@@ -1,13 +1,15 @@
-// Tabs Layout - Bottom navigation for staff dashboard
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../../src/context/ThemeContext";
+import { useAuth } from "../../src/context/AuthContext";
 
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const { colors, isDark } = useTheme();
+  const { isAdmin } = useAuth();
+  const router = useRouter();
 
   return (
     <Tabs
@@ -36,6 +38,14 @@ export default function TabsLayout() {
     >
       <Tabs.Screen
         name="index"
+        listeners={{
+          tabPress: (e) => {
+            if (isAdmin) {
+              e.preventDefault();
+              router.replace("/admin/dashboard");
+            }
+          }
+        }}
         options={{
           title: "Dashboard",
           tabBarIcon: ({ color, size }) => (

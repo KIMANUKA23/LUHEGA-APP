@@ -45,7 +45,7 @@ const formatTimeAgo = (dateString: string): string => {
 
 export default function StartReturnScreen() {
   const router = useRouter();
-  const { getAllSales, refreshSales, returns } = useApp();
+  const { getAllSales, refreshSales, returns, refreshReturns } = useApp();
   const { user, isAdmin } = useAuth();
   const { colors, isDark } = useTheme();
   const statusBarHeight = Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0;
@@ -56,27 +56,27 @@ export default function StartReturnScreen() {
   // Load sales when screen is focused
   useFocusEffect(
     useCallback(() => {
+      let isActive = true;
+
       const loadSales = async () => {
+        if (!isActive) return;
         setLoading(true);
         try {
-          console.log('Refreshing sales data...');
-          // Force a fresh refresh by clearing any potential cache
-          await refreshSales();
-          // Add delay and refresh again to ensure fresh data
-          await new Promise(resolve => setTimeout(resolve, 1500));
-          await refreshSales();
-          console.log('Sales data refreshed twice');
-
-          // Force re-render by updating refresh key
-          setRefreshKey(prev => prev + 1);
+          // Efficient refresh: Just one call, rely on context/service caching
+          await Promise.all([refreshSales(), refreshReturns()]);
         } catch (error) {
-          console.log('Error loading sales:', error);
+          console.log('Error loading data:', error);
         } finally {
-          setLoading(false);
+          if (isActive) setLoading(false);
         }
       };
+
       loadSales();
-    }, [refreshSales])
+
+      return () => {
+        isActive = false;
+      };
+    }, [refreshSales, refreshReturns])
   );
 
   // Get recent sales from context

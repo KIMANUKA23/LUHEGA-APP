@@ -18,7 +18,7 @@ export async function getCategories(): Promise<Category[]> {
 
   console.log('📦 Getting categories | Online:', online, '| DB:', !!db);
 
-  if (online && db) {
+  if (online) {
     try {
       // Check if authenticated
       const { data: { session } } = await supabase.auth.getSession();
@@ -33,19 +33,20 @@ export async function getCategories(): Promise<Category[]> {
 
       if (error) throw error;
 
-      // Cache in local
-      // Cache in local with transaction
-      await performTransaction(async () => {
-        for (const category of data || []) {
-          await db.runAsync(`
-            INSERT OR REPLACE INTO categories (
-              category_id, name, description, created_at, synced
-            ) VALUES (?, ?, ?, ?, 1)
-          `, [
-            category.category_id, category.name, category.description || null, category.created_at,
-          ]);
-        }
-      });
+      // Cache in local (skip if no database on web)
+      if (db) {
+        await performTransaction(async () => {
+          for (const category of data || []) {
+            await db.runAsync(`
+              INSERT OR REPLACE INTO categories (
+                category_id, name, description, created_at, synced
+              ) VALUES (?, ?, ?, ?, 1)
+            `, [
+              category.category_id, category.name, category.description || null, category.created_at,
+            ]);
+          }
+        });
+      }
 
       return data || [];
     } catch (error) {
@@ -139,7 +140,7 @@ export async function createCategory(categoryData: {
 
   console.log('📦 Creating category:', categoryData.name, '| Online:', online, '| DB:', !!db);
 
-  if (online && db) {
+  if (online) {
     try {
       console.log('🌐 Attempting to save category to Supabase...');
       const { data, error } = await supabase
@@ -158,16 +159,18 @@ export async function createCategory(categoryData: {
       }
       console.log('✅ Category saved to Supabase:', data.category_id);
 
-      // Save to local
-      await performTransaction(async () => {
-        await db.runAsync(`
-          INSERT INTO categories (
-            category_id, name, description, created_at, synced
-          ) VALUES (?, ?, ?, ?, 1)
-        `, [
-          data.category_id, data.name, data.description, data.created_at,
-        ]);
-      });
+      // Save to local (skip if no database on web)
+      if (db) {
+        await performTransaction(async () => {
+          await db.runAsync(`
+            INSERT INTO categories (
+              category_id, name, description, created_at, synced
+            ) VALUES (?, ?, ?, ?, 1)
+          `, [
+            data.category_id, data.name, data.description, data.created_at,
+          ]);
+        });
+      }
 
       return data;
     } catch (error) {
@@ -206,7 +209,7 @@ export async function updateCategory(
   const online = await isOnline();
   const db = await ensureDatabaseInitialized();
 
-  if (online && db) {
+  if (online) {
     try {
       const { data, error } = await supabase
         .from('categories')
@@ -217,16 +220,18 @@ export async function updateCategory(
 
       if (error) throw error;
 
-      // Update local
-      await performTransaction(async () => {
-        await db.runAsync(`
-          UPDATE categories 
-          SET name = ?, description = ?, synced = 1
-          WHERE category_id = ?
-        `, [
-          data.name, data.description, id,
-        ]);
-      });
+      // Update local (skip if no database on web)
+      if (db) {
+        await performTransaction(async () => {
+          await db.runAsync(`
+            UPDATE categories 
+            SET name = ?, description = ?, synced = 1
+            WHERE category_id = ?
+          `, [
+            data.name, data.description, id,
+          ]);
+        });
+      }
 
       return data;
     } catch (error) {
@@ -269,7 +274,7 @@ export async function deleteCategory(id: string): Promise<boolean> {
   const online = await isOnline();
   const db = await ensureDatabaseInitialized();
 
-  if (online && db) {
+  if (online) {
     try {
       const { error } = await supabase
         .from('categories')
@@ -278,10 +283,12 @@ export async function deleteCategory(id: string): Promise<boolean> {
 
       if (error) throw error;
 
-      // Delete from local
-      await performTransaction(async () => {
-        await db.runAsync('DELETE FROM categories WHERE category_id = ?', [id]);
-      });
+      // Delete from local (skip if no database on web)
+      if (db) {
+        await performTransaction(async () => {
+          await db.runAsync('DELETE FROM categories WHERE category_id = ?', [id]);
+        });
+      }
 
       return true;
     } catch (error) {

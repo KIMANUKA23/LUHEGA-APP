@@ -1,40 +1,66 @@
-# EAS Build Workflow
+# 🚀 EAS Build Guide: Creating Your Standalone APK
 
-Follow these steps to generate your mobile application builds.
+Follow this simple guide to generate a **real, installable Android app (.apk)**. 
+This is the **Gold Standard** for testing because it runs exactly like the final app your client will use.
 
-## 1. Login to Expo
-Open your terminal and run:
-```bash
-npx eas-cli login
-```
+---
 
-## 2. Commit your changes
-EAS Build only builds files that are committed to git. Ensure everything is saved:
-```bash
-git add .
-git commit -m "Optimize mobile ergonomics and fix stock data"
-```
+## 🛑 Step 1: Login & Commit (Crucial!)
 
-## 3. Generate Android APK
-To get a downloadable `.apk` file (for sideloading):
+1.  **Login to Expo** (if not already logged in):
+    ```bash
+    npx eas-cli login
+    ```
+
+2.  **Save Your Work**: EAS Build only sees files that are committed to git.
+    ```bash
+    git add .
+    git commit -m "Ready for APK build"
+    ```
+
+---
+
+## 🏗️ Step 2: Build the APK (The Magic Command)
+
+Run this command to start the build server. This will create a specific **"Preview"** build which gives you an `.apk` file you can install directly.
+
 ```bash
 npx eas-cli build --platform android --profile preview
 ```
 
-## 4. Generate iOS Build (for iPhone)
-To create a build for real iPhones:
-```bash
-npx eas-cli build --platform ios --profile preview
-```
-> [!NOTE]
-> This requires an **Apple Developer Account** ($99/year). If you don't have one, you can only test on iPhone using the **Expo Go** app.
+**What happens next?**
+1.  You might be asked to log in or create a keystore. Just say **YES** (Y) to everything.
+2.  The build runs in the cloud (it takes about **10-15 minutes**).
+3.  You can close the terminal if you want, but it's better to verify it starts.
 
-## 5. Submit to App Store
-To create a build for the Apple App Store:
-```bash
-npx eas-cli build --platform ios --profile production
-```
+---
 
-> [!IMPORTANT]
-> - **APK (Android)**: Use the `preview` profile.
-> - **AAB (Android)**: Use the `production` profile.
+## 📲 Step 3: Download & Install
+
+When the build finishes, you will see a link in the terminal (and in your Expo dashboard).
+
+1.  **Click the Link** (or scan the QR code).
+2.  Download the **`.apk`** file to your Android phone.
+3.  **Install it** (You may need to allow "Install from Unknown Sources").
+
+---
+
+## 🍎 iOS (iPhone) Notes
+*Testing on iPhone is harder without a paid developer account ($99/year).*
+- If you **DO** have an account:
+  ```bash
+  npx eas-cli build --platform ios --profile preview
+  ```
+- If you **DON'T** have an account: 
+  Stick to using the **Expo Go** app for iPhone testing.
+
+---
+
+## 🚀 Ready for Google Play Store?
+
+When you are finally ready to submit to the Play Store, use the `production` profile to get an `.aab` file (App Bundle):
+
+```bash
+npx eas-cli build --platform android --profile production
+```
+*Note: You cannot install .aab files directly on your phone.*

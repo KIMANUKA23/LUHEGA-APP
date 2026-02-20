@@ -30,6 +30,7 @@ export type SaleItem = {
   quantity: number;
   unit_price: number;
   subtotal: number;
+  cost_price: number;
   return_status: 'none' | 'partial' | 'full';
   created_at: string;
 };
@@ -88,17 +89,25 @@ export async function createSale(
     created_at: now,
   };
 
+  // Fetch products to get cost_price
+  const products = await inventoryService.getProducts();
+  const productMap = new Map(products.map(p => [p.part_id, p]));
+
   // Create sale items
-  const saleItems: SaleItem[] = saleData.items.map((item) => ({
-    sale_item_id: uuid.v4() as string, // Generate UUID for each item
-    sale_id: saleId,
-    part_id: item.part_id,
-    quantity: item.quantity,
-    unit_price: item.unit_price,
-    subtotal: item.unit_price * item.quantity,
-    return_status: 'none',
-    created_at: now,
-  }));
+  const saleItems: SaleItem[] = saleData.items.map((item) => {
+    const product = productMap.get(item.part_id);
+    return {
+      sale_item_id: uuid.v4() as string, // Generate UUID for each item
+      sale_id: saleId,
+      part_id: item.part_id,
+      quantity: item.quantity,
+      unit_price: item.unit_price,
+      subtotal: item.unit_price * item.quantity,
+      cost_price: product?.cost_price || 0,
+      return_status: 'none',
+      created_at: now,
+    };
+  });
 
   if (online) {
     try {
@@ -137,6 +146,7 @@ export async function createSale(
           quantity: item.quantity,
           unit_price: item.unit_price,
           subtotal: item.subtotal,
+          cost_price: item.cost_price,
           return_status: item.return_status,
         })));
 
@@ -149,9 +159,9 @@ export async function createSale(
         throw itemsError;
       }
 
-      // Update stock for each item (stock leaves inventory when the sale is created)
+      // Update stock GROWING locally (server handle remote via trigger)
       for (const item of saleData.items) {
-        await inventoryService.updateStock(item.part_id, -item.quantity);
+        await inventoryService.updateStockLocal(item.part_id, -item.quantity);
       }
 
       // Save to local DB
@@ -173,25 +183,22 @@ export async function createSale(
         for (const item of saleItems) {
           await db.runAsync(`
             INSERT INTO saleitems (
-              sale_item_id, sale_id, part_id, quantity, unit_price, subtotal, return_status, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+              sale_item_id, sale_id, part_id, quantity, unit_price, subtotal, cost_price, return_status, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
           `, [
             item.sale_item_id, item.sale_id, item.part_id, item.quantity,
-            item.unit_price, item.subtotal, item.return_status, item.created_at,
+            item.unit_price, item.subtotal, item.cost_price, item.return_status, item.created_at,
           ]);
         }
       }));
 
-      /* 
-      // NOTE: Removed automatic debt creation. 
-      // Debit sales should remain in a "pending approval" state (debit sale exists but no debt record yet).
-      // Approval will be handled by Admin via DebitSaleDetailScreen.
-      if (saleData.sale_type === 'debit' && amountRemaining > 0 && saleData.customer_name && saleData.customer_phone) {
+      // NOTE: Automatic debt creation ENABLED.
+      if (saleData.sale_type === 'debit' && amountRemaining > 0 && saleData.customer_name) {
         try {
           await debtService.createDebt({
             sale_id: saleId,
             customer_name: saleData.customer_name,
-            customer_phone: saleData.customer_phone,
+            customer_phone: saleData.customer_phone || null,
             total_amount: totalAmount,
             amount_paid: saleData.amount_paid,
           });
@@ -199,7 +206,6 @@ export async function createSale(
           console.log('Error creating debt record:', debtError);
         }
       }
-      */
 
       return { ...saleRecord, items: saleItems, synced: true };
     } catch (error) {
@@ -208,9 +214,12 @@ export async function createSale(
     }
   }
 
-  // Offline: Save locally
+  // Offline: Save locally (skip if no database on web)
+  if (!db) {
+    throw new Error('Cannot create sale offline. Please check your internet connection.');
+  }
+
   await performTransaction(async () => {
-    if (!db) return;
     await db.runAsync(`
         INSERT INTO sales (
           sale_id, user_id, customer_name, customer_phone, sale_type,
@@ -226,20 +235,19 @@ export async function createSale(
     for (const item of saleItems) {
       await db.runAsync(`
           INSERT INTO saleitems (
-            sale_item_id, sale_id, part_id, quantity, unit_price, subtotal, return_status, created_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            sale_item_id, sale_id, part_id, quantity, unit_price, subtotal, cost_price, return_status, created_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [
         item.sale_item_id, item.sale_id, item.part_id, item.quantity,
-        item.unit_price, item.subtotal, item.return_status, item.created_at,
+        item.unit_price, item.subtotal, item.cost_price, item.return_status, item.created_at,
       ]);
 
-      // Update stock locally (stock leaves inventory when the sale is created)
-      await inventoryService.updateStock(item.part_id, -item.quantity);
+      // Update stock locally
+      await inventoryService.updateStockLocal(item.part_id, -item.quantity);
     }
   });
 
-  /* 
-  // NOTE: Removed automatic debt creation offline as well.
+  // NOTE: Automatic debt creation ENABLED.
   if (saleData.sale_type === 'debit' && amountRemaining > 0 && saleData.customer_name && saleData.customer_phone) {
     try {
       await debtService.createDebt({
@@ -253,9 +261,20 @@ export async function createSale(
       console.log('Error creating debt record offline:', debtError);
     }
   }
-  */
 
-  return { ...sale, items: saleItems };
+  // Return mapped object to ensure UI compatibility
+  return serviceSaleToLegacyUI(sale, saleItems);
+}
+
+/**
+ * Internal helper to convert service types to the format expected by the UI.
+ * This ensures consistency between different parts of the app.
+ */
+function serviceSaleToLegacyUI(sale: Sale, items: SaleItem[]): SaleWithItems {
+  return {
+    ...sale,
+    items: items,
+  };
 }
 
 // Get all sales (filtered by user_id for staff)
@@ -285,6 +304,15 @@ export async function getSales(userId?: string | null, isAdmin: boolean = false)
           .select('*')
           .in('sale_id', saleIds);
 
+        // If no database (web), return Supabase data directly
+        if (!db) {
+          const salesWithItems: SaleWithItems[] = sales.map(sale => ({
+            ...sale,
+            items: (allItems || []).filter(i => i.sale_id === sale.sale_id)
+          }));
+          return salesWithItems;
+        }
+
         // 2. Cache in local DB via transaction (DB lock only for local I/O)
         await performTransaction(async () => {
           for (const sale of sales) {
@@ -310,7 +338,7 @@ export async function getSales(userId?: string | null, isAdmin: boolean = false)
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
               `, [
                 item.sale_item_id, item.sale_id, item.part_id, item.quantity,
-                item.unit_price, item.subtotal, item.return_status, item.created_at,
+                item.unit_price, item.subtotal, item.cost_price || 0, item.return_status, item.created_at,
               ]);
             }
           }
@@ -318,9 +346,13 @@ export async function getSales(userId?: string | null, isAdmin: boolean = false)
       }
     } catch (error) {
       console.log('Error fetching sales online:', error);
-      // Fall through to local
+      // Fall through to local only if database exists
+      if (!db) return [];
     }
   }
+
+  // If no database (web), return empty
+  if (!db) return [];
 
   // Always return from local DB to include unsynced sales
   const salesWithItems: SaleWithItems[] = await performTransaction(async () => {
@@ -355,6 +387,7 @@ export async function getSales(userId?: string | null, isAdmin: boolean = false)
           quantity: i.quantity,
           unit_price: i.unit_price,
           subtotal: i.subtotal,
+          cost_price: i.cost_price || 0,
           return_status: i.return_status,
           created_at: i.created_at,
         })),
@@ -395,40 +428,49 @@ export async function getSale(saleId: string): Promise<SaleWithItems | null> {
     }
   }
 
-  // Offline: Read from local
+  // 2. Offline: Read from local (ALWAYS check local if online fetch fails or produces null)
   if (db) {
-    const saleResult = await performTransaction(async () => {
-      const sale = await db.getFirstAsync<any>(
-        `SELECT * FROM sales WHERE sale_id = ?`,
-        [saleId]
-      );
+    try {
+      const saleResult = await performTransaction(async () => {
+        const sale = await db.getFirstAsync<any>(
+          `SELECT * FROM sales WHERE sale_id = ?`,
+          [saleId]
+        );
 
-      if (!sale) return null;
+        if (!sale) return null;
 
-      const itemsResult = await db.getAllAsync<any>(
-        `SELECT * FROM saleitems WHERE sale_id = ?`,
-        [saleId]
-      );
-      const items = Array.isArray(itemsResult) ? itemsResult : [];
+        const itemsResult = await db.getAllAsync<any>(
+          `SELECT * FROM saleitems WHERE sale_id = ?`,
+          [saleId]
+        );
+        const items = Array.isArray(itemsResult) ? itemsResult : [];
 
-      return {
-        ...sale,
-        items: items.map(item => ({
-          sale_item_id: item.sale_item_id,
-          sale_id: item.sale_id,
-          part_id: item.part_id,
-          quantity: item.quantity,
-          unit_price: item.unit_price,
-          subtotal: item.subtotal,
-          return_status: item.return_status,
-          created_at: item.created_at,
-        })),
-      };
-    });
+        return {
+          ...sale,
+          items: items.map(item => ({
+            sale_item_id: item.sale_item_id,
+            sale_id: item.sale_id,
+            part_id: item.part_id,
+            quantity: item.quantity,
+            unit_price: item.unit_price,
+            subtotal: item.subtotal,
+            cost_price: item.cost_price || 0,
+            return_status: item.return_status,
+            created_at: item.created_at,
+          })),
+        };
+      });
 
-    if (saleResult) return saleResult;
+      if (saleResult) {
+        console.log(`DEBUG: Found sale ${saleId} in local DB`);
+        return saleResult;
+      }
+    } catch (localError) {
+      console.log('Error fetching sale locally:', localError);
+    }
   }
 
+  console.log(`DEBUG: Sale ${saleId} not found anywhere`);
   return null;
 }
 

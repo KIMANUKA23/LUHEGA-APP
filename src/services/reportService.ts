@@ -45,6 +45,13 @@ export type POReport = {
   totalCost: number;
 };
 
+export type ExpenseReport = {
+  totalExpenses: number;
+  count: number;
+  byCategory: Array<{ category: string; amount: number }>;
+};
+
+
 // Helper: Get date range for period
 export function getDateRange(period: ReportPeriod): { start: string; end: string } {
   const end = new Date();
@@ -111,35 +118,48 @@ export async function getSalesReport(
       const totalSales = validSales.reduce((sum, s) => sum + (s.total_amount || 0), 0);
       const transactionCount = validSales.length;
       const cashSales = validSales.filter(s => s.sale_type === 'cash').reduce((sum, s) => sum + (s.total_amount || 0), 0);
-      const debitSales = validSales.filter(s => s.sale_type === 'debit').reduce((sum, s) => sum + (s.total_amount || 0), 0);
+      const debitSales = validSales.filter(s => s.sale_type === 'debit' || s.sale_type === 'pending_debit').reduce((sum, s) => sum + (s.total_amount || 0), 0);
 
-      // Calculate profit (need to get cost from products)
-      let totalProfit = 0;
+      // EXTRACTED & IMPROVED PROFIT CALCULATION
+      // 1. Calculate COGS (Cost of Goods Sold)
+      let totalCost = 0;
       if (sales && sales.length > 0) {
-        // Get all sale items to calculate profit
         const saleIds = sales.map(s => s.sale_id);
         const { data: saleItems } = await supabase
           .from('saleitems')
-          .select('part_id, quantity, unit_price, subtotal')
+          .select('quantity, cost_price')
           .in('sale_id', saleIds);
 
-        if (saleItems) {
-          // Get product costs
-          const productIds = [...new Set(saleItems.map(si => si.part_id))];
-          const { data: products } = await supabase
-            .from('spareparts')
-            .select('part_id, cost_price')
-            .in('part_id', productIds);
-
-          const costMap = new Map(products?.map(p => [p.part_id, p.cost_price]) || []);
-
-          totalProfit = saleItems.reduce((sum, item) => {
-            const cost = costMap.get(item.part_id) || 0;
-            const profit = (item.unit_price - cost) * item.quantity;
-            return sum + profit;
+        if (saleItems && saleItems.length > 0) {
+          totalCost = saleItems.reduce((sum, item) => {
+            return sum + ((item.cost_price || 0) * (item.quantity || 0));
           }, 0);
         }
       }
+
+      // 2. Fetch Expenses for the period (to calculate Net Profit)
+      const { data: expenses } = await supabase
+        .from('expenses')
+        .select('amount')
+        .gte('date', start)
+        .lte('date', end);
+
+      const totalExpenses = expenses?.reduce((sum, e) => sum + (e.amount || 0), 0) || 0;
+
+      // 3. Gross Profit = Sales - COGS
+      const grossProfit = totalSales - totalCost;
+
+      // 4. Net Profit = Gross Profit - Expenses
+      const totalProfit = grossProfit - totalExpenses;
+
+      return {
+        totalSales,
+        totalProfit, // This is now NET PROFIT
+        transactionCount,
+        averageTransaction: transactionCount > 0 ? totalSales / transactionCount : 0,
+        cashSales,
+        debitSales,
+      };
 
       return {
         totalSales,
@@ -173,19 +193,38 @@ export async function getSalesReport(
 
       const sales = await db.getAllAsync<any>(salesQuery, params);
       const salesArray = Array.isArray(sales) ? sales : [];
+      // 1. Revenue
       const validSales = salesArray;
-
       const totalSales = validSales.reduce((sum: number, s: any) => sum + (s.total_amount || 0), 0);
       const transactionCount = validSales.length;
       const cashSales = validSales.filter((s: any) => s.sale_type === 'cash').reduce((sum: number, s: any) => sum + (s.total_amount || 0), 0);
-      const debitSales = validSales.filter((s: any) => s.sale_type === 'debit').reduce((sum: number, s: any) => sum + (s.total_amount || 0), 0);
+      const debitSales = validSales.filter((s: any) => s.sale_type === 'debit' || s.sale_type === 'pending_debit').reduce((sum: number, s: any) => sum + (s.total_amount || 0), 0);
 
-      // For offline, profit calculation is simplified (would need cached product costs)
-      const totalProfit = totalSales * 0.3; // Estimated 30% margin
+      // 2. COGS (Cost of Goods Sold) - Using historical cost stored in saleitems
+      const cogsResult = await db.getAllAsync<any>(`
+        SELECT SUM(si.quantity * si.cost_price) as total_cost
+        FROM saleitems si
+        JOIN sales s ON si.sale_id = s.sale_id
+        WHERE s.sale_date >= ? AND s.sale_date <= ?
+      `, [start, end]);
+
+      const totalCost = (cogsResult && cogsResult[0]) ? (cogsResult[0].total_cost || 0) : 0;
+
+      // 3. Expenses
+      const expensesResult = await db.getAllAsync<any>(`
+        SELECT SUM(amount) as total_expenses
+        FROM expenses
+        WHERE date >= ? AND date <= ?
+      `, [start, end]);
+
+      const totalExpenses = (expensesResult && expensesResult[0]) ? (expensesResult[0].total_expenses || 0) : 0;
+
+      // 4. Net Profit
+      const totalProfit = totalSales - totalCost - totalExpenses;
 
       return {
         totalSales,
-        totalProfit,
+        totalProfit, // NET PROFIT
         transactionCount,
         averageTransaction: transactionCount > 0 ? totalSales / transactionCount : 0,
         cashSales,
@@ -224,8 +263,7 @@ export async function getHourlySales(date: Date = new Date()): Promise<Array<{ l
         .from('sales')
         .select('sale_date, total_amount')
         .gte('sale_date', start.toISOString())
-        .lte('sale_date', end.toISOString())
-        .neq('sale_type', 'pending_debit');
+        .lte('sale_date', end.toISOString());
 
       if (error) throw error;
 
@@ -250,7 +288,7 @@ export async function getHourlySales(date: Date = new Date()): Promise<Array<{ l
     try {
       await performTransaction(async () => {
         const sales = await db.getAllAsync<any>(
-          "SELECT sale_date, total_amount FROM sales WHERE sale_date >= ? AND sale_date <= ? AND sale_type != 'pending_debit'",
+          "SELECT sale_date, total_amount FROM sales WHERE sale_date >= ? AND sale_date <= ?",
           [start.toISOString(), end.toISOString()]
         );
         if (sales) {
@@ -307,8 +345,7 @@ export async function getWeeklyComparisonReport(
         .from('sales')
         .select('sale_date, total_amount')
         .gte('sale_date', start.toISOString())
-        .lte('sale_date', end.toISOString())
-        .neq('sale_type', 'pending_debit');
+        .lte('sale_date', end.toISOString());
 
       if (!isAdmin && userId) {
         query = query.eq('user_id', userId);
@@ -323,7 +360,7 @@ export async function getWeeklyComparisonReport(
       });
     } else if (db) {
       await performTransaction(async () => {
-        let sql = "SELECT sale_date, total_amount FROM sales WHERE sale_date >= ? AND sale_date <= ? AND sale_type != 'pending_debit'";
+        let sql = "SELECT sale_date, total_amount FROM sales WHERE sale_date >= ? AND sale_date <= ?";
         const params: any[] = [start.toISOString(), end.toISOString()];
 
         if (!isAdmin && userId) {
@@ -391,13 +428,12 @@ export async function getMonthlyPerformanceReport(monthOffset: number = 0): Prom
       .from('sales')
       .select('sale_date, total_amount')
       .gte('sale_date', start.toISOString())
-      .lte('sale_date', end.toISOString())
-      .neq('sale_type', 'pending_debit');
+      .lte('sale_date', end.toISOString());
     if (sales) processSales(sales);
   } else if (db) {
     await performTransaction(async () => {
       const sales = await db.getAllAsync<any>(
-        "SELECT sale_date, total_amount FROM sales WHERE sale_date >= ? AND sale_date <= ? AND sale_type != 'pending_debit'",
+        "SELECT sale_date, total_amount FROM sales WHERE sale_date >= ? AND sale_date <= ?",
         [start.toISOString(), end.toISOString()]
       );
       if (sales) processSales(sales);
@@ -432,13 +468,12 @@ export async function getYearlyPerformanceReport(year: number = new Date().getFu
       .from('sales')
       .select('sale_date, total_amount')
       .gte('sale_date', start.toISOString())
-      .lte('sale_date', end.toISOString())
-      .neq('sale_type', 'pending_debit');
+      .lte('sale_date', end.toISOString());
     if (sales) processSales(sales);
   } else if (db) {
     await performTransaction(async () => {
       const sales = await db.getAllAsync<any>(
-        "SELECT sale_date, total_amount FROM sales WHERE sale_date >= ? AND sale_date <= ? AND sale_type != 'pending_debit'",
+        "SELECT sale_date, total_amount FROM sales WHERE sale_date >= ? AND sale_date <= ?",
         [start.toISOString(), end.toISOString()]
       );
       if (sales) processSales(sales);
@@ -472,19 +507,20 @@ export async function getTopSellingProducts(
       // Get sale items
       const { data: saleItems } = await supabase
         .from('saleitems')
-        .select('part_id, quantity, unit_price, subtotal')
+        .select('part_id, quantity, unit_price, subtotal, cost_price')
         .in('sale_id', saleIds);
 
       if (!saleItems) return [];
 
       // Aggregate by product
-      const productMap = new Map<string, { quantity: number; revenue: number }>();
+      const productMap = new Map<string, { quantity: number; revenue: number; cost: number }>();
 
       for (const item of saleItems) {
-        const existing = productMap.get(item.part_id) || { quantity: 0, revenue: 0 };
+        const existing = productMap.get(item.part_id) || { quantity: 0, revenue: 0, cost: 0 };
         productMap.set(item.part_id, {
           quantity: existing.quantity + item.quantity,
           revenue: existing.revenue + item.subtotal,
+          cost: existing.cost + ((item.cost_price || 0) * item.quantity),
         });
       }
 
@@ -499,8 +535,7 @@ export async function getTopSellingProducts(
       const results: ProductReport[] = Array.from(productMap.entries())
         .map(([productId, stats]) => {
           const product = products?.find(p => p.part_id === productId);
-          const cost = product?.cost_price || 0;
-          const profit = stats.revenue - (cost * stats.quantity);
+          const profit = stats.revenue - stats.cost;
 
           return {
             productId,
@@ -758,8 +793,12 @@ export async function getStockReport(): Promise<StockReport> {
 }
 
 export type InventoryAnalytics = {
-  totalItems: number;
-  totalValue: number;
+  totalItems: number; // Sum of all units
+  totalProductCount: number; // Count of distinct SKUs/Parts
+  totalCostValue: number;
+  totalSellingValue: number;
+  potentialProfit: number;
+  totalValue: number; // Legacy, map to totalCostValue
   lowStockCount: number;
   outOfStockCount: number;
   reorderAlerts: Array<{ name: string; urgency: 'critical' | 'warning'; daysLeft: number }>;
@@ -783,7 +822,9 @@ export async function getInventoryAnalytics(): Promise<InventoryAnalytics> {
       if (pError) throw pError;
 
       const totalItems = products?.reduce((sum, p) => sum + (p.quantity_in_stock || 0), 0) || 0;
-      const totalValue = products?.reduce((sum, p) => sum + ((p.quantity_in_stock || 0) * (p.cost_price || 0)), 0) || 0;
+      const totalCostValue = products?.reduce((sum, p) => sum + ((p.quantity_in_stock || 0) * (p.cost_price || 0)), 0) || 0;
+      const totalSellingValue = products?.reduce((sum, p) => sum + ((p.quantity_in_stock || 0) * (p.selling_price || 0)), 0) || 0;
+      const potentialProfit = totalSellingValue - totalCostValue;
       const lowStock = products?.filter(p => p.quantity_in_stock <= p.reorder_level && p.quantity_in_stock > 0) || [];
       const outOfStock = products?.filter(p => p.quantity_in_stock === 0) || [];
 
@@ -796,9 +837,33 @@ export async function getInventoryAnalytics(): Promise<InventoryAnalytics> {
 
       const colors = ['#007BFF', '#16A34A', '#D97706', '#8B5CF6', '#DC2626'];
       const stockDistribution = Array.from(catMap.entries()).map(([label, count], idx) => ({
-        value: Math.round((count / products!.length) * 100),
+        value: Math.round((count / (products?.length || 1)) * 100),
         label,
         color: colors[idx % colors.length]
+      }));
+
+      // Stock Movement Trend (Last 7 days)
+      const { start: weekStart } = getDateRange('week');
+      const { data: recentSaleItems } = await supabase
+        .from('saleitems')
+        .select('quantity, sales!inner(sale_date)')
+        .gte('sales.sale_date', weekStart);
+
+      const movementMap = new Map<string, number>();
+      const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      days.forEach(d => movementMap.set(d, 0));
+
+      recentSaleItems?.forEach((item: any) => {
+        if (item.sales?.sale_date) {
+          const date = new Date(item.sales.sale_date);
+          const dayName = days[(date.getDay() + 6) % 7];
+          movementMap.set(dayName, (movementMap.get(dayName) || 0) + (item.quantity || 0));
+        }
+      });
+
+      const movementTrend = days.map(day => ({
+        label: day,
+        value: movementMap.get(day) || 0
       }));
 
       // Reorder alerts
@@ -810,12 +875,16 @@ export async function getInventoryAnalytics(): Promise<InventoryAnalytics> {
 
       return {
         totalItems,
-        totalValue,
+        totalProductCount: products?.length || 0,
+        totalCostValue,
+        totalSellingValue,
+        potentialProfit,
+        totalValue: totalCostValue,
         lowStockCount: lowStock.length,
         outOfStockCount: outOfStock.length,
         reorderAlerts,
         stockDistribution,
-        movementTrend: [], // Placeholder
+        movementTrend,
         lowStockItems: lowStock.slice(0, 5).map(p => ({
           name: p.name,
           sku: p.sku,
@@ -830,8 +899,89 @@ export async function getInventoryAnalytics(): Promise<InventoryAnalytics> {
   }
 
   // Offline fallback
+  const db = getOfflineDB();
+  if (db) {
+    try {
+      const products = await db.getAllAsync<any>(
+        "SELECT * FROM spareparts WHERE status != 'archived'"
+      );
+      const productsArray = Array.isArray(products) ? products : [];
+
+      const totalItems = productsArray.reduce((sum, p) => sum + (p.quantity_in_stock || 0), 0);
+      const totalCostValue = productsArray.reduce((sum, p) => sum + ((p.quantity_in_stock || 0) * (p.cost_price || 0)), 0);
+      const totalSellingValue = productsArray.reduce((sum, p) => sum + ((p.quantity_in_stock || 0) * (p.selling_price || 0)), 0);
+      const potentialProfit = totalSellingValue - totalCostValue;
+      const lowStock = productsArray.filter(p => p.quantity_in_stock <= p.reorder_level && p.quantity_in_stock > 0);
+      const outOfStock = productsArray.filter(p => p.quantity_in_stock === 0);
+
+      const catMap = new Map<string, number>();
+      productsArray.forEach(p => {
+        const catName = p.category_id || 'Uncategorized'; // Simplified for offline
+        catMap.set(catName, (catMap.get(catName) || 0) + 1);
+      });
+
+      const colors = ['#007BFF', '#16A34A', '#D97706', '#8B5CF6', '#DC2626'];
+      const stockDistribution = Array.from(catMap.entries()).map(([label, count], idx) => ({
+        value: Math.round((count / (productsArray.length || 1)) * 100),
+        label,
+        color: colors[idx % colors.length]
+      }));
+
+      // Offline Movement Trend
+      const { start: weekStart } = getDateRange('week');
+      const recentItems = await db.getAllAsync<any>(`
+        SELECT si.quantity, s.sale_date 
+        FROM saleitems si
+        JOIN sales s ON si.sale_id = s.sale_id
+        WHERE s.sale_date >= ?
+      `, [weekStart]);
+
+      const movementMap = new Map<string, number>();
+      const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      days.forEach(d => movementMap.set(d, 0));
+
+      recentItems.forEach((item: any) => {
+        const date = new Date(item.sale_date);
+        const dayName = days[(date.getDay() + 6) % 7];
+        movementMap.set(dayName, (movementMap.get(dayName) || 0) + (item.quantity || 0));
+      });
+
+      const movementTrend = days.map(day => ({
+        label: day,
+        value: movementMap.get(day) || 0
+      }));
+
+      return {
+        totalItems,
+        totalProductCount: productsArray.length,
+        totalCostValue,
+        totalSellingValue,
+        potentialProfit,
+        totalValue: totalCostValue,
+        lowStockCount: lowStock.length,
+        outOfStockCount: outOfStock.length,
+        reorderAlerts: [],
+        stockDistribution,
+        movementTrend,
+        lowStockItems: lowStock.slice(0, 5).map(p => ({
+          name: p.name,
+          sku: p.sku,
+          current: p.quantity_in_stock,
+          reorder: p.reorder_level,
+          supplier: 'Unknown'
+        }))
+      };
+    } catch (e) {
+      console.log("Offline inventory analytics error:", e);
+    }
+  }
+
   return {
     totalItems: 0,
+    totalProductCount: 0,
+    totalCostValue: 0,
+    totalSellingValue: 0,
+    potentialProfit: 0,
     totalValue: 0,
     lowStockCount: 0,
     outOfStockCount: 0,
@@ -974,9 +1124,10 @@ export async function getMonthlyPLBreakdown(): Promise<Array<{
     months.push(d.toLocaleString('default', { month: 'long', year: 'numeric' }));
   }
 
+  // Determine function to run based on connection
   if (online) {
     try {
-      // For each month, get sales and calculate profit
+      // For each month, get sales, cogs, and expenses
       for (let i = 5; i >= 0; i--) {
         const start = new Date();
         start.setMonth(start.getMonth() - i);
@@ -988,21 +1139,18 @@ export async function getMonthlyPLBreakdown(): Promise<Array<{
         end.setDate(0);
         end.setHours(23, 59, 59, 999);
 
-        // This is a bit heavy, but it's for the report screen which isn't called constantly
-        const report = await getSalesReport('month', null, true);
-        // Note: getSalesReport uses getDateRange which is relative to "now". 
-        // We need a version that takes specific start/end.
-        // Let's refactor slightly or implement a quick version here.
-
+        // 1. Revenue
         const { data: sales } = await supabase
           .from('sales')
           .select('sale_id, total_amount')
           .gte('sale_date', start.toISOString())
-          .lte('sale_date', end.toISOString());
+          .lte('sale_date', end.toISOString())
+          .neq('sale_type', 'pending_debit');
 
         const revenue = sales?.reduce((sum, s) => sum + (s.total_amount || 0), 0) || 0;
-        let cost = 0;
 
+        // 2. COGS
+        let cost = 0;
         if (sales && sales.length > 0) {
           const saleIds = sales.map(s => s.sale_id);
           const { data: saleItems } = await supabase
@@ -1022,14 +1170,33 @@ export async function getMonthlyPLBreakdown(): Promise<Array<{
           }
         }
 
-        const profit = revenue - cost;
-        const margin = revenue > 0 ? (profit / revenue) * 100 : 0;
+        // 3. Expenses
+        const { data: expenses } = await supabase
+          .from('expenses')
+          .select('amount')
+          .gte('date', start.toISOString())
+          .lte('date', end.toISOString());
+
+        const totalExpenses = expenses?.reduce((sum, e) => sum + (e.amount || 0), 0) || 0;
+
+        // 4. Net Profit
+        // Profit currently defined as Net Profit (Revenue - COGS - Expenses)
+        // Note: You can split this into Gross and Net if UI supports it, 
+        // but for now we subtract expenses from "cost" side or "profit" side.
+        // Let's treat "cost" in the UI generic "Costs" which typically implies COGS+Expenses
+        // OR we can keep cost as COGS and reduce profit.
+        // The UI shows "Costs" (Red) and "Net Profit" (Green). 
+        // Best approach: Costs = COGS + Expenses.
+
+        const totalCostsAndExpenses = cost + totalExpenses;
+        const netProfit = revenue - totalCostsAndExpenses;
+        const margin = revenue > 0 ? (netProfit / revenue) * 100 : 0;
 
         results.push({
           month: months[5 - i],
           revenue,
-          cost,
-          profit,
+          cost: totalCostsAndExpenses, // Display sum of COGS + Expenses as "Costs"
+          profit: netProfit,
           margin: parseFloat(margin.toFixed(1))
         });
       }
@@ -1037,9 +1204,65 @@ export async function getMonthlyPLBreakdown(): Promise<Array<{
     } catch (error) {
       console.log('Error fetching monthly P&L online:', error);
     }
+  } else if (db) {
+    // OFFLINE IMPLEMENTATION
+    try {
+      await performTransaction(async () => {
+        for (let i = 5; i >= 0; i--) {
+          const start = new Date();
+          start.setMonth(start.getMonth() - i);
+          start.setDate(1);
+          start.setHours(0, 0, 0, 0);
+
+          const end = new Date(start);
+          end.setMonth(end.getMonth() + 1);
+          end.setDate(0);
+          end.setHours(23, 59, 59, 999);
+
+          // 1. Revenue
+          const salesResult = await db.getAllAsync<any>(
+            `SELECT SUM(total_amount) as total FROM sales WHERE sale_date >= ? AND sale_date <= ? AND sale_type != 'pending_debit'`,
+            [start.toISOString(), end.toISOString()]
+          );
+          const revenue = (salesResult && salesResult[0]) ? (salesResult[0].total || 0) : 0;
+
+          // 2. COGS (Join sales -> items -> parts)
+          const cogsResult = await db.getAllAsync<any>(`
+            SELECT SUM(si.quantity * sp.cost_price) as total_cost
+            FROM saleitems si
+            JOIN spareparts sp ON si.part_id = sp.part_id
+            JOIN sales s ON si.sale_id = s.sale_id
+            WHERE s.sale_date >= ? AND s.sale_date <= ?
+          `, [start.toISOString(), end.toISOString()]);
+          const cogs = (cogsResult && cogsResult[0]) ? (cogsResult[0].total_cost || 0) : 0;
+
+          // 3. Expenses
+          const expResult = await db.getAllAsync<any>(
+            `SELECT SUM(amount) as total_exp FROM expenses WHERE date >= ? AND date <= ?`,
+            [start.toISOString(), end.toISOString()]
+          );
+          const expenses = (expResult && expResult[0]) ? (expResult[0].total_exp || 0) : 0;
+
+          const totalCostsAndExpenses = cogs + expenses;
+          const netProfit = revenue - totalCostsAndExpenses;
+          const margin = revenue > 0 ? (netProfit / revenue) * 100 : 0;
+
+          results.push({
+            month: months[5 - i],
+            revenue,
+            cost: totalCostsAndExpenses,
+            profit: netProfit,
+            margin: parseFloat(margin.toFixed(1))
+          });
+        }
+      });
+      return results;
+    } catch (error) {
+      console.log('Error fetching monthly P&L offline:', error);
+    }
   }
 
-  // Fallback / Offline: Simplified calculation or empty
+  // Fallback if DB invalid
   return months.map(m => ({
     month: m,
     revenue: 0,
@@ -1170,3 +1393,72 @@ export async function getStaffPerformanceReport(
 
   return [];
 }
+
+// Get expense report
+export async function getExpenseReport(
+  period: ReportPeriod = 'day'
+): Promise<ExpenseReport> {
+  const online = await isOnline();
+  const { start, end } = getDateRange(period);
+
+  if (online) {
+    try {
+      const { data: expenses, error } = await supabase
+        .from('expenses')
+        .select('category, amount')
+        .gte('date', start)
+        .lte('date', end);
+
+      if (error) throw error;
+
+      const validExpenses = expenses || [];
+      const totalExpenses = validExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+
+      const catMap = new Map<string, number>();
+      validExpenses.forEach(e => {
+        catMap.set(e.category, (catMap.get(e.category) || 0) + (e.amount || 0));
+      });
+
+      return {
+        totalExpenses,
+        count: validExpenses.length,
+        byCategory: Array.from(catMap.entries()).map(([category, amount]) => ({ category, amount })),
+      };
+    } catch (error) {
+      console.log('Error fetching expense report:', error);
+      throw error;
+    }
+  }
+
+  // Offline: Read from local DB
+  const db = getOfflineDB();
+  if (db) {
+    return await performTransaction(async () => {
+      const expenses = await db.getAllAsync<any>(
+        'SELECT category, amount FROM expenses WHERE date >= ? AND date <= ?',
+        [start, end]
+      );
+      const expensesArray = Array.isArray(expenses) ? expenses : [];
+
+      const totalExpenses = expensesArray.reduce((sum: number, e: any) => sum + (e.amount || 0), 0);
+
+      const catMap = new Map<string, number>();
+      expensesArray.forEach((e: any) => {
+        catMap.set(e.category, (catMap.get(e.category) || 0) + (e.amount || 0));
+      });
+
+      return {
+        totalExpenses,
+        count: expensesArray.length,
+        byCategory: Array.from(catMap.entries()).map(([category, amount]) => ({ category, amount })),
+      };
+    });
+  }
+
+  return {
+    totalExpenses: 0,
+    count: 0,
+    byCategory: [],
+  };
+}
+

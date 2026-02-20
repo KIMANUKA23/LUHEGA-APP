@@ -401,87 +401,89 @@ export default function DebitSaleDetailScreen() {
         </View>
       </ScrollView>
 
-      {/* Actions - Approve/Reject */}
-      <View
-        style={{
-          position: "absolute",
-          left: 0,
-          right: 0,
-          bottom: 0,
-          padding: 16,
-          paddingBottom: 24,
-          borderTopWidth: 1,
-          borderTopColor: colors.border,
-          backgroundColor: colors.card,
-          flexDirection: "row",
-          gap: 12,
-        }}
-      >
-        <TouchableOpacity
-          onPress={handleApprove}
-          disabled={processing}
+      {/* Actions - Approve/Reject (Only if NOT already approved) */}
+      {!getAllDebts().some(d => d.saleId === id) && (
+        <View
           style={{
-            flex: 1,
-            height: 52,
-            borderRadius: 14,
-            backgroundColor: processing ? colors.border : colors.success,
-            alignItems: "center",
-            justifyContent: "center",
-            shadowColor: colors.success,
-            shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: 0.25,
-            shadowRadius: 12,
-            elevation: 4,
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            padding: 16,
+            paddingBottom: 24,
+            borderTopWidth: 1,
+            borderTopColor: colors.border,
+            backgroundColor: colors.card,
+            flexDirection: "row",
+            gap: 12,
           }}
-          activeOpacity={0.85}
         >
-          {processing ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
-          ) : (
-            <Text
-              style={{
-                fontSize: 15,
-                fontWeight: "700",
-                color: "#FFFFFF",
-              }}
-            >
-              Approve Sale
-            </Text>
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={handleReject}
-          disabled={processing}
-          style={{
-            flex: 1,
-            height: 52,
-            borderRadius: 14,
-            backgroundColor: processing ? colors.border : colors.error,
-            alignItems: "center",
-            justifyContent: "center",
-            shadowColor: colors.error,
-            shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: 0.25,
-            shadowRadius: 12,
-            elevation: 4,
-          }}
-          activeOpacity={0.85}
-        >
-          {processing ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
-          ) : (
-            <Text
-              style={{
-                fontSize: 15,
-                fontWeight: "700",
-                color: "#FFFFFF",
-              }}
-            >
-              Reject Sale
-            </Text>
-          )}
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            onPress={handleApprove}
+            disabled={processing}
+            style={{
+              flex: 1,
+              height: 52,
+              borderRadius: 14,
+              backgroundColor: processing ? colors.border : colors.success,
+              alignItems: "center",
+              justifyContent: "center",
+              shadowColor: colors.success,
+              shadowOffset: { width: 0, height: 8 },
+              shadowOpacity: 0.25,
+              shadowRadius: 12,
+              elevation: 4,
+            }}
+            activeOpacity={0.85}
+          >
+            {processing ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Text
+                style={{
+                  fontSize: 15,
+                  fontWeight: "700",
+                  color: "#FFFFFF",
+                }}
+              >
+                Approve - Create Debt
+              </Text>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleReject}
+            disabled={processing}
+            style={{
+              flex: 1,
+              height: 52,
+              borderRadius: 14,
+              backgroundColor: processing ? colors.border : colors.error,
+              alignItems: "center",
+              justifyContent: "center",
+              shadowColor: colors.error,
+              shadowOffset: { width: 0, height: 8 },
+              shadowOpacity: 0.25,
+              shadowRadius: 12,
+              elevation: 4,
+            }}
+            activeOpacity={0.85}
+          >
+            {processing ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Text
+                style={{
+                  fontSize: 15,
+                  fontWeight: "700",
+                  color: "#FFFFFF",
+                }}
+              >
+                Reject Sale
+              </Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }

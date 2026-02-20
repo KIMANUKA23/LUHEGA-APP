@@ -37,8 +37,14 @@ export default function CreateCategoryScreen() {
         name: name.trim(),
         description: description.trim() || null,
       });
+      // Better UX for Web: Navigate immediately without blocking Alert
+      if (Platform.OS === 'web') {
+        router.replace("/categories");
+        return;
+      }
+
       Alert.alert("Success", "Category created successfully!", [
-        { text: "OK", onPress: () => router.back() },
+        { text: "OK", onPress: () => router.replace("/categories") },
       ]);
     } catch (error: any) {
       console.log('Error creating category:', error);

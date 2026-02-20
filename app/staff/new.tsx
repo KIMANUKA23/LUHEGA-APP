@@ -143,8 +143,14 @@ export default function AddStaffScreen() {
               // Force refresh staff list cache to show new staff immediately
               await userService.getUsers();
 
+              // Better UX for Web: Navigate immediately without blocking Alert
+              if (Platform.OS === 'web') {
+                router.replace("/admin/staff");
+                return;
+              }
+
               Alert.alert("Success", "Staff member added successfully!", [
-                { text: "OK", onPress: () => router.back() },
+                { text: "OK", onPress: () => router.replace("/admin/staff") },
               ]);
             } catch (error: any) {
               console.log('Error creating staff:', error);

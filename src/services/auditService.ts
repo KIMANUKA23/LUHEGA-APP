@@ -65,19 +65,21 @@ export async function createInventoryAudit(auditData: {
 
       if (error) throw error;
 
-      // Save to local
-      await performTransaction(async () => {
-        await db.runAsync(`
-          INSERT INTO inventoryaudit (
-            audit_id, performed_by, part_id, physical_count, system_count,
-            adjustment, reason, audit_date, status, synced
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
-        `, [
-          data.audit_id, data.performed_by, data.part_id,
-          data.physical_count, data.system_count, data.adjustment,
-          data.reason, data.audit_date, data.status,
-        ]);
-      });
+      // Save to local (skip if no database on web)
+      if (db) {
+        await performTransaction(async () => {
+          await db.runAsync(`
+            INSERT INTO inventoryaudit (
+              audit_id, performed_by, part_id, physical_count, system_count,
+              adjustment, reason, audit_date, status, synced
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+          `, [
+            data.audit_id, data.performed_by, data.part_id,
+            data.physical_count, data.system_count, data.adjustment,
+            data.reason, data.audit_date, data.status,
+          ]);
+        });
+      }
 
       return data;
     } catch (error) {
@@ -86,7 +88,11 @@ export async function createInventoryAudit(auditData: {
     }
   }
 
-  // Offline: Save locally
+  // Offline: Save locally (skip if no database on web)
+  if (!db) {
+    throw new Error('Cannot create audit offline. Please check your internet connection.');
+  }
+
   await performTransaction(async () => {
     await db.runAsync(`
       INSERT INTO inventoryaudit (
@@ -133,12 +139,14 @@ export async function completeAudit(auditId: string): Promise<boolean> {
         }
       }
 
-      // Update local status
-      await performTransaction(async () => {
-        await db.runAsync(`
-          UPDATE inventoryaudit SET status = 'completed', synced = 1 WHERE audit_id = ?
-        `, [auditId]);
-      });
+      // Update local status (skip if no database on web)
+      if (db) {
+        await performTransaction(async () => {
+          await db.runAsync(`
+            UPDATE inventoryaudit SET status = 'completed', synced = 1 WHERE audit_id = ?
+          `, [auditId]);
+        });
+      }
 
       return true;
     } catch (error) {
@@ -147,7 +155,11 @@ export async function completeAudit(auditId: string): Promise<boolean> {
     }
   }
 
-  // Offline: Update local status and queue for sync
+  // Offline: Update local status and queue for sync (skip if no database on web)
+  if (!db) {
+    throw new Error('Cannot complete audit offline. Please check your internet connection.');
+  }
+
   const audit = await performTransaction(async () => {
     await db.runAsync(`
       UPDATE inventoryaudit SET status = 'completed', synced = 0 WHERE audit_id = ?
@@ -194,75 +206,95 @@ export async function getAllAudits(userId?: string | null, isAdmin: boolean = fa
 
       const merged: InventoryAudit[] = [];
 
-      // Cache in local (but don't overwrite a locally-completed audit with stale online in_progress)
-      await performTransaction(async () => {
-        // 1. Batch fetch existing local status to avoid N+1 queries
-        const existingStatusMap = new Map<string, string>();
-        if (data && data.length > 0) {
-          const ids = data.map(d => d.audit_id).filter(id => id);
-          if (ids.length > 0) {
-            // Processing in chunks to avoid too many variables in 'IN' clause if list is huge
-            const chunkSize = 50;
-            for (let i = 0; i < ids.length; i += chunkSize) {
-              const chunk = ids.slice(i, i + chunkSize);
-              const placeholders = chunk.map(() => '?').join(',');
-              const localRows = await db.getAllAsync<{ audit_id: string, status: string }>(
-                `SELECT audit_id, status FROM inventoryaudit WHERE audit_id IN (${placeholders})`,
-                chunk
-              );
-              localRows.forEach(row => existingStatusMap.set(row.audit_id, row.status));
+      // Cache in local (skip if no database on web)
+      if (db) {
+        await performTransaction(async () => {
+          // 1. Batch fetch existing local status to avoid N+1 queries
+          const existingStatusMap = new Map<string, string>();
+          if (data && data.length > 0) {
+            const ids = data.map(d => d.audit_id).filter(id => id);
+            if (ids.length > 0) {
+              // Processing in chunks to avoid too many variables in 'IN' clause if list is huge
+              const chunkSize = 50;
+              for (let i = 0; i < ids.length; i += chunkSize) {
+                const chunk = ids.slice(i, i + chunkSize);
+                const placeholders = chunk.map(() => '?').join(',');
+                const localRows = await db.getAllAsync<{ audit_id: string, status: string }>(
+                  `SELECT audit_id, status FROM inventoryaudit WHERE audit_id IN (${placeholders})`,
+                  chunk
+                );
+                localRows.forEach(row => existingStatusMap.set(row.audit_id, row.status));
+              }
             }
           }
-        }
 
-        for (const audit of data || []) {
-          let status: InventoryAudit['status'] = (audit.status || 'in_progress') as InventoryAudit['status'];
-          const localStatus = existingStatusMap.get(audit.audit_id);
+          for (const audit of data || []) {
+            let status: InventoryAudit['status'] = (audit.status || 'in_progress') as InventoryAudit['status'];
+            const localStatus = existingStatusMap.get(audit.audit_id);
 
-          if (localStatus === 'completed' && status !== 'completed') {
-            status = 'completed';
+            if (localStatus === 'completed' && status !== 'completed') {
+              status = 'completed';
+            }
+
+            const row: InventoryAudit = {
+              audit_id: audit.audit_id,
+              performed_by: audit.performed_by ?? null,
+              part_id: audit.part_id ?? null,
+              physical_count: audit.physical_count,
+              system_count: audit.system_count,
+              adjustment: audit.adjustment,
+              reason: audit.reason ?? null,
+              audit_date: audit.audit_date,
+              status,
+              synced: !!audit.synced,
+            };
+
+            merged.push(row);
+
+            await db.runAsync(`
+              INSERT OR REPLACE INTO inventoryaudit (
+                audit_id, performed_by, part_id, physical_count, system_count,
+                adjustment, reason, audit_date, status, synced
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `, [
+              row.audit_id,
+              row.performed_by,
+              row.part_id,
+              row.physical_count,
+              row.system_count,
+              row.adjustment,
+              row.reason,
+              row.audit_date,
+              row.status,
+              row.synced ? 1 : 0,
+            ]);
           }
+        });
+        return merged;
+      }
 
-          const row: InventoryAudit = {
-            audit_id: audit.audit_id,
-            performed_by: audit.performed_by ?? null,
-            part_id: audit.part_id ?? null,
-            physical_count: audit.physical_count,
-            system_count: audit.system_count,
-            adjustment: audit.adjustment,
-            reason: audit.reason ?? null,
-            audit_date: audit.audit_date,
-            status,
-            synced: !!audit.synced,
-          };
-
-          merged.push(row);
-
-          await db.runAsync(`
-            INSERT OR REPLACE INTO inventoryaudit (
-              audit_id, performed_by, part_id, physical_count, system_count,
-              adjustment, reason, audit_date, status, synced
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-          `, [
-            row.audit_id,
-            row.performed_by,
-            row.part_id,
-            row.physical_count,
-            row.system_count,
-            row.adjustment,
-            row.reason,
-            row.audit_date,
-            row.status,
-            row.synced ? 1 : 0,
-          ]);
-        }
-      });
-
-      return merged;
+      // On web (no db), return the online data directly
+      return (data || []).map(audit => ({
+        audit_id: audit.audit_id,
+        performed_by: audit.performed_by ?? null,
+        part_id: audit.part_id ?? null,
+        physical_count: audit.physical_count,
+        system_count: audit.system_count,
+        adjustment: audit.adjustment,
+        reason: audit.reason ?? null,
+        audit_date: audit.audit_date,
+        status: (audit.status || 'in_progress') as InventoryAudit['status'],
+        synced: true,
+      }));
     } catch (error) {
       console.log('Error fetching audits online:', error);
+      // Fall through to offline only if database exists
+      if (!db) return [];
     }
   }
+
+  // If no database (web), return empty
+  if (!db) return [];
 
   // Offline: Read from local
   const audits = await performTransaction(async () => {

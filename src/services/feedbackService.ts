@@ -44,7 +44,7 @@ export async function createFeedback(feedbackData: {
     synced: false,
   };
 
-  if (online && db) {
+  if (online) {
     try {
       const feedbackToInsert = {
         id: feedback.feedback_id,
@@ -98,15 +98,17 @@ export async function createFeedback(feedbackData: {
         console.warn('📧 Failed to send feedback email:', err);
       });
 
-      // Save to local
-      await db.runAsync(`
-        INSERT INTO feedback (
-          feedback_id, user_id, type, subject, message, status, created_at, synced
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, 1)
-      `, [
-        data.feedback_id, data.user_id, data.type, data.subject,
-        data.message, data.status, data.created_at,
-      ]);
+      // Save to local (skip if no database on web)
+      if (db) {
+        await db.runAsync(`
+          INSERT INTO feedback (
+            feedback_id, user_id, type, subject, message, status, created_at, synced
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+        `, [
+          data.feedback_id, data.user_id, data.type, data.subject,
+          data.message, data.status, data.created_at,
+        ]);
+      }
 
       return data;
     } catch (error) {

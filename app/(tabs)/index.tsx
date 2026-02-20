@@ -147,16 +147,18 @@ export default function StaffDashboard() {
 
   // 2. Navigation redirects in Effects
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
+    if (!authLoading && isAuthenticated && user?.role === 'admin') {
+      // Redirect immediately for admins to avoid flashing staff dashboard
+      router.replace("/admin/dashboard");
+      return;
+    }
+  }, [user?.role, isAuthenticated, authLoading]);
+
+  useEffect(() => {
+    if (!authLoading && isAuthenticated === false) {
       router.replace("/(auth)/login-choice");
     }
   }, [isAuthenticated, authLoading]);
-
-  useEffect(() => {
-    if (!authLoading && isAuthenticated && user?.role === 'admin') {
-      router.replace("/admin/dashboard");
-    }
-  }, [user?.role, isAuthenticated, authLoading]);
 
   // 3. Barcode scan handler
   useFocusEffect(
@@ -228,11 +230,13 @@ export default function StaffDashboard() {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || user?.role === 'admin') {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.background }}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={{ marginTop: 16, color: colors.textSecondary }}>Redirecting...</Text>
+        <Text style={{ marginTop: 16, color: colors.textSecondary }}>
+          {user?.role === 'admin' ? "Loading Admin Dashboard..." : "Redirecting..."}
+        </Text>
       </View>
     );
   }
@@ -241,30 +245,13 @@ export default function StaffDashboard() {
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <ExpoStatusBar style={isDark ? "light" : "dark"} backgroundColor={colors.card} />
 
-      {/* Offline Indicator */}
-      {isOffline && (
-        <View style={{
-          backgroundColor: isDark ? "rgba(239, 68, 68, 0.2)" : "#FEF2F2",
-          paddingVertical: 6,
-          alignItems: "center",
-          borderBottomWidth: 1,
-          borderBottomColor: isDark ? "rgba(239, 68, 68, 0.3)" : "#FEE2E2",
-          marginTop: Math.max(insets.top, StatusBar.currentHeight || 0),
-        }}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-            <MaterialIcons name="cloud-off" size={14} color={colors.error} />
-            <Text style={{ fontSize: 12, fontWeight: "600", color: colors.error }}>
-              Offline Mode - Changes will sync later
-            </Text>
-          </View>
-        </View>
-      )}
+      {/* Offline Indicator Removed */}
 
       {/* Header */}
       <View
         style={{
           backgroundColor: colors.card,
-          paddingTop: !isOffline ? Math.max(insets.top, StatusBar.currentHeight || 0) + 32 : 32,
+          paddingTop: insets.top + 24,
           paddingBottom: 20,
           paddingHorizontal: 16,
           borderBottomWidth: 1,
@@ -395,7 +382,7 @@ export default function StaffDashboard() {
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
-          paddingBottom: 140 + insets.bottom, // Account for taller V2 tab bar + safe area padding
+          paddingBottom: 140 + insets.bottom,
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -665,6 +652,7 @@ export default function StaffDashboard() {
             >
               {[
                 { label: "New Sale", icon: "add-shopping-cart", route: "/sales/new", color: colors.primary, bgColor: "rgba(0, 123, 255, 0.12)" },
+                { label: "Expenses", icon: "payments", route: "/expenses/new", color: colors.error, bgColor: "rgba(220, 38, 38, 0.12)" },
                 { label: "Inventory", icon: "inventory", route: "/(tabs)/inventory", color: "#16A34A", bgColor: "rgba(22, 163, 74, 0.12)" },
                 { label: "Customers", icon: "group", route: "/(tabs)/customers", color: "#8B5CF6", bgColor: "rgba(139, 92, 246, 0.12)" },
                 { label: "Returns", icon: "assignment-return", route: "/returns/list", color: "#F59E0B", bgColor: "rgba(245, 158, 11, 0.12)" },

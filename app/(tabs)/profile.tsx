@@ -14,8 +14,9 @@ import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useAuth } from "../../src/context/AuthContext";
 import { useTheme } from "../../src/context/ThemeContext";
+import { syncAll, getUnsyncedCount, isOnline } from "../../src/services/syncService";
+import { useAuth } from "../../src/context/AuthContext";
 
 type MenuItem = {
   icon: keyof typeof MaterialIcons.glyphMap;
@@ -32,6 +33,9 @@ export default function ProfileScreen() {
   const { user, isAdmin, logout, isAuthenticated, loading: authLoading } = useAuth();
   const { colors, mode, isDark, setMode } = useTheme();
   const insets = useSafeAreaInsets();
+  const [unsyncedCount, setUnsyncedCount] = React.useState(0);
+  const [syncing, setSyncing] = React.useState(false);
+  const [onlineStatus, setOnlineStatus] = React.useState(false);
 
   // Redirect if not authenticated
   React.useEffect(() => {
@@ -39,6 +43,33 @@ export default function ProfileScreen() {
       router.replace("/(auth)/login-choice");
     }
   }, [isAuthenticated, authLoading, router]);
+
+  // Load sync status
+  React.useEffect(() => {
+    const loadStatus = async () => {
+      const count = await getUnsyncedCount();
+      const online = await isOnline();
+      setUnsyncedCount(count);
+      setOnlineStatus(online);
+    };
+    loadStatus();
+    const interval = setInterval(loadStatus, 10000); // Poll every 10s
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleManualSync = async () => {
+    if (syncing) return;
+    setSyncing(true);
+    try {
+      await syncAll();
+      const newCount = await getUnsyncedCount();
+      setUnsyncedCount(newCount);
+    } catch (e) {
+      console.log("Manual sync error:", e);
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   // Early returns AFTER all hooks
   if (authLoading) {
@@ -255,6 +286,85 @@ export default function ProfileScreen() {
               <Text style={{ fontSize: 14, fontWeight: "600", color: "#FFFFFF" }}>
                 Edit Profile
               </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Sync Status Section */}
+        <View style={{ paddingHorizontal: 16, marginBottom: 24 }}>
+          <View
+            style={{
+              backgroundColor: colors.card,
+              borderRadius: 16,
+              borderWidth: 1,
+              borderColor: colors.border,
+              padding: 16,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: isDark ? 0.3 : 0.05,
+              shadowRadius: 6,
+              elevation: 2,
+            }}
+          >
+            <View style={{ flex: 1 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                <View
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: 5,
+                    backgroundColor: onlineStatus ? '#10B981' : '#EF4444',
+                    marginRight: 8
+                  }}
+                />
+                <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text }}>
+                  {onlineStatus ? "Cloud Sync Live" : "Offline Mode"}
+                </Text>
+              </View>
+              <Text style={{ fontSize: 13, color: colors.textSecondary }}>
+                {unsyncedCount > 0
+                  ? `${unsyncedCount} items waiting to sync...`
+                  : "All data is up to date"}
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              onPress={handleManualSync}
+              disabled={syncing}
+              style={{
+                backgroundColor: unsyncedCount > 0 ? colors.primary : colors.surface,
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+                borderRadius: 9999,
+                flexDirection: 'row',
+                alignItems: 'center',
+                borderWidth: unsyncedCount > 0 ? 0 : 1,
+                borderColor: colors.border,
+              }}
+              activeOpacity={0.8}
+            >
+              {syncing ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <>
+                  <MaterialIcons
+                    name="sync"
+                    size={18}
+                    color={unsyncedCount > 0 ? "#FFFFFF" : colors.textSecondary}
+                    style={{ marginRight: 6 }}
+                  />
+                  <Text style={{
+                    fontSize: 14,
+                    fontWeight: '600',
+                    color: unsyncedCount > 0 ? "#FFFFFF" : colors.textSecondary
+                  }}>
+                    Sync Now
+                  </Text>
+                </>
+              )}
             </TouchableOpacity>
           </View>
         </View>

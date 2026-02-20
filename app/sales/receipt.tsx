@@ -152,7 +152,8 @@ export default function SalesReceiptScreen() {
   };
 
   const handleNewSale = () => {
-    router.replace("/sales/new");
+    // Navigate away from the receipt to the sales tab, following existing tab conventions
+    router.replace("/(tabs)/sales");
   };
 
   // Generate HTML receipt template
@@ -457,7 +458,9 @@ export default function SalesReceiptScreen() {
         }}
       >
         <TouchableOpacity
-          onPress={() => router.push("/(tabs)/sales")}
+          onPress={() => {
+            router.replace("/(tabs)/sales");
+          }}
           style={{
             width: 40,
             height: 40,

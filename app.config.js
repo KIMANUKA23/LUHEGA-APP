@@ -51,7 +51,7 @@ module.exports = {
     },
     extra: {
       eas: {
-        projectId: "41f8bbdf-ef63-4f8a-8d72-3d1aa2b1353f"
+        projectId: "e6360c2a-a66a-4e95-b60b-658b17d003b5"
       },
       // These will be available via Constants.expoConfig.extra
       supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://jfrydmnmbelwxbdsuepo.supabase.co',

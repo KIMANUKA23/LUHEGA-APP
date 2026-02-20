@@ -29,6 +29,7 @@ import * as notificationService from "../../src/services/notificationService";
 import { useAuth } from "../../src/context/AuthContext";
 import { isOnline } from "../../src/services/syncService";
 import * as debtService from "../../src/services/debtService";
+import * as customerService from "../../src/services/customerService";
 
 export default function AdminDashboard() {
   // Guard: Admin only
@@ -163,12 +164,12 @@ export default function AdminDashboard() {
       const salesReport = await getSalesReport('month', null, true);
 
       // Calculate unique customers (last 7 days)
-      const customerService = require("@/services/customerService");
+      // Calculate unique customers (last 7 days)
       const allCustomers = await customerService.getAllCustomers();
-      const recentCustomers = allCustomers.filter((c: any) => {
+      const recentCustomers = Array.isArray(allCustomers) ? allCustomers.filter((c: any) => {
         const visitDate = new Date(c.lastVisit);
         return visitDate >= last7Days;
-      }).length;
+      }).length : 0;
 
       // Pending returns count
       const pendingReturns = allReturns.filter((r: any) => r.status === 'pending').length;
@@ -232,7 +233,7 @@ export default function AdminDashboard() {
       chartData.push(dayTotal);
     }
 
-    return chartData.length > 0 ? chartData : [0, 0, 0, 0, 0, 0, 0];
+    return (Array.isArray(allSales) && allSales.length > 0) ? chartData : [0, 0, 0, 0, 0, 0, 0];
   }, [getAllSales]);
 
   const months = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -262,31 +263,13 @@ export default function AdminDashboard() {
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <ExpoStatusBar style={isDark ? "light" : "dark"} backgroundColor={colors.card} />
 
-      {/* Offline Indicator */}
-      {isOffline && (
-        <View style={{
-          backgroundColor: isDark ? "rgba(239, 68, 68, 0.2)" : "#FEF2F2",
-          paddingVertical: 6,
-          alignItems: "center",
-          borderBottomWidth: 1,
-          borderBottomColor: isDark ? "rgba(239, 68, 68, 0.3)" : "#FEE2E2",
-          marginTop: Math.max(insets.top, StatusBar.currentHeight || 0),
-          zIndex: 20,
-        }}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-            <MaterialIcons name="cloud-off" size={14} color={colors.error} />
-            <Text style={{ fontSize: 12, fontWeight: "600", color: colors.error }}>
-              Offline Mode - Changes will sync later
-            </Text>
-          </View>
-        </View>
-      )}
+      {/* Offline Indicator Removed */}
 
       {/* Fixed Header */}
       <View
         style={{
           backgroundColor: colors.card,
-          paddingTop: insets.top + (isOffline ? 8 : 24),
+          paddingTop: insets.top + 24,
           paddingBottom: 16,
           paddingHorizontal: 16,
           borderBottomWidth: 1,
@@ -402,7 +385,7 @@ export default function AdminDashboard() {
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
-          paddingBottom: 100 + insets.bottom,
+          paddingBottom: 140 + insets.bottom,
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -818,6 +801,60 @@ export default function AdminDashboard() {
           </TouchableOpacity>
         </View>
 
+        {/* Expenses Alert Card */}
+        <View style={{ paddingHorizontal: 16, marginBottom: 16 }}>
+          <TouchableOpacity
+            onPress={() => router.push("/expenses/history")}
+            style={{
+              backgroundColor: isDark ? "#1E293B" : "#FFFFFF",
+              borderRadius: 20,
+              padding: 20,
+              borderWidth: 1.5,
+              borderColor: colors.error + "40",
+              shadowColor: colors.error,
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: 0.1,
+              shadowRadius: 15,
+              elevation: 4,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+            activeOpacity={0.8}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 14, flex: 1 }}>
+              <View
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 14,
+                  backgroundColor: colors.error + "20",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <MaterialIcons name="payments" size={24} color={colors.error} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: "700",
+                    color: colors.text,
+                    fontFamily: "Poppins_700Bold",
+                  }}
+                >
+                  Shop Expenses
+                </Text>
+                <Text style={{ fontSize: 13, color: colors.textSecondary, fontWeight: "500" }}>
+                  View and manage daily costs
+                </Text>
+              </View>
+            </View>
+            <MaterialIcons name="chevron-right" size={24} color={colors.textSecondary} />
+          </TouchableOpacity>
+        </View>
+
         {/* Sales Trends Chart */}
         <View style={{ padding: 16 }}>
           <View
@@ -1040,7 +1077,7 @@ export default function AdminDashboard() {
         })}
         style={{
           position: "absolute",
-          bottom: 110 + insets.bottom,
+          bottom: 125 + insets.bottom,
           right: 20,
           width: 56,
           height: 56,
@@ -1125,16 +1162,20 @@ export default function AdminDashboard() {
           shadowRadius: 10,
           elevation: 5,
           zIndex: 20,
-          height: 80,
+          height: 85 + insets.bottom,
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-around",
           paddingHorizontal: 8,
+          paddingBottom: Math.max(insets.bottom, 20) + 12,
         }}
       >
         {/* Dashboard */}
         <TouchableOpacity
-          onPress={() => router.push("/admin/dashboard")}
+          onPress={() => {
+            // Scroll to top if already on dashboard, don't re-push stack
+            // This prevents the "sudden close" crash on some Android devices
+          }}
           style={{
             alignItems: "center",
             justifyContent: "center",
@@ -1157,7 +1198,7 @@ export default function AdminDashboard() {
 
         {/* Inventory */}
         <TouchableOpacity
-          onPress={() => router.push("/(tabs)/inventory")}
+          onPress={() => router.navigate("/(tabs)/inventory")}
           style={{
             alignItems: "center",
             justifyContent: "center",
@@ -1180,7 +1221,7 @@ export default function AdminDashboard() {
 
         {/* Sales */}
         <TouchableOpacity
-          onPress={() => router.push("/(tabs)/sales")}
+          onPress={() => router.navigate("/(tabs)/sales")}
           style={{
             alignItems: "center",
             justifyContent: "center",
@@ -1203,7 +1244,7 @@ export default function AdminDashboard() {
 
         {/* Customers */}
         <TouchableOpacity
-          onPress={() => router.push("/(tabs)/customers")}
+          onPress={() => router.navigate("/(tabs)/customers")}
           style={{
             alignItems: "center",
             justifyContent: "center",
@@ -1226,7 +1267,7 @@ export default function AdminDashboard() {
 
         {/* Profile */}
         <TouchableOpacity
-          onPress={() => router.push("/(tabs)/profile")}
+          onPress={() => router.navigate("/(tabs)/profile")}
           style={{
             alignItems: "center",
             justifyContent: "center",

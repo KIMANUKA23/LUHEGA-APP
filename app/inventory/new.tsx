@@ -10,6 +10,7 @@ import {
   TextInput,
   Alert,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -21,6 +22,8 @@ import * as inventoryService from "@/services/inventoryService";
 import * as categoryService from "@/services/categoryService";
 import * as supplierService from "@/services/supplierService";
 import { useTheme } from "../../src/context/ThemeContext";
+import { syncAllDebounced } from "../../src/services/syncService";
+import { pickImage, uploadImage } from "../../src/services/storageService";
 
 export default function AddProductScreen() {
   // Guard: Admin only
@@ -43,6 +46,7 @@ export default function AddProductScreen() {
   const [showManualBarcode, setShowManualBarcode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [checkingSku, setCheckingSku] = useState(false);
+  const [imageUri, setImageUri] = useState<string | null>(null);
 
   // Load categories and suppliers
   const [categories, setCategories] = useState<{ category_id: string; name: string }[]>([]);
@@ -141,6 +145,11 @@ export default function AddProductScreen() {
 
     setLoading(true);
     try {
+      let finalImageUrl = null;
+      if (imageUri) {
+        finalImageUrl = await uploadImage(imageUri, 'spareparts', 'products');
+      }
+
       await inventoryService.createProduct({
         sku: sku.trim(),
         name: name.trim(),
@@ -151,15 +160,33 @@ export default function AddProductScreen() {
         selling_price: sellingPrice,
         quantity_in_stock: qty,
         reorder_level: reorder,
-        image_url: null,
+        image_url: finalImageUrl,
         status: 'active',
       });
 
       // Refresh products in AppContext
       await refreshProducts();
 
+      // Trigger a background sync so the new product is pushed to Supabase
+      // and becomes visible on other devices using the same admin account.
+      syncAllDebounced();
+
+      // Better UX: Navigate immediately to inventory list
+      if (Platform.OS === 'web') {
+        router.dismissAll();
+        router.replace("/(tabs)/inventory");
+        return;
+      }
+
       Alert.alert("Success", "Product created successfully!", [
-        { text: "OK", onPress: () => router.back() },
+        {
+          text: "OK",
+          onPress: () => {
+            // Force navigation back to inventory list, clearing potential stack issues
+            router.dismissAll();
+            router.replace("/(tabs)/inventory");
+          }
+        },
       ]);
     } catch (error: any) {
       console.log('Error creating product:', error);
@@ -245,6 +272,58 @@ export default function AddProductScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
+        {/* Image Picker */}
+        <View
+          style={{
+            alignItems: 'center',
+            marginBottom: 20,
+          }}
+        >
+          <TouchableOpacity
+            onPress={async () => {
+              const uri = await pickImage();
+              if (uri) setImageUri(uri);
+            }}
+            style={{
+              width: 120,
+              height: 120,
+              borderRadius: 16,
+              backgroundColor: colors.surface,
+              borderWidth: 2,
+              borderStyle: 'dashed',
+              borderColor: colors.border,
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden',
+            }}
+          >
+            {imageUri ? (
+              <Image
+                source={{ uri: imageUri }}
+                style={{ width: '100%', height: '100%' }}
+                resizeMode="cover"
+              />
+            ) : (
+              <View style={{ alignItems: 'center' }}>
+                <MaterialIcons name="add-a-photo" size={32} color={colors.textSecondary} />
+                <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 4 }}>
+                  Add Image
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+          {imageUri && (
+            <TouchableOpacity
+              onPress={() => setImageUri(null)}
+              style={{ marginTop: 8 }}
+            >
+              <Text style={{ color: colors.error, fontSize: 12, fontWeight: '600' }}>
+                Remove Image
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
         {/* Basic Info */}
         <View
           style={{
